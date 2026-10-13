@@ -274,7 +274,7 @@ function miV59CanOpen(id){
  if(id==='home')return true;
  if(id==='children')return role==='teacher'?p.kids===true:role==='coordinator'&&p.importKids===true;
  if(id==='ebd')return role==='teacher'?(p.tal===true||p.fin===true||p.rep===true):role==='coordinator'&&(p.ebd===true||p.repEbd===true||p.fin===true);
- if(id==='network')return role==='coordinator'&&(p.net===true||p.repNet===true||p.fin===true);
+ if(id==='network')return role==='teacher'?p.check===true:role==='coordinator'&&(p.net===true||p.repNet===true||p.fin===true||p.check===true);
  if(id==='people')return role==='coordinator'&&p.addCoords===true;
  if(id==='reports')return role==='teacher'?p.rep===true:role==='coordinator'&&(p.repEbd===true||p.repNet===true);
  return false;
@@ -300,7 +300,7 @@ function go(id,b){if(!miV59CanOpen(id))return;document.querySelectorAll('.page')
  if(id==='tal')return role==='teacher'&&p.tal===true;
  if(id==='efin'||id==='nfin')return p.fin===true;
  if(id==='rooms')return role==='coordinator'&&p.ebd===true;
- if(id==='check')return role==='coordinator'&&p.net===true;
+ if(id==='check')return p.check===true;
  return miV59CanOpen(document.getElementById(id)?.closest('.page')?.id||'');
 }
 function miV59RefreshPanes(){
