@@ -244,7 +244,33 @@ function seed3Months(){
 }
 /* Sem geração de demonstração em produção */ let selected=null;function save(){localStorage.setItem(KEY,JSON.stringify(d));render();window.miCloudScheduleSave?.()}save();
 function now(){let x=new Date();x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,16)}function today(){return now().slice(0,10)}function localDate(dt){const d=new Date(dt.getTime()-dt.getTimezoneOffset()*60000);return d.toISOString().slice(0,10)}function age(b){if(!b)return'';let n=new Date(),x=new Date(b+'T12:00'),a=n.getFullYear()-x.getFullYear();if(n.getMonth()<x.getMonth()||(n.getMonth()==x.getMonth()&&n.getDate()<x.getDate()))a--;return a}function brnum(v){let x=String(v??'').replace(/R\$\s?/g,'').replace(/\./g,'').replace(',','.');return +x||0}function money(v){return(+v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}function brdate(v){let p=String(v||'').slice(0,10).split('-');return p.length===3?p.reverse().join('/'):String(v||'')}
-function go(id,b){document.querySelectorAll('.page').forEach(x=>x.classList.remove('show'));document.getElementById(id).classList.add('show');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}function pane(id,b){b.closest('.page').querySelectorAll('.pane').forEach(x=>x.classList.remove('open'));document.getElementById(id).classList.add('open');b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+/* V59: defesa de navegação por autorização individual; acesso de dados permanece protegido pelo servidor. */
+function miV59CanOpen(id){
+ const a=window.miLiveAccessV58,role=window.miAuthRoleV58;
+ if(role==='developer')return true;
+ if(!a||!a.permissions||a.role!==role)return false;
+ const p=a.permissions;
+ if(id==='home')return true;
+ if(id==='children')return role==='teacher'?p.kids===true:role==='coordinator'&&p.importKids===true;
+ if(id==='ebd')return role==='teacher'?(p.tal===true||p.fin===true||p.rep===true):role==='coordinator'&&(p.ebd===true||p.repEbd===true||p.fin===true);
+ if(id==='network')return role==='coordinator'&&(p.net===true||p.repNet===true||p.fin===true);
+ if(id==='people')return role==='coordinator'&&p.addCoords===true;
+ if(id==='reports')return role==='teacher'?p.rep===true:role==='coordinator'&&(p.repEbd===true||p.repNet===true);
+ return false;
+}
+function miV59RefreshNavigation(){
+ const buttons=document.querySelectorAll('nav button');
+ const pages=['home','children','ebd','network','people','reports'];
+ buttons.forEach((b,i)=>{if(pages[i])b.hidden=!miV59CanOpen(pages[i])});
+ document.querySelectorAll('#home .card button[onclick*="go("]').forEach(b=>{
+  const match=b.getAttribute('onclick')?.match(/go\('([^']+)'/);
+  if(match)b.closest('.card').hidden=!miV59CanOpen(match[1]);
+ });
+ const current=document.querySelector('.page.show');
+ if(current&&!miV59CanOpen(current.id))go('home',buttons[0]);
+}
+window.miV59RefreshNavigation=miV59RefreshNavigation;
+function go(id,b){if(!miV59CanOpen(id))return;document.querySelectorAll('.page').forEach(x=>x.classList.remove('show'));document.getElementById(id).classList.add('show');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));if(b)b.classList.add('on')}function pane(id,b){b.closest('.page').querySelectorAll('.pane').forEach(x=>x.classList.remove('open'));document.getElementById(id).classList.add('open');b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
 async function cep(){let z=kcep.value.replace(/\D/g,'');if(z.length!==8)return;try{let j=await(await fetch('https://viacep.com.br/ws/'+z+'/json/')).json();kst.value=j.logradouro||'';khood.value=j.bairro||'';kcity.value=j.localidade||'';kuf.value=j.uf||'';cepmsg.textContent='Endereço localizado.'}catch(e){cepmsg.textContent='Preencha manualmente.'}}
 function authCandidates(){return [{key:'Pai',name:kf.value.trim()},{key:'Mãe',name:km.value.trim()},{key:'Outro responsável',name:kr.value.trim()}].filter(x=>x.name)}
 function renderAuthBtns(){let box=document.getElementById('authBtns');if(!box)return;let sel=(kauth.value||'').split('||').filter(Boolean),choices=authCandidates();box.innerHTML=choices.map((x,i)=>{let v=x.key+' — '+x.name,on=sel.includes(v);return `<button type="button" class="authpick ${on?'on':''}" data-auth-index="${i}">${x.key}: ${x.name}</button>`}).join('')||'<span>Preencha Pai, Mãe ou Outro responsável acima.</span>';box.querySelectorAll('button[data-auth-index]').forEach(btn=>btn.addEventListener('click',()=>{let x=choices[+btn.dataset.authIndex];toggleAuth(x.key+' — '+x.name)}));authSelected.textContent=sel.length?'Autorizados: '+sel.join(' • '):'Nenhum responsável selecionado.'}function toggleAuth(v){let a=(kauth.value||'').split('||').filter(Boolean),i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);kauth.value=a.join('||');renderAuthBtns()}
@@ -621,7 +647,7 @@ function lock(){const staffPanel=document.getElementById('miStaffWorkspaceV58');
 if(!pr.ok)throw Error('Não foi possível validar as permissões desta conta.');
 const permissions=await pr.json();
 if(!Array.isArray(permissions)||permissions.length!==1||permissions[0].role!==profile[0].staff_role)throw Error('Perfil e permissões inconsistentes.');
-const liveResponse=await fetch(base+'/rest/v1/rpc/v58_my_live_access',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});if(!liveResponse.ok)throw Error('Não foi possível sincronizar as permissões individuais.');const live=await liveResponse.json();if(!live||live.role!==profile[0].staff_role||!live.permissions)throw Error('Permissões individuais inconsistentes.');window.miLiveAccessV58=live;msg.textContent='Permissões atualizadas. Preparando seu ambiente...';
+const liveResponse=await fetch(base+'/rest/v1/rpc/v58_my_live_access',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});if(!liveResponse.ok)throw Error('Não foi possível sincronizar as permissões individuais.');const live=await liveResponse.json();if(!live||live.role!==profile[0].staff_role||!live.permissions)throw Error('Permissões individuais inconsistentes.');window.miLiveAccessV58=live;window.miV59RefreshNavigation?.();msg.textContent='Permissões atualizadas. Preparando seu ambiente...';
 saveRefresh(data.refresh_token);window.miAuthTokenV58=data.access_token;window.miAuthRoleV58=profile[0].staff_role;window.miCloudRefreshAdminControls?.();
 if(!permissions[0].can_manage_all){
  const w=await fetch(base+'/rest/v1/rpc/v58_staff_workspace',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});
