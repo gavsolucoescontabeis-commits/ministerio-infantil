@@ -456,7 +456,15 @@ window.miQrResolveV58=function(raw){
  if(active){checkout(active.id);return {ok:true,message:'Criança localizada. Confirme quem está buscando antes de registrar a saída.'};}
  choose(kid.id);return {ok:true,message:'Criança localizada. Confirme quem trouxe antes de registrar a entrada.'};
 };
-function confirmCheckout(){let w=getWho('out');if(!w)return alert('Informe quem buscou a criança.');let x=d.checks.find(y=>y.id===checkoutId);if(x){x.out=now();x.whoOut=w;save()}outBox.classList.add('hidden');checkoutId=null}
+async function confirmCheckout(){
+ const w=getWho('out');if(!w)return alert('Informe quem buscou a criança.');
+ if(window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'){
+  if(window.miLiveAccessV58?.permissions?.check!==true)return alert('Sem permissão para registrar saída.');
+  try{const res=await window.miV59CheckAction('v59_record_checkout',{p_id:String(checkoutId),p_who:w});if(!res?.ok)throw Error('Saída não confirmada');await window.miV59ReloadStaff();outBox.classList.add('hidden');checkoutId=null;return}
+  catch(e){return alert('Não foi possível registrar saída: '+e.message)}
+ }
+ const x=d.checks.find(y=>y.id===checkoutId);if(x){x.out=now();x.whoOut=w;save()}outBox.classList.add('hidden');checkoutId=null
+}
 function delCheck(id){let x=d.checks.find(y=>y.id===id);if(!x)return;if(x.out){if(confirm('Excluir a SAÍDA deste registro? A entrada será preservada e poderá ser excluída depois.')){x.out='';x.whoOut='';save()}return}if(confirm('Excluir a ENTRADA deste registro? Esta ação remove o registro de presença.')){d.checks=d.checks.filter(y=>y.id!==id);save()}}
 
 let editingTeacherId=null,editingCoordId=null;
