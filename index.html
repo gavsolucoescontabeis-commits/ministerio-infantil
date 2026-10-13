@@ -255,6 +255,14 @@ window.miV59ReloadStaff=async function(){
  if(!response.ok)throw Error('Falha ao atualizar dados autorizados');
  window.miV59LoadScopedState(await response.json());
 };
+window.miV59ClearStaffState=function(){
+ if(!window.miV59SyncedState)return;
+ window.miV59SyncedState=null;
+ window.miV59Saving=false;
+ Object.keys(d).forEach(k=>delete d[k]);
+ Object.assign(d,{rooms:[],kids:[],checks:[],teachers:[],coords:[],talents:[],roomLinks:[],ebdRooms:{},ebdBrooches:[],roomTransfers:[],initialTalentsAudit:[],importQueue:[],fin:{ebd:{offers:[],products:[],moves:[]},net:{offers:[],products:[],moves:[]}}});
+ render();
+};
 window.miV59LoadScopedState=function(state){
  if(!state||!Array.isArray(state.kids)||!Array.isArray(state.rooms)||!Array.isArray(state.checks)||!Number.isFinite(Number(state.revision)))throw Error('Dados de equipe inválidos');
  Object.keys(d).forEach(k=>delete d[k]);
@@ -734,7 +742,7 @@ setInterval(async()=>{if(!window.miAuthTokenV58||window.miAuthRoleV58==='develop
 setInterval(refreshSession,60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshSession()});
 window.addEventListener('online',refreshSession);
-function lock(){const staffPanel=document.getElementById('miStaffWorkspaceV58');if(staffPanel)staffPanel.hidden=true;const assignPanel=document.getElementById('miTeamAssignPanel');if(assignPanel)assignPanel.hidden=true;document.body.classList.add('auth-locked');document.getElementById('authV58').hidden=false;}function unlock(){document.getElementById('authV58').hidden=true;document.body.classList.remove('auth-locked');document.getElementById('authPassV58').value='';}lock();async function completeLogin(data){const p=await fetch(base+'/rest/v1/rpc/current_staff_profile',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});if(!p.ok)throw Error('Não foi possível confirmar o perfil de acesso.');const profile=await p.json();if(!Array.isArray(profile)||!profile.length||!['developer','coordinator','teacher'].includes(profile[0].staff_role))throw Error('Perfil sem permissão ativa.');const pr=await fetch(base+'/rest/v1/rpc/v58_my_permissions',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});
+function lock(){window.miV59ClearStaffState?.();const staffPanel=document.getElementById('miStaffWorkspaceV58');if(staffPanel)staffPanel.hidden=true;const assignPanel=document.getElementById('miTeamAssignPanel');if(assignPanel)assignPanel.hidden=true;document.body.classList.add('auth-locked');document.getElementById('authV58').hidden=false;}function unlock(){document.getElementById('authV58').hidden=true;document.body.classList.remove('auth-locked');document.getElementById('authPassV58').value='';}lock();async function completeLogin(data){const p=await fetch(base+'/rest/v1/rpc/current_staff_profile',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});if(!p.ok)throw Error('Não foi possível confirmar o perfil de acesso.');const profile=await p.json();if(!Array.isArray(profile)||!profile.length||!['developer','coordinator','teacher'].includes(profile[0].staff_role))throw Error('Perfil sem permissão ativa.');const pr=await fetch(base+'/rest/v1/rpc/v58_my_permissions',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});
 if(!pr.ok)throw Error('Não foi possível validar as permissões desta conta.');
 const permissions=await pr.json();
 if(!Array.isArray(permissions)||permissions.length!==1||permissions[0].role!==profile[0].staff_role)throw Error('Perfil e permissões inconsistentes.');
@@ -1015,7 +1023,7 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
   }
   function accept(value){
     if(typeof window.miQrResolveV58!=='function'){message('Cadastro ainda não disponível.');return false}
-    if(!window.miAuthTokenV58 || window.miAuthRoleV58!=='developer'){message('Acesso administrativo necessário nesta tela.');return false}
+    if(!window.miAuthTokenV58 || (window.miAuthRoleV58!=='developer' && window.miLiveAccessV58?.permissions?.check!==true)){message('Sem permissão para utilizar o leitor de QR Code.');return false}
     const result=window.miQrResolveV58(value);
     message(result.message);
     if(result.ok)stop();
@@ -1023,7 +1031,7 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
   }
   async function start(){
     if(stream)return;
-    if(!window.miAuthTokenV58 || window.miAuthRoleV58!=='developer'){message('Entre como administrador para utilizar o leitor nesta tela.');return}
+    if(!window.miAuthTokenV58 || (window.miAuthRoleV58!=='developer' && window.miLiveAccessV58?.permissions?.check!==true)){message('Entre com um perfil autorizado para usar o leitor.');return}
     if(!window.isSecureContext){message('Para usar a câmera, abra o aplicativo em HTTPS ou localhost.');return}
     if(!navigator.mediaDevices?.getUserMedia){message('Este navegador não permite acesso à câmera. Use o campo de código abaixo.');return}
     if(!('BarcodeDetector' in window)){message('Leitura automática indisponível neste navegador. Use o campo de código abaixo.');return}
@@ -1032,7 +1040,7 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
       if(!formats.includes('qr_code')){message('Leitura de QR Code não disponível neste navegador.');return}
       const detector=new BarcodeDetector({formats:['qr_code']});
       stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
-      if(!window.miAuthTokenV58 || window.miAuthRoleV58!=='developer'){stop();message('Sessão encerrada.');return}
+      if(!window.miAuthTokenV58 || (window.miAuthRoleV58!=='developer' && window.miLiveAccessV58?.permissions?.check!==true)){stop();message('Sessão encerrada.');return}
       const video=byId('miQrVideo');video.srcObject=stream;video.hidden=false;
       await video.play();
       byId('miQrStart').disabled=true;
