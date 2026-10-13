@@ -250,10 +250,19 @@ function seed3Months(){
  return response.json();
 };
 window.miV59ReloadStaff=async function(){
+ if(window.miV59ReloadPromise)return window.miV59ReloadPromise;
  const token=window.miAuthTokenV58;if(!token)throw Error('Sessão encerrada');
- const response=await fetch('https://jthxnjvqmvtydyfuqcct.supabase.co/rest/v1/rpc/v59_staff_app_state',{method:'POST',headers:{'Content-Type':'application/json','apikey':'sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs','Authorization':'Bearer '+token},body:'{}'});
- if(!response.ok)throw Error('Falha ao atualizar dados autorizados');
- window.miV59LoadScopedState(await response.json());
+ window.miV59ReloadPromise=(async()=>{
+  const response=await fetch('https://jthxnjvqmvtydyfuqcct.supabase.co/rest/v1/rpc/v59_staff_app_state',{method:'POST',headers:{'Content-Type':'application/json','apikey':'sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs','Authorization':'Bearer '+token},body:'{}'});
+  if(!response.ok)throw Error('Falha ao atualizar dados autorizados');
+  const state=await response.json();
+  if(window.miAuthTokenV58!==token)throw Error('Sessão alterada durante atualização');
+  window.miV59LoadScopedState(state);
+ })();
+ try{return await window.miV59ReloadPromise}finally{window.miV59ReloadPromise=null}
+};
+window.miV59CanReload=function(){
+ return !window.miV59Saving && !!window.miV59SyncedState && JSON.stringify(d)===JSON.stringify(window.miV59SyncedState);
 };
 window.miV59ClearStaffState=function(){
  if(!window.miV59SyncedState)return;
@@ -739,6 +748,9 @@ async function refreshSession(){
  }finally{refreshBusy=false}
 }
 setInterval(async()=>{if(!window.miAuthTokenV58||window.miAuthRoleV58==='developer')return;try{const r=await fetch(base+'/rest/v1/rpc/current_staff_profile',{method:'POST',headers:{apikey:key,'Content-Type':'application/json',Authorization:'Bearer '+window.miAuthTokenV58},body:'{}'});const data=await r.json();if(r.ok&&Array.isArray(data)&&data.length&&data[0].staff_role===window.miAuthRoleV58){const ar=await fetch(base+'/rest/v1/rpc/v58_my_live_access',{method:'POST',headers:{apikey:key,'Content-Type':'application/json',Authorization:'Bearer '+window.miAuthTokenV58},body:'{}'});if(!ar.ok)throw Error('Falha ao renovar permissões');const live=await ar.json();if(live.role!==window.miAuthRoleV58||!live.permissions)throw Error('Permissões inconsistentes');window.miLiveAccessV58=live;window.miV59RefreshNavigation?.();document.querySelectorAll('[data-v59-permission="check"]').forEach(el=>{el.hidden=live.permissions?.check!==true});if(live.permissions?.check!==true){document.querySelectorAll('[data-v59-permission="check"] button').forEach(el=>el.disabled=true)}return;}if(!r.ok||!Array.isArray(data)||!data.length||data[0].staff_role!==window.miAuthRoleV58){window.miAuthTokenV58=null;window.miAuthRoleV58=null;saveRefresh(null);window.miCloudLogout?.();lock();document.getElementById('authMsgV58').textContent='Acesso desativado ou sessão encerrada.'}}catch(e){console.warn('Não foi possível verificar o acesso da equipe',e)}},60000);
+setInterval(()=>{
+ if(window.miAuthTokenV58 && window.miAuthRoleV58!=='developer' && !document.hidden && !document.body.classList.contains('auth-locked') && window.miV59CanReload?.())window.miV59ReloadStaff?.().catch(e=>console.warn('Atualização compartilhada pendente',e));
+},30000);
 setInterval(refreshSession,60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshSession()});
 window.addEventListener('online',refreshSession);
