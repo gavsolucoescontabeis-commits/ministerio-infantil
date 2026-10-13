@@ -721,6 +721,26 @@ if(!permissions[0].can_manage_all){
   });
   childBox.appendChild(area);
  }
+ if(mayCheck&&checks.some(c=>!c.out)){
+ const box=document.createElement('div');box.style.cssText='padding:12px;margin:12px 0;border:1px solid #cbd5e1;border-radius:10px';
+ const title=document.createElement('h3');title.textContent='Registrar saída';box.appendChild(title);
+ const select=document.createElement('select');select.style.cssText='display:block;width:100%;padding:9px;margin-bottom:8px';
+ const first=document.createElement('option');first.value='';first.textContent='Selecione uma criança presente';select.appendChild(first);
+ for(const c of checks.filter(c=>!c.out)){const kid=kids.find(k=>String(k.id)===String(c.kid));if(!kid)continue;const opt=document.createElement('option');opt.value=String(c.id);opt.textContent=String(kid.name);select.appendChild(opt)}
+ box.appendChild(select);
+ const who=document.createElement('input');who.placeholder='Nome de quem retirou a criança';who.style.cssText='display:block;width:100%;padding:9px;margin-bottom:8px';box.appendChild(who);
+ const button=document.createElement('button');button.type='button';button.textContent='Confirmar saída';button.style.cssText='padding:10px;background:#173f79;color:white;border:0;border-radius:7px';box.appendChild(button);
+ const status=document.createElement('p');status.setAttribute('role','status');box.appendChild(status);
+ button.addEventListener('click',async()=>{
+  if(!select.value||who.value.trim().length<2){status.textContent='Selecione a criança e informe quem a retirou.';return}
+  button.disabled=true;status.textContent='Registrando saída...';
+  try{const res=await fetch(base+'/rest/v1/rpc/v59_record_checkout',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+window.miAuthTokenV58},body:JSON.stringify({p_id:select.value,p_who:who.value.trim()})});
+   if(!res.ok){const err=await res.json().catch(()=>({}));throw Error(err.message||'Falha ao registrar saída')}
+   status.textContent='Saída registrada. Atualizando...';setTimeout(()=>location.reload(),700);
+  }catch(err){status.textContent=err.message||'Falha ao registrar saída';button.disabled=false}
+ });
+ attendanceBox.appendChild(box);
+}
  const names=new Map(kids.map(k=>[String(k.id),k.name]));drawTable(attendanceBox,['Criança','Entrada','Saída'],checks.map(c=>[names.get(String(c.kid))||'Criança',c.in,c.out]));
  document.getElementById('miStaffWorkspaceV58').hidden=false;
  document.getElementById('authV58').hidden=true;
