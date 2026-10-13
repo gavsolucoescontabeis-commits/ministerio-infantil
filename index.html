@@ -722,7 +722,7 @@ if(!permissions[0].can_manage_all){
   childBox.appendChild(area);
  }
  if(mayCheck&&checks.some(c=>!c.out)){
- const box=document.createElement('div');box.style.cssText='padding:12px;margin:12px 0;border:1px solid #cbd5e1;border-radius:10px';
+ const box=document.createElement('div');box.dataset.v59Permission='check';box.style.cssText='padding:12px;margin:12px 0;border:1px solid #cbd5e1;border-radius:10px';
  const title=document.createElement('h3');title.textContent='Registrar saída';box.appendChild(title);
  const select=document.createElement('select');select.style.cssText='display:block;width:100%;padding:9px;margin-bottom:8px';
  const first=document.createElement('option');first.value='';first.textContent='Selecione uma criança presente';select.appendChild(first);
