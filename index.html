@@ -268,9 +268,34 @@ function miV59RefreshNavigation(){
  });
  const current=document.querySelector('.page.show');
  if(current&&!miV59CanOpen(current.id))go('home',buttons[0]);
+ miV59RefreshPanes();
 }
 window.miV59RefreshNavigation=miV59RefreshNavigation;
-function go(id,b){if(!miV59CanOpen(id))return;document.querySelectorAll('.page').forEach(x=>x.classList.remove('show'));document.getElementById(id).classList.add('show');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));if(b)b.classList.add('on')}function pane(id,b){b.closest('.page').querySelectorAll('.pane').forEach(x=>x.classList.remove('open'));document.getElementById(id).classList.add('open');b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+function go(id,b){if(!miV59CanOpen(id))return;document.querySelectorAll('.page').forEach(x=>x.classList.remove('show'));document.getElementById(id).classList.add('show');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));if(b)b.classList.add('on')}function miV59CanOpenPane(id){
+ const a=window.miLiveAccessV58,role=window.miAuthRoleV58;
+ if(role==='developer')return true;
+ if(!a||a.role!==role||!a.permissions)return false;
+ const p=a.permissions;
+ if(id==='tal')return role==='teacher'&&p.tal===true;
+ if(id==='efin'||id==='nfin')return p.fin===true;
+ if(id==='rooms')return role==='coordinator'&&p.ebd===true;
+ if(id==='check')return role==='coordinator'&&p.net===true;
+ return miV59CanOpen(document.getElementById(id)?.closest('.page')?.id||'');
+}
+function miV59RefreshPanes(){
+ document.querySelectorAll('.page .tabs button[onclick*="pane("]').forEach(b=>{
+  const match=b.getAttribute('onclick')?.match(/pane\('([^']+)'/);
+  if(match)b.hidden=!miV59CanOpenPane(match[1]);
+ });
+ for(const page of document.querySelectorAll('.page')){
+  const open=page.querySelector('.pane.open');
+  if(open&&!miV59CanOpenPane(open.id)){
+   const allowed=[...page.querySelectorAll('.tabs button')].find(b=>!b.hidden);
+   if(allowed)allowed.click();
+  }
+ }
+}
+function pane(id,b){if(!miV59CanOpenPane(id))return;b.closest('.page').querySelectorAll('.pane').forEach(x=>x.classList.remove('open'));document.getElementById(id).classList.add('open');b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
 async function cep(){let z=kcep.value.replace(/\D/g,'');if(z.length!==8)return;try{let j=await(await fetch('https://viacep.com.br/ws/'+z+'/json/')).json();kst.value=j.logradouro||'';khood.value=j.bairro||'';kcity.value=j.localidade||'';kuf.value=j.uf||'';cepmsg.textContent='Endereço localizado.'}catch(e){cepmsg.textContent='Preencha manualmente.'}}
 function authCandidates(){return [{key:'Pai',name:kf.value.trim()},{key:'Mãe',name:km.value.trim()},{key:'Outro responsável',name:kr.value.trim()}].filter(x=>x.name)}
 function renderAuthBtns(){let box=document.getElementById('authBtns');if(!box)return;let sel=(kauth.value||'').split('||').filter(Boolean),choices=authCandidates();box.innerHTML=choices.map((x,i)=>{let v=x.key+' — '+x.name,on=sel.includes(v);return `<button type="button" class="authpick ${on?'on':''}" data-auth-index="${i}">${x.key}: ${x.name}</button>`}).join('')||'<span>Preencha Pai, Mãe ou Outro responsável acima.</span>';box.querySelectorAll('button[data-auth-index]').forEach(btn=>btn.addEventListener('click',()=>{let x=choices[+btn.dataset.authIndex];toggleAuth(x.key+' — '+x.name)}));authSelected.textContent=sel.length?'Autorizados: '+sel.join(' • '):'Nenhum responsável selecionado.'}function toggleAuth(v){let a=(kauth.value||'').split('||').filter(Boolean),i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);kauth.value=a.join('||');renderAuthBtns()}
