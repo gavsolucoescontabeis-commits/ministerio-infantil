@@ -272,7 +272,7 @@ function miV59CanOpen(id){
  if(!a||!a.permissions||a.role!==role)return false;
  const p=a.permissions;
  if(id==='home')return true;
- if(id==='children')return role==='teacher'?p.kids===true:role==='coordinator'&&p.importKids===true;
+ if(id==='children')return false;
  if(id==='ebd')return false;
  if(id==='network')return p.check===true;
  if(id==='people')return false;
