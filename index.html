@@ -435,7 +435,16 @@ function respButtons(type,k){let box=document.getElementById(type==='in'?'whoBtn
 function choose(id){selected=id;let k=d.kids.find(x=>x.id===id);ename.textContent=k.name;search.value=k.name;found.innerHTML='';who.value='';whoOther.value='';whoRelation.value='';respButtons('in',k);whoOtherBox.classList.add('hidden');entry.classList.remove('hidden')}
 function otherResp(type){if(type==='in')whoOtherBox.classList.toggle('hidden',who.value!=='__other');else outOtherBox.classList.toggle('hidden',whoOutSel.value!=='__other')}
 function getWho(type){if(type==='in'){if(who.value==='__other')return [whoOther.value.trim(),whoRelation.value.trim()].filter(Boolean).join(' — ');return who.value}else{if(whoOutSel.value==='__other')return [outOther.value.trim(),outRelation.value.trim()].filter(Boolean).join(' — ');return whoOutSel.value}}
-function checkIn(){if(d.checks.some(x=>x.kid===selected&&!x.out))return alert('Já presente.');let w=getWho('in');if(!w)return alert('Informe quem trouxe a criança.');d.checks.push({id:Date.now(),kid:selected,in:indt.value||now(),whoIn:w,out:'',whoOut:''});entry.classList.add('hidden');search.value='';selected=null;save()}
+async function checkIn(){
+ if(d.checks.some(x=>String(x.kid)===String(selected)&&!x.out))return alert('Já presente.');
+ const w=getWho('in');if(!w)return alert('Informe quem trouxe a criança.');
+ if(window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'){
+  if(window.miLiveAccessV58?.permissions?.check!==true)return alert('Sem permissão para registrar entrada.');
+  try{const res=await window.miV59CheckAction('v59_record_checkin',{p_kid:String(selected),p_who:w});if(!res?.ok)throw Error('Entrada não confirmada');await window.miV59ReloadStaff();entry.classList.add('hidden');search.value='';selected=null;return}
+  catch(e){return alert('Não foi possível registrar entrada: '+e.message)}
+ }
+ d.checks.push({id:Date.now(),kid:selected,in:indt.value||now(),whoIn:w,out:'',whoOut:''});entry.classList.add('hidden');search.value='';selected=null;save()
+}
 let checkoutId=null;
 function checkout(id){checkoutId=id;let x=d.checks.find(y=>y.id===id),k=d.kids.find(y=>y.id===x.kid);outChild.innerHTML=`<b>${k?.name||''}</b>`;whoOutSel.value='';outOther.value='';outRelation.value='';respButtons('out',k||{});outOtherBox.classList.add('hidden');outBox.classList.remove('hidden');outBox.scrollIntoView({behavior:'smooth'})}
 window.miQrResolveV58=function(raw){
