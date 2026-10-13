@@ -697,6 +697,30 @@ if(!permissions[0].can_manage_all){
  const kids=Array.isArray(overview.children)?overview.children:[],checks=Array.isArray(overview.attendance)?overview.attendance:[];
  function drawTable(target,heads,rows){target.replaceChildren();if(!rows.length){target.textContent='Nenhum registro encontrado nas salas autorizadas.';return}const wrap=document.createElement('div');wrap.className='scroll';const table=document.createElement('table'),thead=document.createElement('thead'),tr=document.createElement('tr');for(const h of heads){const th=document.createElement('th');th.textContent=h;tr.appendChild(th)}thead.appendChild(tr);table.appendChild(thead);const tbody=document.createElement('tbody');for(const cells of rows){const row=document.createElement('tr');for(const value of cells){const td=document.createElement('td');td.textContent=String(value??'');row.appendChild(td)}tbody.appendChild(row)}table.appendChild(tbody);wrap.appendChild(table);target.appendChild(wrap)}
  drawTable(childBox,['Criança','Sala','Nascimento'],kids.map(k=>[k.name,k.room,k.birth]));
+ const mayCheck=live.permissions?.check===true;
+ if(mayCheck&&kids.length){
+  const area=document.createElement('div');area.style.cssText='padding:12px;margin:12px 0;border:1px solid #cbd5e1;border-radius:10px';
+  const heading=document.createElement('h3');heading.textContent='Registrar entrada';area.appendChild(heading);
+  const select=document.createElement('select');select.style.cssText='display:block;width:100%;padding:9px;margin-bottom:8px';
+  const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Selecione uma criança';select.appendChild(placeholder);
+  const present=new Set(checks.filter(c=>!c.out).map(c=>String(c.kid)));
+  for(const kid of kids.filter(k=>!present.has(String(k.id)))){const opt=document.createElement('option');opt.value=String(kid.id);opt.textContent=String(kid.name)+' — '+String(kid.room);select.appendChild(opt)}
+  area.appendChild(select);
+  const who=document.createElement('input');who.placeholder='Nome de quem trouxe a criança';who.style.cssText='display:block;width:100%;padding:9px;margin-bottom:8px';area.appendChild(who);
+  const submit=document.createElement('button');submit.type='button';submit.textContent='Confirmar entrada';submit.style.cssText='padding:10px;background:#173f79;color:white;border:0;border-radius:7px';area.appendChild(submit);
+  const feedback=document.createElement('p');feedback.setAttribute('role','status');area.appendChild(feedback);
+  submit.addEventListener('click',async()=>{
+   if(!select.value||who.value.trim().length<2){feedback.textContent='Selecione a criança e informe quem a trouxe.';return}
+   submit.disabled=true;feedback.textContent='Registrando entrada...';
+   try{
+    const res=await fetch(base+'/rest/v1/rpc/v59_record_checkin',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+window.miAuthTokenV58},body:JSON.stringify({p_kid:select.value,p_who:who.value.trim()})});
+    if(!res.ok){const error=await res.json().catch(()=>({}));throw Error(error.message||'Falha ao registrar entrada')}
+    feedback.textContent='Entrada registrada com sucesso. Atualize a página para consultar a presença.';
+    select.querySelector('option:checked')?.remove();who.value='';
+   }catch(error){feedback.textContent=error.message||'Falha ao registrar entrada'}finally{submit.disabled=false}
+  });
+  childBox.appendChild(area);
+ }
  const names=new Map(kids.map(k=>[String(k.id),k.name]));drawTable(attendanceBox,['Criança','Entrada','Saída'],checks.map(c=>[names.get(String(c.kid))||'Criança',c.in,c.out]));
  document.getElementById('miStaffWorkspaceV58').hidden=false;
  document.getElementById('authV58').hidden=true;
