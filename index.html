@@ -772,7 +772,14 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
   const createBox=document.createElement('section');
  createBox.innerHTML='<h4>Criar acesso individual</h4><p>Uso exclusivo do administrador. A senha inicial deve ser comunicada ao responsável por um canal seguro.</p><form id="miCreateStaffForm"><label>Nome <input name="name" required minlength="3" maxlength="120" autocomplete="off"></label><label>CPF <input name="cpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00" autocomplete="off"></label><label>E-mail <input name="email" type="email" required autocomplete="off"></label><label>Perfil <select name="role"><option value="teacher">Professor</option><option value="coordinator">Coordenador</option></select></label><label>Senha inicial <input name="password" type="password" required minlength="10" autocomplete="new-password"></label><button type="submit">Criar acesso</button></form><p id="miCreateStaffStatus" role="status"></p><hr>';
  panel.insertBefore(createBox,panel.firstChild);
- createBox.querySelector('form').addEventListener('submit',async ev=>{
+ const createForm=createBox.querySelector('form');
+ const createStatus=createBox.querySelector('#miCreateStaffStatus');
+ createStatus.style.cssText='font-weight:700;white-space:pre-wrap;min-height:1.5em;padding:6px 0';
+ createForm.addEventListener('invalid',event=>{
+  createStatus.textContent='Confira o campo '+(event.target.closest('label')?.textContent||'obrigatório').trim()+'. Preencha os dados solicitados antes de criar o acesso.';
+ },true);
+ createForm.addEventListener('input',()=>{if(createStatus.textContent.startsWith('Confira o campo'))createStatus.textContent='';});
+ createForm.addEventListener('submit',async ev=>{
   ev.preventDefault();
   const form=ev.currentTarget;
   const msg=createBox.querySelector('#miCreateStaffStatus');
