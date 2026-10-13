@@ -188,6 +188,7 @@
 </div>
 <div id="kidFormCard" class="card hidden">
 <input id="kidId" type="hidden"><input id="returnTo" type="hidden">
+<div id="miV59KidRoomWrap" class="row" hidden><div><label>Sala da criança</label><select id="miV59KidRoom"></select></div></div>
 <div class="row"><div><label>Nome completo</label><input id="kn"></div><div><label>Nascimento</label><input id="kb" type="date" onchange="kage.textContent=age(kb.value)+' anos'"></div><div><label>Idade automática</label><div id="kage" style="padding:10px">—</div></div></div>
 <div class="row"><div><label>Pai</label><input id="kf" oninput="renderAuthBtns()"></div><div><label>Contato pai</label><input id="kfp"></div><div><label>Mãe</label><input id="km" oninput="renderAuthBtns()"></div><div><label>Contato mãe</label><input id="kmp"></div></div>
 <div class="row"><div><label>Outro responsável</label><input id="kr" oninput="toggleRespRelation();renderAuthBtns()"></div><div id="krrelBox" class="hidden"><label>Grau de parentesco / relação</label><select id="krrel" onchange="toggleRespOther()"><option value="">Selecione...</option><option>Irmão</option><option>Irmã</option><option>Tio</option><option>Tia</option><option>Avô</option><option>Avó</option><option>Amigo</option><option>Amiga</option><option>Vizinho</option><option>Vizinha</option><option>Outro</option></select><input id="krrelOther" class="hidden" placeholder="Informe a relação"></div><div><label>Contato</label><input id="krp"></div></div>
@@ -386,6 +387,7 @@ function saveKid(){
  let k=id?d.kids.find(x=>+x.id===id):{id:Date.now(),createdAt:new Date().toISOString()}; if(!k)return alert('Cadastro não localizado para edição.');
  let rel=E('krrel')?.value||'', relOther=E('krrelOther')?.value.trim()||'';
  Object.assign(k,{name,birth,father:properName(E('kf')?.value),fphone:E('kfp')?.value||'',mother:properName(E('km')?.value),mphone:E('kmp')?.value||'',resp:properName(E('kr')?.value),respRelation:(rel==='Outro'?(relOther||'Outro'):rel),rphone:E('krp')?.value||'',cep:E('kcep')?.value||'',street:E('kst')?.value||'',num:E('knum')?.value||'',comp:E('kcomp')?.value||'',hood:E('khood')?.value||'',city:E('kcity')?.value||'',uf:E('kuf')?.value||'',auth:E('kauth')?.value||'',obs:E('kobs')?.value||''});
+ if(!id&&window.miAuthRoleV58==='coordinator'){const chosen=E('miV59KidRoom')?.value;if(!chosen||!d.rooms.includes(chosen))return alert('Selecione a sala da criança.');k.room=chosen;}
  if(!id)d.kids.push(k);
  let back=E('returnTo')?.value||''; if(E('kidId'))E('kidId').value=''; if(E('returnTo'))E('returnTo').value=''; save();clearKidForm();showKidHome();
  if(back==='ebd')go('ebd',document.querySelectorAll('nav button')[2]);
@@ -456,7 +458,7 @@ function saveTalOpening(){
  d.initialTalentsAudit=d.initialTalentsAudit||[];let at=new Date().toISOString();for(let c of changes){c.kid.initialTalents=c.v;d.initialTalentsAudit.push({kid:c.kid.id,from:c.old,to:c.v,at})}save();refreshTalOpening();alert(`${changes.length} saldo(s) salvo(s) na EBD.`)
 }
 function talentPeople(room){return isTeacherRoom(room)?d.teachers.filter(t=>t.area!=='net').map(t=>({id:'T'+t.id,name:t.name})):d.kids.filter(k=>roomKey(kidRoom(k))===roomKey(room))}
-function newKidMain(){clearKidForm();kidHome.classList.add('hidden');kidView.classList.add('hidden');importBox.classList.add('hidden');kidFormCard.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
+function newKidMain(){clearKidForm();const wrap=document.getElementById('miV59KidRoomWrap'),sel=document.getElementById('miV59KidRoom');if(wrap&&sel){wrap.hidden=window.miAuthRoleV58!=='coordinator';sel.innerHTML=d.rooms.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');}kidHome.classList.add('hidden');kidView.classList.add('hidden');importBox.classList.add('hidden');kidFormCard.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
 function showKidHome(){kidFormCard.classList.add('hidden');kidView.classList.add('hidden');importBox.classList.add('hidden');kidHome.classList.remove('hidden');renderKidHome()}
 function toggleKidSearch(){kidSearchBox.classList.toggle('hidden');if(!kidSearchBox.classList.contains('hidden'))kidSearch.focus()}
 function locateKid(){let q=kidSearch.value.trim().toLowerCase();kidSearchResults.innerHTML=!q?'':d.kids.filter(k=>k.name.toLowerCase().includes(q)).slice(0,12).map(k=>`<p><button class="soft" onclick="openKid(${k.id})">${esc(k.name)}${k.birth?' • '+age(k.birth)+' anos':''}</button></p>`).join('')||'<p>Nenhuma criança localizada.</p>'}
