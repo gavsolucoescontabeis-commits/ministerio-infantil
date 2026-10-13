@@ -242,7 +242,20 @@ function seed3Months(){
  });
  d.demo3MonthsV16=true;
 }
-/* Sem geração de demonstração em produção */ let selected=null;window.miV59LoadScopedState=function(state){
+/* Sem geração de demonstração em produção */ let selected=null;window.miV59CheckAction=async function(action,payload){
+ if(!['v59_record_checkin','v59_record_checkout'].includes(action))throw Error('Operação não autorizada');
+ const token=window.miAuthTokenV58;if(!token)throw Error('Sessão encerrada');
+ const response=await fetch('https://jthxnjvqmvtydyfuqcct.supabase.co/rest/v1/rpc/'+action,{method:'POST',headers:{'Content-Type':'application/json','apikey':'sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs','Authorization':'Bearer '+token},body:JSON.stringify(payload)});
+ if(!response.ok){const err=await response.json().catch(()=>({}));throw Error(err.message||'Operação recusada pelo servidor')}
+ return response.json();
+};
+window.miV59ReloadStaff=async function(){
+ const token=window.miAuthTokenV58;if(!token)throw Error('Sessão encerrada');
+ const response=await fetch('https://jthxnjvqmvtydyfuqcct.supabase.co/rest/v1/rpc/v59_staff_app_state',{method:'POST',headers:{'Content-Type':'application/json','apikey':'sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs','Authorization':'Bearer '+token},body:'{}'});
+ if(!response.ok)throw Error('Falha ao atualizar dados autorizados');
+ window.miV59LoadScopedState(await response.json());
+};
+window.miV59LoadScopedState=function(state){
  if(!state||!Array.isArray(state.kids)||!Array.isArray(state.rooms)||!Array.isArray(state.checks))throw Error('Dados de equipe inválidos');
  const roomMap={};for(const k of state.kids){if(k.room)roomMap[String(k.id)]=k.room}
  Object.keys(d).forEach(k=>delete d[k]);
