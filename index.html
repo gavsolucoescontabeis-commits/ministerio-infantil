@@ -297,9 +297,7 @@ function go(id,b){if(!miV59CanOpen(id))return;document.querySelectorAll('.page')
  if(role==='developer')return true;
  if(!a||a.role!==role||!a.permissions)return false;
  const p=a.permissions;
- if(id==='tal')return role==='teacher'&&p.tal===true;
- if(id==='efin'||id==='nfin')return p.fin===true;
- if(id==='rooms')return role==='coordinator'&&p.ebd===true;
+ if(id==='tal'||id==='efin'||id==='nfin'||id==='rooms')return false;
  if(id==='check')return p.check===true;
  return miV59CanOpen(document.getElementById(id)?.closest('.page')?.id||'');
 }
