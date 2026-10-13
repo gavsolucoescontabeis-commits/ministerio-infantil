@@ -273,10 +273,10 @@ function miV59CanOpen(id){
  const p=a.permissions;
  if(id==='home')return true;
  if(id==='children')return role==='teacher'?p.kids===true:role==='coordinator'&&p.importKids===true;
- if(id==='ebd')return role==='teacher'?(p.tal===true||p.fin===true||p.rep===true):role==='coordinator'&&(p.ebd===true||p.repEbd===true||p.fin===true);
+ if(id==='ebd')return false;
  if(id==='network')return p.check===true;
- if(id==='people')return role==='coordinator'&&p.addCoords===true;
- if(id==='reports')return role==='teacher'?p.rep===true:role==='coordinator'&&(p.repEbd===true||p.repNet===true);
+ if(id==='people')return false;
+ if(id==='reports')return false;
  return false;
 }
 function miV59RefreshNavigation(){
