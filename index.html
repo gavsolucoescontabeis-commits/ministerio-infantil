@@ -750,8 +750,12 @@ if(!permissions[0].can_manage_all){
  window.miV59CheckoutBox=box;
 }
  const names=new Map(kids.map(k=>[String(k.id),k.name]));drawTable(attendanceBox,['Criança','Entrada','Saída'],checks.map(c=>[names.get(String(c.kid))||'Criança',c.in,c.out]));if(window.miV59CheckoutBox){attendanceBox.appendChild(window.miV59CheckoutBox);window.miV59CheckoutBox=null;}
- document.getElementById('miStaffWorkspaceV58').hidden=false;
- document.getElementById('authV58').hidden=true;
+ const scopedResponse=await fetch(base+'/rest/v1/rpc/v59_staff_app_state',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});
+ if(!scopedResponse.ok)throw Error('Não foi possível carregar o aplicativo com os dados autorizados.');
+ const scopedState=await scopedResponse.json();
+ window.miV59LoadScopedState(scopedState);
+ document.getElementById('miStaffWorkspaceV58').hidden=true;
+ unlock();
  document.getElementById('authPassV58').value='';
  window.dispatchEvent(new Event('mi-auth-ready'));
  msg.textContent='';
