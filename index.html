@@ -242,7 +242,15 @@ function seed3Months(){
  });
  d.demo3MonthsV16=true;
 }
-/* Sem geração de demonstração em produção */ let selected=null;function save(){localStorage.setItem(KEY,JSON.stringify(d));render();window.miCloudScheduleSave?.()}save();
+/* Sem geração de demonstração em produção */ let selected=null;window.miV59LoadScopedState=function(state){
+ if(!state||!Array.isArray(state.kids)||!Array.isArray(state.rooms)||!Array.isArray(state.checks))throw Error('Dados de equipe inválidos');
+ const roomMap={};for(const k of state.kids){if(k.room)roomMap[String(k.id)]=k.room}
+ Object.keys(d).forEach(k=>delete d[k]);
+ Object.assign(d,state,{ebdRooms:roomMap,roomLinks:[],teachers:[],coords:[],talents:[]});
+ render();
+ window.miV59RefreshNavigation?.();
+};
+function save(){if(window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'){alert('Esta operação ainda não está disponível para seu perfil.');return}localStorage.setItem(KEY,JSON.stringify(d));render();window.miCloudScheduleSave?.()}save();
 function now(){let x=new Date();x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,16)}function today(){return now().slice(0,10)}function localDate(dt){const d=new Date(dt.getTime()-dt.getTimezoneOffset()*60000);return d.toISOString().slice(0,10)}function age(b){if(!b)return'';let n=new Date(),x=new Date(b+'T12:00'),a=n.getFullYear()-x.getFullYear();if(n.getMonth()<x.getMonth()||(n.getMonth()==x.getMonth()&&n.getDate()<x.getDate()))a--;return a}function brnum(v){let x=String(v??'').replace(/R\$\s?/g,'').replace(/\./g,'').replace(',','.');return +x||0}function money(v){return(+v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}function brdate(v){let p=String(v||'').slice(0,10).split('-');return p.length===3?p.reverse().join('/'):String(v||'')}
 /* V59: defesa de navegação por autorização individual; acesso de dados permanece protegido pelo servidor. */
 function miV59CanOpen(id){
