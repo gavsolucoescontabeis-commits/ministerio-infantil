@@ -783,6 +783,7 @@ if(!permissions[0].can_manage_all){
  const scopedResponse=await fetch(base+'/rest/v1/rpc/v59_staff_app_state',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});
  if(!scopedResponse.ok)throw Error('Não foi possível carregar o aplicativo com os dados autorizados.');
  const scopedState=await scopedResponse.json();
+ if(!Array.isArray(scopedState.rooms)||!Array.isArray(scopedState.kids)||!Array.isArray(scopedState.checks))throw Error('Dados individuais inválidos.');
  window.miV59LoadScopedState(scopedState);
  document.getElementById('miStaffWorkspaceV58').hidden=true;
  unlock();
