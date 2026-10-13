@@ -715,7 +715,7 @@ if(!permissions[0].can_manage_all){
    try{
     const res=await fetch(base+'/rest/v1/rpc/v59_record_checkin',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+window.miAuthTokenV58},body:JSON.stringify({p_kid:select.value,p_who:who.value.trim()})});
     if(!res.ok){const error=await res.json().catch(()=>({}));throw Error(error.message||'Falha ao registrar entrada')}
-    feedback.textContent='Entrada registrada com sucesso. Atualize a página para consultar a presença.';
+    feedback.textContent='Entrada registrada com sucesso. Atualizando a presença...';setTimeout(()=>location.reload(),700);
     select.querySelector('option:checked')?.remove();who.value='';
    }catch(error){feedback.textContent=error.message||'Falha ao registrar entrada'}finally{submit.disabled=false}
   });
