@@ -258,7 +258,7 @@ window.miV59ReloadStaff=async function(){
 window.miV59LoadScopedState=function(state){
  if(!state||!Array.isArray(state.kids)||!Array.isArray(state.rooms)||!Array.isArray(state.checks)||!Number.isFinite(Number(state.revision)))throw Error('Dados de equipe inválidos');
  Object.keys(d).forEach(k=>delete d[k]);
- Object.assign(d,state);
+ Object.assign(d,{rooms:[],kids:[],checks:[],teachers:[],coords:[],talents:[],roomLinks:[],ebdRooms:{},ebdBrooches:[],roomTransfers:[],initialTalentsAudit:[],importQueue:[],fin:{ebd:{offers:[],products:[],moves:[]},net:{offers:[],products:[],moves:[]}}},state);
  render();
  window.miV59SyncedState=JSON.parse(JSON.stringify(d));
  window.miV59RefreshNavigation?.();
