@@ -613,6 +613,7 @@ async function refreshSession(){
   }
  }finally{refreshBusy=false}
 }
+setInterval(async()=>{if(!window.miAuthTokenV58||window.miAuthRoleV58==='developer')return;try{const r=await fetch(base+'/rest/v1/rpc/current_staff_profile',{method:'POST',headers:{apikey:key,'Content-Type':'application/json',Authorization:'Bearer '+window.miAuthTokenV58},body:'{}'});const data=await r.json();if(!r.ok||!Array.isArray(data)||!data.length||data[0].staff_role!==window.miAuthRoleV58){window.miAuthTokenV58=null;window.miAuthRoleV58=null;saveRefresh(null);window.miCloudLogout?.();lock();document.getElementById('authMsgV58').textContent='Acesso desativado ou sessão encerrada.'}}catch(e){console.warn('Não foi possível verificar o acesso da equipe',e)}},60000);
 setInterval(refreshSession,60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshSession()});
 window.addEventListener('online',refreshSession);
@@ -769,7 +770,48 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
  panel.id='miTeamAssignPanel';panel.hidden=true;
  const target=document.querySelector('#people .hero');
  if(target)target.insertAdjacentElement('afterend',panel);else document.body.appendChild(panel);
-  const createBox=document.createElement('section');
+  const accessBox=document.createElement('section');
+ accessBox.innerHTML='<h4>Gerenciar acessos da equipe</h4><p>Somente o administrador pode ativar, desativar ou excluir acessos. Excluir oculta a conta desta lista e impede sua reativação por este painel; os históricos são preservados.</p><button type="button" id="miAccessReload">Atualizar lista de acessos</button><div id="miAccessList" role="status"></div><hr>';
+ panel.appendChild(accessBox);
+ const accessList=accessBox.querySelector('#miAccessList');
+ const accessApi=async(action,staffId)=>{
+  const token=window.miAuthTokenV58;
+  if(!token||window.miAuthRoleV58!=='developer')throw Error('Entre como administrador.');
+  const response=await fetch('https://jthxnjvqmvtydyfuqcct.supabase.co/rest/v1/rpc/v58_manage_staff_access',{method:'POST',headers:{'Content-Type':'application/json',apikey:'sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs',Authorization:'Bearer '+token},body:JSON.stringify({p_action:action,p_staff_id:staffId||null})});
+  const data=await response.json();
+  if(!response.ok)throw Error(data.message||data.error||'Não foi possível alterar o acesso.');
+  return data;
+ };
+ const refreshAccess=async()=>{
+  accessList.textContent='Carregando acessos...';
+  try{
+   const result=await accessApi('list');
+   accessList.replaceChildren();
+   if(!result.accounts?.length){accessList.textContent='Nenhum acesso de professor ou coordenador cadastrado.';return}
+   for(const person of result.accounts){
+    const row=document.createElement('div');
+    row.style.cssText='border:1px solid #ccd3df;border-radius:10px;padding:12px;margin:10px 0';
+    const name=document.createElement('strong');name.textContent=(person.name||'Sem nome')+' — '+(person.role==='teacher'?'Professor(a)':'Coordenador(a)');
+    const status=document.createElement('p');status.textContent=person.active?'Situação: ATIVO':'Situação: INATIVO';
+    row.append(name,status);
+    for(const [action,label] of [['activate','Ativar'],['deactivate','Desativar'],['delete','Excluir']]){
+     if((action==='activate'&&person.active)||(action==='deactivate'&&!person.active))continue;
+     const button=document.createElement('button');button.type='button';button.textContent=label;button.style.margin='3px';
+     button.addEventListener('click',async()=>{
+      if(!confirm('Confirma '+label.toLowerCase()+' o acesso de '+(person.name||'esta pessoa')+'?'))return;
+      button.disabled=true;
+      try{await accessApi(action,person.id);await refreshAccess()}
+      catch(error){alert(error.message||'Falha ao atualizar o acesso.');button.disabled=false}
+     });
+     row.appendChild(button);
+    }
+    accessList.appendChild(row);
+   }
+  }catch(error){accessList.textContent=error.message||'Falha ao consultar acessos.'}
+ };
+ accessBox.querySelector('#miAccessReload').addEventListener('click',refreshAccess);
+ window.miAccessRefreshV58=refreshAccess;
+ const createBox=document.createElement('section');
  createBox.innerHTML='<h4>Criar acesso individual</h4><p>Uso exclusivo do administrador. A senha inicial deve ser comunicada ao responsável por um canal seguro.</p><form id="miCreateStaffForm"><label>Nome <input name="name" required minlength="3" maxlength="120" autocomplete="off"></label><label>CPF <input name="cpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00" autocomplete="off"></label><label>E-mail <input name="email" type="email" required autocomplete="off"></label><label>Perfil <select name="role"><option value="teacher">Professor</option><option value="coordinator">Coordenador</option></select></label><label>Senha inicial <input name="password" type="password" required minlength="10" autocomplete="new-password"></label><button type="submit">Criar acesso</button></form><p id="miCreateStaffStatus" role="status"></p><hr>';
  panel.insertBefore(createBox,panel.firstChild);
  const dualBox=document.createElement('section');
@@ -827,7 +869,7 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
     });
     if(!roomResponse.ok){msg.textContent='Acesso criado, mas a sala não foi sincronizada. Não entregue a senha antes de corrigir o vínculo.';return}
    }
-   form.reset();msg.textContent=fields.role==='teacher'?'Acesso criado e sala EBD sincronizada.':'Acesso de coordenação criado.';
+   form.reset();refreshAccess();msg.textContent=fields.role==='teacher'?'Acesso criado e sala EBD sincronizada.':'Acesso de coordenação criado.';
 
   }catch(error){msg.textContent=error.message||'Falha ao criar acesso.'}
   finally{button.disabled=false}
@@ -852,7 +894,7 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
   }catch(err){output.textContent=err.message||'Não foi possível redefinir a senha.'}
   finally{submit.disabled=false}
  });
- window.miTeamAssignmentsLoad=()=>{panel.hidden=window.miAuthRoleV58!=='developer';};
+ window.miTeamAssignmentsLoad=()=>{panel.hidden=window.miAuthRoleV58!=='developer';if(!panel.hidden)refreshAccess();};
  window.addEventListener('mi-auth-ready',window.miTeamAssignmentsLoad);
  for(const id of ['authExitV58','miStaffExitV58'])document.getElementById(id)?.addEventListener('click',()=>{panel.hidden=true;});
 })();
