@@ -811,6 +811,25 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
   finally{button.disabled=false}
  });
 
+ const resetBox=document.createElement('section');
+ resetBox.innerHTML='<h4>Redefinir senha de professor ou coordenador</h4><p>Informe o CPF da conta e uma nova senha temporária. Esta operação não altera os cadastros nem as salas.</p><form id="miResetStaffForm"><label>CPF do usuário <input name="cpf" required inputmode="numeric" maxlength="14" autocomplete="off"></label><label>Nova senha (mínimo 10 caracteres) <input name="password" type="password" required minlength="10" maxlength="128" autocomplete="new-password"></label><label>Confirmar senha <input name="confirm" type="password" required minlength="10" autocomplete="new-password"></label><button type="submit">Redefinir senha</button></form><p id="miResetStaffStatus" role="status"></p><hr>';
+ panel.insertBefore(resetBox,panel.firstChild.nextSibling);
+ resetBox.querySelector('form').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const f=event.currentTarget,output=resetBox.querySelector('#miResetStaffStatus'),submit=f.querySelector('button');
+  const fields=Object.fromEntries(new FormData(f));
+  if(window.miAuthRoleV58!=='developer'||!window.miAuthTokenV58){output.textContent='Entre como administrador.';return}
+  if(fields.password!==fields.confirm){output.textContent='As senhas não coincidem.';return}
+  if(!confirm('Confirma a redefinição da senha desta conta?'))return;
+  submit.disabled=true;output.textContent='Redefinindo senha...';
+  try{
+   const response=await fetch('https://jthxnjvqmvtydyfuqcct.supabase.co/functions/v1/v58-reset-staff-password',{method:'POST',headers:{'Content-Type':'application/json',apikey:'sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs',Authorization:'Bearer '+window.miAuthTokenV58},body:JSON.stringify({cpf:fields.cpf,password:fields.password})});
+   const result=await response.json();
+   if(!response.ok||!result.ok)throw Error(result.error||'Falha ao redefinir senha.');
+   f.reset();output.textContent='Senha redefinida. Comunique a nova senha ao usuário por um canal seguro.';
+  }catch(err){output.textContent=err.message||'Não foi possível redefinir a senha.'}
+  finally{submit.disabled=false}
+ });
  window.miTeamAssignmentsLoad=()=>{panel.hidden=window.miAuthRoleV58!=='developer';};
  window.addEventListener('mi-auth-ready',window.miTeamAssignmentsLoad);
  for(const id of ['authExitV58','miStaffExitV58'])document.getElementById(id)?.addEventListener('click',()=>{panel.hidden=true;});
