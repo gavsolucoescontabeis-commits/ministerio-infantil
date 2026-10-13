@@ -243,7 +243,7 @@ function seed3Months(){
  d.demo3MonthsV16=true;
 }
 /* Sem geração de demonstração em produção */ let selected=null;window.miV59CheckAction=async function(action,payload){
- if(!['v59_record_checkin','v59_record_checkout'].includes(action))throw Error('Operação não autorizada');
+ if(!['v59_record_checkin','v59_record_checkout','v59_staff_commit'].includes(action))throw Error('Operação não autorizada');
  const token=window.miAuthTokenV58;if(!token)throw Error('Sessão encerrada');
  const response=await fetch('https://jthxnjvqmvtydyfuqcct.supabase.co/rest/v1/rpc/'+action,{method:'POST',headers:{'Content-Type':'application/json','apikey':'sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs','Authorization':'Bearer '+token},body:JSON.stringify(payload)});
  if(!response.ok){const err=await response.json().catch(()=>({}));throw Error(err.message||'Operação recusada pelo servidor')}
@@ -256,14 +256,41 @@ window.miV59ReloadStaff=async function(){
  window.miV59LoadScopedState(await response.json());
 };
 window.miV59LoadScopedState=function(state){
- if(!state||!Array.isArray(state.kids)||!Array.isArray(state.rooms)||!Array.isArray(state.checks))throw Error('Dados de equipe inválidos');
- const roomMap={};for(const k of state.kids){if(k.room)roomMap[String(k.id)]=k.room}
+ if(!state||!Array.isArray(state.kids)||!Array.isArray(state.rooms)||!Array.isArray(state.checks)||!Number.isFinite(Number(state.revision)))throw Error('Dados de equipe inválidos');
  Object.keys(d).forEach(k=>delete d[k]);
- Object.assign(d,state,{ebdRooms:roomMap,roomLinks:[],teachers:[],coords:[],talents:[]});
+ Object.assign(d,state);
  render();
+ window.miV59SyncedState=JSON.parse(JSON.stringify(d));
  window.miV59RefreshNavigation?.();
 };
-function save(){if(window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'){alert('Esta operação ainda não está disponível para seu perfil.');return}localStorage.setItem(KEY,JSON.stringify(d));render();window.miCloudScheduleSave?.()}save();
+function save(){
+ if(window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'){
+  if(window.miV59Saving)return alert('Uma gravação já está em andamento.');
+  const previous=window.miV59SyncedState;
+  if(!previous)return alert('Reabra sua sessão para atualizar os dados.');
+  const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  const unsupported=['rooms','checks','teachers','coords','roomLinks','ebdRooms','ebdBrooches'];
+  if(unsupported.some(k=>!same(d[k],previous[k]))){
+   alert('Esta alteração exige autorização administrativa e não foi gravada.');
+   Object.keys(d).forEach(k=>delete d[k]);Object.assign(d,JSON.parse(JSON.stringify(previous)));render();return;
+  }
+  const changes={};
+  if(!same(d.kids,previous.kids))changes.kids=JSON.parse(JSON.stringify(d.kids));
+  if(!same(d.talents,previous.talents))changes.talents=JSON.parse(JSON.stringify(d.talents));
+  if(!same(d.fin?.ebd,previous.fin?.ebd))changes.finEbd=JSON.parse(JSON.stringify(d.fin.ebd));
+  if(!same(d.fin?.net,previous.fin?.net))changes.finNet=JSON.parse(JSON.stringify(d.fin.net));
+  if(!Object.keys(changes).length){render();return}
+  window.miV59Saving=true;render();
+  window.miV59CheckAction('v59_staff_commit',{p_changes:changes,p_expected_revision:Number(previous.revision)})
+   .then(result=>{if(!result?.ok)throw Error('Gravação não confirmada');return window.miV59ReloadStaff()})
+   .catch(async error=>{
+    alert(error.message==='REVISION_CONFLICT'?'Os dados foram alterados por outra pessoa. Recarregamos as informações para evitar perda de dados.':'Não foi possível salvar: '+error.message);
+    try{await window.miV59ReloadStaff()}catch(e){Object.keys(d).forEach(k=>delete d[k]);Object.assign(d,JSON.parse(JSON.stringify(previous)));render()}
+   }).finally(()=>{window.miV59Saving=false});
+  return;
+ }
+ localStorage.setItem(KEY,JSON.stringify(d));render();window.miCloudScheduleSave?.()
+}save();
 function now(){let x=new Date();x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,16)}function today(){return now().slice(0,10)}function localDate(dt){const d=new Date(dt.getTime()-dt.getTimezoneOffset()*60000);return d.toISOString().slice(0,10)}function age(b){if(!b)return'';let n=new Date(),x=new Date(b+'T12:00'),a=n.getFullYear()-x.getFullYear();if(n.getMonth()<x.getMonth()||(n.getMonth()==x.getMonth()&&n.getDate()<x.getDate()))a--;return a}function brnum(v){let x=String(v??'').replace(/R\$\s?/g,'').replace(/\./g,'').replace(',','.');return +x||0}function money(v){return(+v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}function brdate(v){let p=String(v||'').slice(0,10).split('-');return p.length===3?p.reverse().join('/'):String(v||'')}
 /* V59: defesa de navegação por autorização individual; acesso de dados permanece protegido pelo servidor. */
 function miV59CanOpen(id){
