@@ -699,7 +699,7 @@ if(!permissions[0].can_manage_all){
  drawTable(childBox,['Criança','Sala','Nascimento'],kids.map(k=>[k.name,k.room,k.birth]));
  const mayCheck=live.permissions?.check===true;
  if(mayCheck&&kids.length){
-  const area=document.createElement('div');area.style.cssText='padding:12px;margin:12px 0;border:1px solid #cbd5e1;border-radius:10px';
+  const area=document.createElement('div');area.dataset.v59Permission='check';area.style.cssText='padding:12px;margin:12px 0;border:1px solid #cbd5e1;border-radius:10px';
   const heading=document.createElement('h3');heading.textContent='Registrar entrada';area.appendChild(heading);
   const select=document.createElement('select');select.style.cssText='display:block;width:100%;padding:9px;margin-bottom:8px';
   const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Selecione uma criança';select.appendChild(placeholder);
