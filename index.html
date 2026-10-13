@@ -673,7 +673,7 @@ if(!pr.ok)throw Error('Não foi possível validar as permissões desta conta.');
 const permissions=await pr.json();
 if(!Array.isArray(permissions)||permissions.length!==1||permissions[0].role!==profile[0].staff_role)throw Error('Perfil e permissões inconsistentes.');
 const liveResponse=await fetch(base+'/rest/v1/rpc/v58_my_live_access',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});if(!liveResponse.ok)throw Error('Não foi possível sincronizar as permissões individuais.');const live=await liveResponse.json();if(!live||live.role!==profile[0].staff_role||!live.permissions)throw Error('Permissões individuais inconsistentes.');window.miLiveAccessV58=live;window.miV59RefreshNavigation?.();msg.textContent='Permissões atualizadas. Preparando seu ambiente...';
-saveRefresh(data.refresh_token);window.miAuthTokenV58=data.access_token;window.miAuthRoleV58=profile[0].staff_role;window.miCloudRefreshAdminControls?.();
+saveRefresh(data.refresh_token);window.miAuthTokenV58=data.access_token;window.miAuthRoleV58=profile[0].staff_role;window.miV59RefreshNavigation?.();window.miCloudRefreshAdminControls?.();
 if(!permissions[0].can_manage_all){
  const w=await fetch(base+'/rest/v1/rpc/v58_staff_workspace',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+data.access_token},body:'{}'});
  if(!w.ok)throw Error('Não foi possível carregar o espaço da equipe.');
