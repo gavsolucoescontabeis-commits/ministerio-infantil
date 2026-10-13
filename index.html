@@ -299,11 +299,11 @@ function miV59CanOpen(id){
  if(!a||!a.permissions||a.role!==role)return false;
  const p=a.permissions;
  if(id==='home')return true;
- if(id==='children')return false;
- if(id==='ebd')return false;
- if(id==='network')return p.check===true;
+ if(id==='children')return role==='teacher'?p.kids===true:role==='coordinator'&&p.importKids===true;
+ if(id==='ebd')return role==='teacher'?(p.tal===true||p.fin===true):role==='coordinator'&&p.fin===true;
+ if(id==='network')return p.check===true||(role==='coordinator'&&p.fin===true);
  if(id==='people')return false;
- if(id==='reports')return false;
+ if(id==='reports')return role==='teacher'?p.rep===true:role==='coordinator'&&(p.repEbd===true||p.repNet===true);
  return false;
 }
 function miV59RefreshNavigation(){
@@ -324,7 +324,10 @@ function go(id,b){if(!miV59CanOpen(id))return;document.querySelectorAll('.page')
  if(role==='developer')return true;
  if(!a||a.role!==role||!a.permissions)return false;
  const p=a.permissions;
- if(id==='tal'||id==='efin'||id==='nfin'||id==='rooms')return false;
+ if(id==='tal')return role==='teacher'&&p.tal===true;
+ if(id==='efin')return p.fin===true;
+ if(id==='nfin')return role==='coordinator'&&p.fin===true;
+ if(id==='rooms')return false;
  if(id==='check')return p.check===true;
  return miV59CanOpen(document.getElementById(id)?.closest('.page')?.id||'');
 }
