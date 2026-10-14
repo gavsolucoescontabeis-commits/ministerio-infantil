@@ -264,7 +264,8 @@ window.miV59ReloadStaff=async function(){
     const offersResponse=await fetch('https://jthxnjvqmvtydyfuqcct.supabase.co/rest/v1/rpc/v59_ebd_room_offers',{method:'POST',headers:{'Content-Type':'application/json','apikey':'sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs','Authorization':'Bearer '+token},body:'{}'});
     if(!offersResponse.ok)throw Error('Não foi possível carregar as ofertas autorizadas da sala.');
     const roomOffers=await offersResponse.json();
-    if(Number(roomOffers?.revision)!==Number(state.revision))throw Error('Os dados foram atualizados durante a consulta. Atualize novamente.');
+    // As consultas são independentes; uma atualização simultânea não deve bloquear o login.
+    // A sincronização periódica atualizará qualquer diferença de revisão.
     state.ebdRoomOffers=Array.isArray(roomOffers.offers)?roomOffers.offers:[];
   }
   if(window.miAuthTokenV58!==token)throw Error('Sessão alterada durante atualização');
@@ -600,6 +601,7 @@ async function talSave(){
    if(result?.ok!==true)throw Error('Não foi possível confirmar a gravação');
    recorded=true;
    await window.miV59ReloadStaff();
+   if(Number(d.revision)<Number(result.revision))await window.miV59ReloadStaff();
    tr.value=room;td.value=date;talKids(person);
    tv.value=25;te.value=0;ter.value='';if(offerInput)offerInput.value='';
    if(msg)msg.textContent=offerCents>0?'Talentos e oferta registrados. Valor disponível para conferência do escritório.':'Talentos registrados.';
