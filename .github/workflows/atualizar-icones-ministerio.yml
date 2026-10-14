@@ -1,0 +1,57 @@
+name: Atualizar ícones Ministério Infantil
+on:
+  push:
+    paths:
+      - ".github/workflows/atualizar-icones-ministerio.yml"
+permissions:
+  contents: write
+jobs:
+  generate-app-icons:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obter repositório
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar Pillow
+        run: python -m pip install pillow
+      - name: Gerar PNGs da logomarca aprovada
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, io, pathlib, re
+          from PIL import Image, ImageChops, ImageOps
+          html = pathlib.Path('index.html').read_text(encoding='utf-8')
+          match = re.search(r'data:image/png;base64,([A-Za-z0-9+/=]+)', html)
+          if not match:
+              raise RuntimeError('Logotipo original não localizado no aplicativo')
+          source = Image.open(io.BytesIO(base64.b64decode(match.group(1)))).convert('RGB')
+          white = Image.new('RGB', source.size, 'white')
+          difference = ImageChops.difference(source, white).convert('L')
+          threshold = difference.point(lambda value: 255 if value > 38 else 0)
+          bbox = threshold.getbbox()
+          if not bbox:
+              raise RuntimeError('Logotipo sem conteúdo válido')
+          left, top, right, bottom = bbox
+          border = round((right - left) * 0.025)
+          source = source.crop((max(0,left-border), max(0,top-border), min(source.width,right+border), min(source.height,bottom+border)))
+          for size in (192,512):
+              canvas = Image.new('RGB', (size,size), 'white')
+              scaled = ImageOps.contain(source,(round(size * .94),round(size * .94)),Image.Resampling.LANCZOS)
+              canvas.paste(scaled,((size-scaled.width)//2,(size-scaled.height)//2))
+              canvas.save(f'icon-{size}.png',format='PNG',optimize=True)
+          print('Ícones 192px e 512px gerados a partir do logo existente, sem redesenho')
+          PY
+      - name: Publicar ícones no site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add icon-192.png icon-512.png
+          if ! git diff --cached --quiet; then
+            git commit -m "assets: ícones oficiais do Ministério Infantil para celulares"
+            git push
+          fi
