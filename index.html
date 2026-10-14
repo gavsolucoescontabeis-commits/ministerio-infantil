@@ -278,6 +278,8 @@ window.miV59LoadScopedState=function(state){
  Object.keys(d).forEach(k=>delete d[k]);
  Object.assign(d,{rooms:[],kids:[],checks:[],teachers:[],coords:[],talents:[],roomLinks:[],ebdRooms:{},ebdBrooches:[],roomTransfers:[],initialTalentsAudit:[],importQueue:[],fin:{ebd:{offers:[],products:[],moves:[]},net:{offers:[],products:[],moves:[]}}},state);
  render();
+ renderKidHome();
+ if(document.getElementById('kidSearch')?.value.trim())locateKid();
  window.miV59SyncedState=JSON.parse(JSON.stringify(d));
  window.miV59RefreshNavigation?.();
 };
