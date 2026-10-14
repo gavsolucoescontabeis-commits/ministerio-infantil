@@ -188,7 +188,7 @@
 </div>
 <div id="kidFormCard" class="card hidden">
 <input id="kidId" type="hidden"><input id="returnTo" type="hidden">
-<div id="miV59KidRoomWrap" class="row" hidden><div><label>Sala da criança</label><select id="miV59KidRoom"></select></div></div>
+<div id="miV59KidRoomWrap" class="row" hidden><div><label>Sala EBD (opcional)</label><select id="miV59KidRoom"></select></div></div>
 <div class="row"><div><label>Nome completo</label><input id="kn"></div><div><label>Nascimento</label><input id="kb" type="date" onchange="kage.textContent=age(kb.value)+' anos'"></div><div><label>Idade automática</label><div id="kage" style="padding:10px">—</div></div></div>
 <div class="row"><div><label>Pai</label><input id="kf" oninput="renderAuthBtns()"></div><div><label>Contato pai</label><input id="kfp"></div><div><label>Mãe</label><input id="km" oninput="renderAuthBtns()"></div><div><label>Contato mãe</label><input id="kmp"></div></div>
 <div class="row"><div><label>Outro responsável</label><input id="kr" oninput="toggleRespRelation();renderAuthBtns()"></div><div id="krrelBox" class="hidden"><label>Grau de parentesco / relação</label><select id="krrel" onchange="toggleRespOther()"><option value="">Selecione...</option><option>Irmão</option><option>Irmã</option><option>Tio</option><option>Tia</option><option>Avô</option><option>Avó</option><option>Amigo</option><option>Amiga</option><option>Vizinho</option><option>Vizinha</option><option>Outro</option></select><input id="krrelOther" class="hidden" placeholder="Informe a relação"></div><div><label>Contato</label><input id="krp"></div></div>
@@ -387,6 +387,7 @@ async function saveKid(){
  const same=kids.find(x=>+x.id!==id&&dupNameNorm(x.name)===dupNameNorm(name));
  if(same&&!confirm('Já existe uma criança com este nome, mas com outra data de nascimento. Deseja continuar?'))return;
  const original=id?kids.find(x=>+x.id===id):null;
+ if(id&&!original)return alert('Cadastro não localizado. Atualize os dados antes de editar.');
  const k=id?(staff?{...original}:original):{id:Date.now(),createdAt:new Date().toISOString()};
  if(!k)return alert('Cadastro não localizado para edição.');
  const rel=E('krrel')?.value||'',relOther=E('krrelOther')?.value.trim()||'';
@@ -486,7 +487,7 @@ function saveTalOpening(){
  d.initialTalentsAudit=d.initialTalentsAudit||[];let at=new Date().toISOString();for(let c of changes){c.kid.initialTalents=c.v;d.initialTalentsAudit.push({kid:c.kid.id,from:c.old,to:c.v,at})}save();refreshTalOpening();alert(`${changes.length} saldo(s) salvo(s) na EBD.`)
 }
 function talentPeople(room){return isTeacherRoom(room)?d.teachers.filter(t=>t.area!=='net').map(t=>({id:'T'+t.id,name:t.name})):d.kids.filter(k=>roomKey(kidRoom(k))===roomKey(room))}
-function newKidMain(){clearKidForm();const wrap=document.getElementById('miV59KidRoomWrap'),sel=document.getElementById('miV59KidRoom');if(wrap&&sel){wrap.hidden=window.miAuthRoleV58!=='coordinator';sel.innerHTML=d.rooms.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');}kidHome.classList.add('hidden');kidView.classList.add('hidden');importBox.classList.add('hidden');kidFormCard.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
+function newKidMain(){clearKidForm();const wrap=document.getElementById('miV59KidRoomWrap'),sel=document.getElementById('miV59KidRoom');if(wrap&&sel){wrap.hidden=window.miAuthRoleV58!=='coordinator';sel.innerHTML='<option value="">Sem sala EBD (somente cadastro geral)</option>'+d.rooms.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');}kidHome.classList.add('hidden');kidView.classList.add('hidden');importBox.classList.add('hidden');kidFormCard.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
 function showKidHome(){kidFormCard.classList.add('hidden');kidView.classList.add('hidden');importBox.classList.add('hidden');kidHome.classList.remove('hidden');renderKidHome()}
 function toggleKidSearch(){kidSearchBox.classList.toggle('hidden');if(!kidSearchBox.classList.contains('hidden'))kidSearch.focus()}
 function registryKidsV59(){return window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'?(Array.isArray(d.registryKids)?d.registryKids:[]):d.kids}
