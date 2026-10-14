@@ -184,7 +184,7 @@
 <div id="kidHome">
   <div class="card"><div class="row"><div><button class="primary" onclick="newKidMain()">➕ Nova criança</button></div><div><button class="soft" onclick="toggleKidSearch()">🔎 Localizar criança</button></div><div><button class="soft" onclick="openImport()">📥 Importar cadastros</button></div></div></div>
   <div id="kidSearchBox" class="card hidden"><h3>🔎 Localizar criança</h3><input id="kidSearch" placeholder="Digite parte do nome..." oninput="locateKid()"><div id="kidSearchResults"></div></div>
-  <div class="card"><h3>Recentes</h3><div id="kidRecent"></div></div>
+  <div class="card"><h3>Cadastro geral de crianças</h3><div id="kidRecent"></div></div>
 </div>
 <div id="kidFormCard" class="card hidden">
 <input id="kidId" type="hidden"><input id="returnTo" type="hidden">
@@ -461,7 +461,10 @@ function talentPeople(room){return isTeacherRoom(room)?d.teachers.filter(t=>t.ar
 function newKidMain(){clearKidForm();const wrap=document.getElementById('miV59KidRoomWrap'),sel=document.getElementById('miV59KidRoom');if(wrap&&sel){wrap.hidden=window.miAuthRoleV58!=='coordinator';sel.innerHTML=d.rooms.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');}kidHome.classList.add('hidden');kidView.classList.add('hidden');importBox.classList.add('hidden');kidFormCard.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
 function showKidHome(){kidFormCard.classList.add('hidden');kidView.classList.add('hidden');importBox.classList.add('hidden');kidHome.classList.remove('hidden');renderKidHome()}
 function toggleKidSearch(){kidSearchBox.classList.toggle('hidden');if(!kidSearchBox.classList.contains('hidden'))kidSearch.focus()}
-function locateKid(){let q=kidSearch.value.trim().toLowerCase();kidSearchResults.innerHTML=!q?'':d.kids.filter(k=>k.name.toLowerCase().includes(q)).slice(0,12).map(k=>`<p><button class="soft" onclick="openKid(${k.id})">${esc(k.name)}${k.birth?' • '+age(k.birth)+' anos':''}</button></p>`).join('')||'<p>Nenhuma criança localizada.</p>'}
+function registryKidsV59(){return window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'?(Array.isArray(d.registryKids)?d.registryKids:[]):d.kids}
+function registryKidV59(id){return registryKidsV59().find(k=>String(k.id)===String(id))}
+function registryRoomV59(id){return window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'?(d.registryRoomMap?.[String(id)]||''):(d.ebdRooms?.[String(id)]||'')}
+function locateKid(){let q=kidSearch.value.trim().toLowerCase();kidSearchResults.innerHTML=!q?'':registryKidsV59().filter(k=>k.name.toLowerCase().includes(q)).slice(0,30).map(k=>`<p><button class="soft" onclick="openKid(${k.id})">${esc(k.name)}${k.birth?' • '+age(k.birth)+' anos':''}</button></p>`).join('')||'<p>Nenhuma criança localizada.</p>'}
 function renderKidHome(){if(!window.kidRecent)return;let rr=[...d.kids].slice(-5).reverse();kidRecent.innerHTML=rr.length?`<div class="listWrap"><table class="listTable"><tr><th>Nome</th><th>Idade</th><th>Ações</th></tr>${rr.map(k=>`<tr><td><b>${esc(k.name)}</b></td><td>${age(k.birth)} anos</td><td><div class="actions"><button class="soft" onclick="openKid(${k.id})">Abrir</button><button class="red" onclick="delKid(${k.id})">Excluir</button></div></td></tr>`).join('')}</table></div>`:'<p>Nenhum cadastro.</p>'}
 function editRoom(i){let old=d.rooms[i],n=prompt('Novo nome da sala:',old);if(n===null)return;n=n.trim();if(!n||n===old)return;if(d.rooms.some((r,j)=>j!==i&&r===n))return alert('Já existe uma sala com esse nome.');d.rooms[i]=n;Object.keys(d.ebdRooms).forEach(id=>{if(d.ebdRooms[id]===old)d.ebdRooms[id]=n});d.teachers.forEach(t=>{if(t.room===old)t.room=n});save()}
 function delRoom(i){let r=d.rooms[i],usedKid=Object.values(d.ebdRooms).includes(r),usedTeacher=d.teachers.some(t=>t.room===r);if(usedKid||usedTeacher)return alert('Esta sala possui criança ou professor vinculado. Transfira os vínculos antes de excluir.');if(confirm(`Excluir a sala "${r}"?`)){d.rooms.splice(i,1);save()}}
