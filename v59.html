@@ -634,7 +634,7 @@ async function talSave(){
  renderBroochAlerts();
  if(!String(person).startsWith('T')&&ebdSunday(date)&&broochStreakAt(person,date)>=3&&!(d.ebdBrooches||[]).some(b=>String(b.kid)===String(person)))showBroochCelebration(person);
 }
-function delTal(id){if(!confirm('Excluir lançamento?'))return;let room=tr.value,date=td.value,person=tk.value;d.talents=d.talents.filter(x=>x.id!==id);localStorage.setItem(KEY,JSON.stringify(d));window.miCloudScheduleSave?.();tr.value=room;td.value=date;talKids(person);renderBroochAlerts()}
+function delTal(id){if(!confirm('Excluir lançamento? A oferta financeira, se houver, deverá ser ajustada separadamente pelo escritório.'))return;let room=tr.value,date=td.value,person=tk.value;d.talents=d.talents.filter(x=>String(x.id)!==String(id));if(window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'){save();}else{localStorage.setItem(KEY,JSON.stringify(d));window.miCloudScheduleSave?.();}tr.value=room;td.value=date;talKids(person);renderBroochAlerts()}
 function networkKidsV59(){return window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'?(Array.isArray(d.networkKids)?d.networkKids:[]):d.kids}
 function networkChecksV59(){return window.miAuthRoleV58&&window.miAuthRoleV58!=='developer'?(Array.isArray(d.networkChecks)?d.networkChecks:[]):d.checks}
 function networkKidV59(id){return networkKidsV59().find(x=>String(x.id)===String(id))}
@@ -696,7 +696,17 @@ function finHTML(s){return `<div class="card"><div class="fintabs"><button oncli
 function finTab(s,t){finActive[s]=t;renderFin(s);['offers','summary','stock','moves'].forEach(x=>{let e=document.getElementById(s+'f'+x);if(e)e.style.display=x===t?'block':'none'});let root=document.getElementById(s+'f'+t),wrap=root?.parentElement;if(wrap){let bs=wrap.querySelectorAll('.fintabs button');bs.forEach(b=>b.classList.remove('on'));let map={offers:0,stock:1,moves:2,summary:3};bs[map[t]]?.classList.add('on')}}
 function F(s){return d.fin[s]}
 function offer(s){let v=brnum(document.getElementById(s+'ov').value);if(!(v>0))return;let o={id:Date.now(),date:document.getElementById(s+'od').value,value:v,note:'',createdAt:new Date().toISOString()};if(s==='ebd')o.room=document.getElementById('ebdoroom')?.value||'TOTAL';F(s).offers.push(o);document.getElementById(s+'ov').value='';save();renderFin(s)}
-function editOffer(s,id){let o=F(s).offers.find(x=>x.id===id);if(!o)return;let val=prompt('Valor da oferta:',String(o.value??'').replace('.',','));if(val===null)return;let v=brnum(val);if(!(v>0))return alert('Informe um valor válido.');let dt=prompt('Data da oferta (AAAA-MM-DD):',o.date||today());if(dt===null)return;dt=dt.trim();if(!/^\d{4}-\d{2}-\d{2}$/.test(dt))return alert('Informe a data no formato AAAA-MM-DD.');if(s==='ebd'){let rooms=['TOTAL',...(d.rooms||[]).map(r=>typeof r==='string'?r:(r.name||r.room||'')).filter(Boolean)],room=prompt('Sala (use TOTAL para Geral):',o.room||'TOTAL');if(room===null)return;let match=rooms.find(r=>norm(r)===norm(room));if(!match)return alert('Sala não encontrada. Use uma sala cadastrada ou TOTAL.');o.room=match}o.value=v;o.date=dt;save();renderFin(s)}
+function confirmEbdOffer(id){
+ const admin=window.miAuthRoleV58==='developer';
+ const office=window.miAuthRoleV58==='coordinator'&&window.miLiveAccessV58?.permissions?.fin===true;
+ if(!admin&&!office)return alert('A conferência de ofertas é exclusiva da gestão financeira.');
+ const o=F('ebd').offers.find(x=>String(x.id)===String(id));
+ if(!o||o.source!=='ebd-talents')return alert('Oferta não localizada.');
+ if(o.conferenceStatus==='checked')return;
+ o.conferenceStatus='checked';o.checkedAt=new Date().toISOString();
+ save();renderFin('ebd');
+}
+function editOffer(s,id){let o=F(s).offers.find(x=>x.id===id);if(!o)return;let val=prompt('Valor da oferta:',String(o.value??'').replace('.',','));if(val===null)return;let v=brnum(val);if(!(v>0))return alert('Informe um valor válido.');let dt=prompt('Data da oferta (AAAA-MM-DD):',o.date||today());if(dt===null)return;dt=dt.trim();if(!/^\d{4}-\d{2}-\d{2}$/.test(dt))return alert('Informe a data no formato AAAA-MM-DD.');if(s==='ebd'){let rooms=['TOTAL',...(d.rooms||[]).map(r=>typeof r==='string'?r:(r.name||r.room||'')).filter(Boolean)],room=prompt('Sala (use TOTAL para Geral):',o.room||'TOTAL');if(room===null)return;let match=rooms.find(r=>norm(r)===norm(room));if(!match)return alert('Sala não encontrada. Use uma sala cadastrada ou TOTAL.');o.room=match}o.value=v;o.date=dt;if(s==='ebd'&&o.source==='ebd-talents')o.conferenceStatus='pending';save();renderFin(s)}
 function delOffer(s,id){let o=F(s).offers.find(x=>x.id===id);if(!o)return;if(confirm('Excluir esta oferta? Esta exclusão também será refletida nas movimentações, resumos e relatórios.')){F(s).offers=F(s).offers.filter(x=>x.id!==id);save();renderFin(s)}}
 function prod(s){let n=document.getElementById(s+'pn').value.trim();if(!n)return alert('Informe o produto.');let q=+document.getElementById(s+'pq').value||0,c=brnum(document.getElementById(s+'pc').value),p=brnum(document.getElementById(s+'pp').value),id=Date.now();F(s).products.push({id,name:n,variant:document.getElementById(s+'pv').value,qty:q,stock:q,cost:c,price:p});if(q>0)F(s).moves.push({id:id+1,date:today(),type:'Compra',product:id,desc:'Estoque inicial - '+n,qty:q,value:q*c,unitCost:c,profit:0});document.getElementById(s+'pn').value='';save();renderFin(s)}
 function editProd(s,id){let p=F(s).products.find(x=>x.id===id);if(!p)return;let n=prompt('Nome do produto:',p.name);if(n===null)return;let v=prompt('Tamanho/variação:',p.variant||'');if(v===null)return;let c=prompt('Custo unitário:',p.cost??0);if(c===null)return;let pr=prompt('Preço de venda:',p.price??0);if(pr===null)return;p.name=n.trim()||p.name;p.variant=v.trim();p.cost=+String(c).replace(',','.')||0;p.price=+String(pr).replace(',','.')||0;save();renderFin(s)}
@@ -718,9 +728,9 @@ if(s==='ebd'){
  if(review){
   const rows=[...f.offers].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.createdAt||'').localeCompare(a.createdAt||''));
   const total=rows.reduce((sum,o)=>sum+(Number(o.value)||0),0);
-  review.innerHTML=rows.length?'<div class="listWrap"><table class="listTable"><tr><th>Data</th><th>Sala</th><th>Criança / origem</th><th>Oferta</th><th>Responsável</th><th>Ações</th></tr>'
-   +rows.map(o=>'<tr><td>'+esc(brdate(o.date))+'</td><td>'+esc(o.room||'Geral')+'</td><td>'+esc(o.childName||'Oferta geral')+'</td><td><b>'+money(o.value)+'</b></td><td>'+esc(o.registeredByName||'Financeiro')+'</td><td><div class="actions"><button class="soft" onclick="editOffer(\'ebd\','+o.id+')">Editar</button></div></td></tr>').join('')
-   +'<tr><th colspan="3">TOTAL DA EBD</th><th>'+money(total)+'</th><th colspan="2"></th></tr></table></div>'
+  review.innerHTML=rows.length?'<div class="listWrap"><table class="listTable"><tr><th>Data</th><th>Sala</th><th>Criança / origem</th><th>Oferta</th><th>Responsável</th><th>Situação</th><th>Ações</th></tr>'
+   +rows.map(o=>'<tr><td>'+esc(brdate(o.date))+'</td><td>'+esc(o.room||'Geral')+'</td><td>'+esc(o.childName||'Oferta geral')+'</td><td><b>'+money(o.value)+'</b></td><td>'+esc(o.registeredByName||'Financeiro')+'</td><td>'+(o.source==='ebd-talents'?(o.conferenceStatus==='checked'?'Conferida':'Pendente'):'Oferta geral')+'</td><td><div class="actions"><button class="soft" onclick="editOffer(\'ebd\','+o.id+')">Editar</button>'+(o.source==='ebd-talents'&&o.conferenceStatus!=='checked'?'<button class="green" onclick="confirmEbdOffer('+o.id+')">Conferir</button>':'')+'</div></td></tr>').join('')
+   +'<tr><th colspan="3">TOTAL DA EBD</th><th>'+money(total)+'</th><th colspan="3"></th></tr></table></div>'
    :'<p class="small">Nenhuma oferta registrada na EBD.</p>';
  }
 }
