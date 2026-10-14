@@ -1007,6 +1007,37 @@ window.addEventListener('pagehide',()=>{if(token&&JSON.stringify(d)!==last&&owne
 window.addEventListener('beforeunload',e=>{if(token&&JSON.stringify(d)!==last){e.preventDefault();e.returnValue='Há dados ainda não salvos na nuvem';}});
 window.miCloudUpdateToken=t=>{if(token&&t)token=t};
 window.miCloudLogout=()=>{if(token&&JSON.stringify(d)!==last){try{localStorage.setItem('mi_v58_pending_backup_'+(owner||'unknown'),JSON.stringify({savedAt:new Date().toISOString(),revision,data:d}));}catch(e){console.warn('Backup local indisponível',e)}updateRecoveryButton()}++sessionId;token=null;owner=null;blocked=false;clearTimeout(saveTimer);status('Nuvem: sessão encerrada')};window.miCloudState=()=>({connected:!!token,revision,blocked,saved:JSON.stringify(d)===last});
+/* V61: a gestão recebe lançamentos feitos por outras contas, sem sobrescrever dados locais pendentes. */
+let refreshAdminPromiseV61=null;
+window.miCloudRefreshIfChanged=async()=>{
+ if(refreshAdminPromiseV61)return refreshAdminPromiseV61;
+ if(!token||!owner||blocked||busy||window.miAuthRoleV58!=='developer'||JSON.stringify(d)!==last)return false;
+ const originalSession=sessionId,originalToken=token;
+ refreshAdminPromiseV61=(async()=>{
+  const rows=await call('app_state_v58?select=data,revision&owner_id=eq.'+encodeURIComponent(owner)+'&limit=1');
+  if(originalSession!==sessionId||originalToken!==token||blocked||busy||JSON.stringify(d)!==last)return false;
+  if(!rows.length||Number(rows[0].revision)<=revision)return false;
+  const loaded=rows[0].data;
+  if(!loaded||typeof loaded!=='object'||Array.isArray(loaded))throw Error('Estado da nuvem inválido.');
+  for(const item of ['rooms','kids','teachers','coords','talents','checks']){
+   if(!Array.isArray(loaded[item]))throw Error('Dados incompletos: '+item);
+  }
+  for(const area of ['ebd','net'])for(const item of ['offers','products','moves']){
+   if(!Array.isArray(loaded.fin?.[area]?.[item]))throw Error('Dados financeiros incompletos: '+area+'/'+item);
+  }
+  const nextRevision=Number(rows[0].revision);
+  Object.keys(d).forEach(k=>delete d[k]);Object.assign(d,loaded);
+  revision=nextRevision;localStorage.setItem(KEY,JSON.stringify(d));
+  render();last=JSON.stringify(d);
+  status('Nuvem: atualizada com lançamentos de outros acessos');
+  return true;
+ })();
+ try{return await refreshAdminPromiseV61}finally{refreshAdminPromiseV61=null}
+};
+setInterval(()=>{
+ if(document.hidden||window.miAuthRoleV58!=='developer')return;
+ window.miCloudRefreshIfChanged?.().catch(e=>console.warn('Atualização financeira pendente',e));
+},30000);
 })();
 </script>
 <style id="mi-staff-workspace-style">#miStaffWorkspaceV58[hidden]{display:none!important}#miStaffWorkspaceV58{position:fixed;inset:0;z-index:2147483642;display:flex;justify-content:center;align-items:center;background:#f1f4f9;font:16px system-ui;color:#17233d;padding:16px}#miStaffWorkspaceV58>section{background:white;border-radius:16px;max-width:780px;width:100%;max-height:92vh;overflow:auto;padding:26px;box-shadow:0 8px 24px #0002}.miStaffDataV58{margin:18px 0}.miStaffDataV58 h3{margin:18px 0 8px}.miStaffDataV58 table{width:100%;border-collapse:collapse;font-size:13px}.miStaffDataV58 th,.miStaffDataV58 td{padding:8px;text-align:left;border-bottom:1px solid #ddd}.miStaffDataV58 .scroll{overflow-x:auto}#miStaffExitV58{padding:10px 20px;border:0;border-radius:8px;background:#173f79;color:white;cursor:pointer}</style><div id="miStaffWorkspaceV58" hidden><section><h2>Ministério Infantil — 4ª IEQ</h2><p id="miStaffNameV58"></p><p>Perfil: <strong id="miStaffRoleV58"></strong></p><p>Salas autorizadas para consulta (somente leitura):</p><div id="miStaffRoomsV58" role="status">Carregando salas...</div><div id="miStaffDataV58" class="miStaffDataV58" role="region" aria-label="Crianças e presença das salas autorizadas"><h3>Crianças das salas autorizadas</h3><div id="miStaffChildrenV58">Carregando crianças...</div><h3>Registros de presença</h3><div id="miStaffAttendanceV58">Carregando registros...</div></div><p style="font-size:13px;color:#55657a">Consulta das salas autorizadas. Inclusões, alterações e exclusões permanecem restritas até a liberação segura dessas permissões.</p><button type="button" id="miStaffChangePasswordV58" style="padding:10px 18px;margin-right:8px;border:0;border-radius:8px;background:#173f79;color:white;cursor:pointer">Alterar minha senha</button><button type="button" id="miStaffExitV58">Sair</button></section></div>
