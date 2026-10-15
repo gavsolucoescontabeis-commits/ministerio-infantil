@@ -1,11 +1,12 @@
 {
-  "release": "Projeto V60 — permissão Talentos",
-  "build": "v60-20261015-3",
+  "release": "Projeto V60 — acessos simultâneos",
+  "build": "v60-20261015-4",
   "date": "2026-10-15",
   "changes": [
-    "Cadastro automático para Coordenador/Escritório",
-    "Atualização do aplicativo sem reinstalação",
-    "Botão opcional Alterar minha senha visível para Professor, Coordenador e Escritório",
-    "Talentos para Coordenador e Escritório, mediante permissão individual, em todas as salas da EBD"
+    "Entrada e saída preparadas para acessos simultâneos, com bloqueio atômico no servidor e prevenção de dupla presença",
+    "Talentos gravados de forma atômica: operações concorrentes são serializadas e lançamentos de salas/crianças diferentes não se sobrescrevem",
+    "Oferta vinculada ao Talentos continua com proteção contra duplicidade por criança e data",
+    "Novos cadastros de crianças podem ser gravados independentemente; edição simultânea da mesma criança continua protegida contra sobrescrita",
+    "Gravações em bloco, como financeiro, mantêm controle de revisão para impedir perda silenciosa de dados"
   ]
 }
