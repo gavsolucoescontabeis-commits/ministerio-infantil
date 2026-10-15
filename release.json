@@ -1,9 +1,10 @@
 {
-  "release": "Projeto V60",
-  "build": "v60-20261015",
+  "release": "Projeto V60 — ajuste de conta",
+  "build": "v60-20261015-2",
   "date": "2026-10-15",
   "changes": [
     "Cadastro automático para Coordenador/Escritório",
-    "Atualização do aplicativo sem reinstalação"
+    "Atualização do aplicativo sem reinstalação",
+    "Botão opcional Alterar minha senha visível para Professor, Coordenador e Escritório"
   ]
 }
