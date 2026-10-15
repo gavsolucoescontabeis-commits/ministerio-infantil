@@ -1,10 +1,11 @@
 {
-  "release": "Projeto V60 — ajuste de conta",
-  "build": "v60-20261015-2",
+  "release": "Projeto V60 — permissão Talentos",
+  "build": "v60-20261015-3",
   "date": "2026-10-15",
   "changes": [
     "Cadastro automático para Coordenador/Escritório",
     "Atualização do aplicativo sem reinstalação",
-    "Botão opcional Alterar minha senha visível para Professor, Coordenador e Escritório"
+    "Botão opcional Alterar minha senha visível para Professor, Coordenador e Escritório",
+    "Talentos para Coordenador e Escritório, mediante permissão individual, em todas as salas da EBD"
   ]
 }
