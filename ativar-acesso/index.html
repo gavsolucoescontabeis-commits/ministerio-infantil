@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#263343">
+<title>Criar senha • Ministério Infantil • 4ª IEQ Curitiba</title>
+<style>
+:root{--blue:#29a9df;--green:#31b96c;--yellow:#f6bd22;--ink:#263343;--muted:#6d7b86;--red:#b3261e}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(145deg,#f3fbff,#fff9e9);color:var(--ink)}
+header{background:#fff;border-bottom:5px solid var(--yellow);padding:24px 16px;text-align:center}
+main{width:min(620px,calc(100% - 24px));margin:24px auto}.card{background:#fff;border:1px solid #e1e9ee;border-radius:18px;padding:22px;box-shadow:0 8px 24px #1d4d6812}
+h1{font-size:26px;margin:6px 0}p{line-height:1.5}.muted{color:var(--muted);font-size:13px}
+label{display:block;font-size:13px;font-weight:800;color:#526571;margin:14px 0 6px}
+input{width:100%;padding:12px;border:1px solid #cfdbe2;border-radius:11px;font-size:16px}
+button,a.action{display:block;width:100%;border:0;border-radius:13px;padding:14px 18px;font-size:16px;font-weight:800;text-align:center;text-decoration:none;margin-top:16px}
+button{background:var(--green);color:#fff;cursor:pointer}a.action{background:var(--blue);color:#fff}
+#formBox[hidden],#successBox[hidden]{display:none!important}#status{margin-top:12px;font-weight:700}.err{color:var(--red)}.ok{color:#176b39}
+</style>
+</head>
+<body>
+<header><div style="font-size:40px">👧👦</div><div style="font-weight:800;color:#267da3">Ministério Infantil • 4ª IEQ Curitiba</div><h1>Criar minha senha</h1></header>
+<main><div class="card">
+<p id="intro">Validando seu link de acesso...</p>
+<div id="formBox" hidden>
+  <p>Seu cadastro foi aprovado. Crie agora a senha que você usará junto com seu <b>CPF</b> para entrar no aplicativo.</p>
+  <form id="passwordForm">
+    <label for="password">Nova senha</label>
+    <input id="password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required>
+    <label for="confirm">Confirmar nova senha</label>
+    <input id="confirm" type="password" minlength="10" maxlength="128" autocomplete="new-password" required>
+    <button type="submit">Salvar minha senha</button>
+  </form>
+  <p class="muted">Use pelo menos 10 caracteres e não compartilhe sua senha.</p>
+</div>
+<div id="successBox" hidden>
+  <h2>✅ Senha criada</h2>
+  <p>Seu acesso está pronto. Entre no aplicativo usando seu <b>CPF</b> e a senha que acabou de criar.</p>
+  <a class="action" href="../">Abrir o aplicativo</a>
+</div>
+<p id="status" role="status" aria-live="polite"></p>
+</div></main>
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm";
+const supabase=createClient("https://jthxnjvqmvtydyfuqcct.supabase.co","sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs",{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:true}});
+const intro=document.getElementById("intro"),box=document.getElementById("formBox"),success=document.getElementById("successBox"),status=document.getElementById("status"),form=document.getElementById("passwordForm");
+function fail(msg){intro.textContent="Não foi possível validar este link.";box.hidden=true;status.className="err";status.textContent=msg+" Se o link expirou, peça à coordenação para reenviar o e-mail de criação da senha."}
+async function showIfSession(){
+ const {data:{session}}=await supabase.auth.getSession();
+ if(session){intro.textContent="";box.hidden=false;status.textContent="";return true}
+ return false;
+}
+supabase.auth.onAuthStateChange(async(event,session)=>{
+ if((event==="PASSWORD_RECOVERY"||event==="SIGNED_IN")&&session){intro.textContent="";box.hidden=false;status.textContent=""}
+});
+const params=new URLSearchParams(location.search);
+if(params.get("error_description"))fail(decodeURIComponent(params.get("error_description")));
+else setTimeout(async()=>{if(!(await showIfSession()))fail("O link é inválido ou já expirou.")},700);
+form.addEventListener("submit",async e=>{
+ e.preventDefault();status.className="";status.textContent="";
+ const a=document.getElementById("password").value,b=document.getElementById("confirm").value;
+ if(a.length<10){status.className="err";status.textContent="Use uma senha com pelo menos 10 caracteres.";return}
+ if(a!==b){status.className="err";status.textContent="As senhas não coincidem.";return}
+ const button=form.querySelector("button");button.disabled=true;button.textContent="Salvando...";
+ const {error}=await supabase.auth.updateUser({password:a});
+ if(error){status.className="err";status.textContent="Não foi possível salvar a senha. Solicite um novo e-mail de acesso.";button.disabled=false;button.textContent="Salvar minha senha";return}
+ await supabase.auth.signOut();
+ box.hidden=true;intro.hidden=true;success.hidden=false;status.className="ok";status.textContent="Senha definida com sucesso.";
+});
+</script>
+</body>
+</html>

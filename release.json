@@ -1,12 +1,14 @@
 {
-  "release": "Projeto V60 — pré-cadastros da equipe",
-  "build": "v60-20261016-2",
+  "release": "Projeto V60 — liberação automática de acesso",
+  "build": "v60-20261016-3",
   "date": "2026-10-16",
   "changes": [
-    "Pré-cadastros recebidos aparecem automaticamente na área Equipe com contador vermelho",
-    "Administrador visualiza ficha e certidão antes de aprovar",
-    "Perfil, área, sala e permissões são definidos na própria análise do pré-cadastro",
-    "Ao aprovar, a certidão é transferida da área pendente para o armazenamento definitivo e vinculada ao relatório de vigência",
-    "A importação atualiza a equipe sem sobrescrever alterações simultâneas"
+    "Pré-cadastros aprovados permanecem visíveis em Cadastros concluídos recentemente, próximos da redefinição de senha",
+    "E-mail e telefone continuam disponíveis após a aprovação do pré-cadastro",
+    "Novas aprovações criam automaticamente a conta de acesso vinculada ao CPF",
+    "O sistema tenta enviar automaticamente um e-mail para a pessoa criar a própria senha",
+    "Nova página segura de criação de senha; depois o acesso é feito normalmente com CPF e senha",
+    "E-mail passa a ser obrigatório no formulário público para permitir a liberação automática",
+    "Mantidos os controles manuais de acesso e redefinição de senha como fallback"
   ]
 }\n

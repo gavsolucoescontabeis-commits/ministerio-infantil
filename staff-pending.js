@@ -2,7 +2,7 @@
 'use strict';
 const BASE='https://jthxnjvqmvtydyfuqcct.supabase.co';
 const KEY='sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs';
-let panel=null,list=null,shortcut=null,navBadge=null,homeBadge=null,refreshing=false;
+let panel=null,list=null,shortcut=null,navBadge=null,homeBadge=null,refreshing=false,recentPanel=null,recentList=null,recentRefreshing=false;
 
 function isAdmin(){return window.miAuthRoleV58==='developer'&&!!window.miAuthTokenV58}
 function escText(v){return String(v??'')}
@@ -76,6 +76,84 @@ function ensureUI(){
    homeTeamCard.querySelector('h3')?.appendChild(homeBadge);
    homeTeamBtn.addEventListener('click',()=>{if(isAdmin())refreshPending(true)});
  }
+ ensureRecentUI();
+}
+
+function ensureRecentUI(){
+ if(recentPanel)return;
+ const adminPanel=document.getElementById('miTeamAssignPanel');
+ const resetForm=document.getElementById('miResetStaffForm');
+ const resetSection=resetForm?.closest('section');
+ if(!adminPanel||!resetSection)return;
+ recentPanel=document.createElement('section');
+ recentPanel.id='miRecentStaffV60';
+ const title=document.createElement('h4');title.textContent='Cadastros concluídos recentemente';
+ const help=document.createElement('p');help.className='small';help.textContent='Os pré-cadastros aprovados continuam visíveis aqui com CPF, telefone e e-mail. Assim você não perde os dados depois da confirmação.';
+ const refresh=document.createElement('button');refresh.type='button';refresh.className='soft';refresh.textContent='Atualizar concluídos';
+ refresh.addEventListener('click',()=>refreshRecent());
+ recentList=document.createElement('div');recentList.id='miRecentStaffListV60';recentList.setAttribute('role','status');
+ recentPanel.append(title,help,refresh,recentList);
+ resetSection.insertAdjacentElement('afterend',recentPanel);
+}
+
+async function loadRecentRows(){
+ const fields='id,created_at,reviewed_at,full_name,cpf,phone,email,area,declared_role,current_room,status,imported_person_key,account_user_id,activation_email_sent_at,activation_email_error';
+ return await request('/rest/v1/staff_applications_v60?select='+encodeURIComponent(fields)+'&status=in.(imported,rejected)&order=reviewed_at.desc.nullslast&limit=12');
+}
+
+async function resendActivation(app,button,statusEl){
+ if(!app.account_user_id){statusEl.textContent='Este cadastro foi concluído antes da automação do acesso.';return}
+ button.disabled=true;const old=button.textContent;button.textContent='Enviando...';statusEl.textContent='';
+ try{
+  await request('/functions/v1/v60-resend-staff-activation',{method:'POST',body:JSON.stringify({applicationId:app.id})});
+  statusEl.textContent='E-mail enviado novamente.';
+  await refreshRecent();
+ }catch(e){statusEl.textContent=e.message||'Não foi possível reenviar o e-mail.'}
+ finally{button.disabled=false;button.textContent=old}
+}
+
+function renderRecentRows(rows){
+ if(!recentList)return;
+ recentList.replaceChildren();
+ if(!rows.length){recentList.textContent='Nenhum cadastro concluído ainda.';return}
+ for(const app of rows){
+  const card=document.createElement('div');card.className='mi-recent-card';
+  const title=document.createElement('strong');
+  title.textContent=(app.status==='imported'?'✅ ':'⛔ ')+escText(app.full_name);
+  const meta=document.createElement('div');meta.className='mi-recent-meta';
+  const entries=[
+   ['Situação',app.status==='imported'?'Aprovado e importado':'Descartado'],
+   ['CPF',fmtCpf(app.cpf)],['WhatsApp',app.phone||'—'],['E-mail',app.email||'—'],
+   ['Área informada',areaLabel(app.area)],['Atuação informada',roleLabel(app.declared_role)],
+   ['Concluído em',fmtDateTime(app.reviewed_at||app.created_at)]
+  ];
+  for(const [k,v] of entries){const d=document.createElement('div'),b=document.createElement('b');b.textContent=k+': ';d.append(b,document.createTextNode(escText(v)));meta.appendChild(d)}
+  const mail=document.createElement('p');mail.className='small';
+  if(app.status==='imported'){
+   if(app.activation_email_sent_at) mail.textContent='✉️ E-mail para criação da senha enviado em '+fmtDateTime(app.activation_email_sent_at)+'.';
+   else if(app.account_user_id) mail.textContent='🟡 Acesso criado, mas o envio automático do e-mail ainda não foi confirmado.';
+   else mail.textContent='Cadastro concluído antes da automação do e-mail; os dados permanecem disponíveis aqui.';
+  }else mail.textContent='Pré-cadastro descartado; nenhum acesso foi criado.';
+  card.append(title,meta,mail);
+  if(app.status==='imported'&&app.account_user_id){
+    const resend=document.createElement('button');resend.type='button';resend.className='soft';resend.textContent='✉️ Reenviar e-mail de criação da senha';
+    const feedback=document.createElement('span');feedback.className='small';feedback.style.marginLeft='8px';
+    resend.addEventListener('click',()=>resendActivation(app,resend,feedback));
+    card.append(resend,feedback);
+  }
+  recentList.appendChild(card);
+ }
+}
+
+async function refreshRecent(silent=false){
+ ensureRecentUI();
+ if(!isAdmin()||!recentList)return;
+ if(recentRefreshing)return;
+ recentRefreshing=true;
+ if(!silent)recentList.textContent='Carregando cadastros concluídos...';
+ try{renderRecentRows(await loadRecentRows())}
+ catch(e){if(!silent)recentList.textContent=e.message||'Não foi possível consultar os cadastros concluídos.'}
+ finally{recentRefreshing=false}
 }
 
 function setCount(n){
@@ -200,19 +278,21 @@ function renderCard(app){
   if(!confirm('Confirma a aprovação e importação de '+app.full_name+'?'))return;
   approve.disabled=true;reject.disabled=true;feedback.textContent='Importando cadastro...';
   try{
-   await request('/functions/v1/v60-admin-import-staff-application',{method:'POST',body:JSON.stringify({
+   const result=await request('/functions/v1/v60-admin-import-staff-application',{method:'POST',body:JSON.stringify({
     applicationId:app.id,targetRole:role.value,targetArea:area.value,room:room.value||'',permissions:selectedPermissions(perms)
    })});
-   feedback.textContent='Cadastro importado. Atualizando a equipe...';
+   feedback.textContent=result.emailSent?'Cadastro importado e e-mail de criação da senha enviado.':'Cadastro importado; o e-mail não foi enviado. Veja “Cadastros concluídos recentemente” para reenviar.';
    await window.miCloudInit?.(window.miAuthTokenV58);
    await refreshPending();
+   await refreshRecent();
+   if(!result.emailSent)alert('O cadastro foi aprovado e o acesso foi criado, mas o e-mail automático não foi enviado. Use o botão “Reenviar e-mail de criação da senha” nos cadastros concluídos.');
   }catch(e){feedback.textContent=e.message||'Não foi possível importar o cadastro.';approve.disabled=false;reject.disabled=false}
  });
 
  reject.addEventListener('click',async()=>{
   if(!confirm('Descartar o pré-cadastro de '+app.full_name+'? Ele sairá da fila e não será incluído na equipe.'))return;
   approve.disabled=true;reject.disabled=true;feedback.textContent='Descartando...';
-  try{await request('/rest/v1/rpc/v60_reject_staff_application',{method:'POST',body:JSON.stringify({p_application_id:app.id})});await refreshPending()}
+  try{await request('/rest/v1/rpc/v60_reject_staff_application',{method:'POST',body:JSON.stringify({p_application_id:app.id})});await refreshPending();await refreshRecent()}
   catch(e){feedback.textContent=e.message||'Não foi possível descartar.';approve.disabled=false;reject.disabled=false}
  });
 
@@ -241,9 +321,9 @@ async function refreshPending(silent=false){
 }
 window.miPendingApplicationsRefreshV60=refreshPending;
 
-function ready(){ensureUI();if(isAdmin())refreshPending()}
+function ready(){ensureUI();if(isAdmin()){refreshPending();refreshRecent()}}
 window.addEventListener('mi-auth-ready',ready);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&isAdmin())refreshPending(true)});
-setInterval(()=>{if(!document.hidden&&isAdmin())refreshPending(true)},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&isAdmin()){refreshPending(true);refreshRecent(true)}});
+setInterval(()=>{if(!document.hidden&&isAdmin()){refreshPending(true);refreshRecent(true)}},30000);
 setTimeout(ready,1200);
 })();

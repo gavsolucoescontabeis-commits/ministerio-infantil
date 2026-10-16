@@ -40,7 +40,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 28px}
 
 <main>
   <div class="notice">
-    <b>Importante:</b> este formulário é somente para pré-cadastro. O envio não cria acesso ao aplicativo e não define permissões. A coordenação fará a conferência e a liberação posteriormente.
+    <b>Importante:</b> este formulário é somente para pré-cadastro. A coordenação fará a conferência e definirá as permissões. Depois da aprovação, o sistema enviará automaticamente um e-mail para você criar sua senha de acesso.
   </div>
 
   <form id="staffForm" novalidate>
@@ -179,7 +179,7 @@ form.addEventListener('submit',async e=>{
    const body=await r.json().catch(()=>({}));
    if(!r.ok||body.ok!==true)throw new Error(body.message||'Não foi possível enviar o cadastro.');
    form.reset();info.textContent='Nenhum arquivo selecionado.';
-   msg('Cadastro enviado com sucesso! Protocolo: '+body.protocol+'. A coordenação fará a conferência antes de liberar qualquer acesso.',true);
+   msg('Cadastro enviado com sucesso! Protocolo: '+body.protocol+'. Após a aprovação, você receberá um e-mail para criar sua senha de acesso.',true);
  }catch(err){msg(err.message||'Não foi possível enviar o cadastro. Tente novamente.')}
  finally{btn.disabled=false;btn.textContent='Enviar cadastro'}
 });
