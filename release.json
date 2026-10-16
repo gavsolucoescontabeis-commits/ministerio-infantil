@@ -1,12 +1,12 @@
 {
-  "release": "Projeto V60 — acessos simultâneos",
-  "build": "v60-20261015-4",
-  "date": "2026-10-15",
+  "release": "Projeto V60 — pré-cadastros da equipe",
+  "build": "v60-20261016-1",
+  "date": "2026-10-16",
   "changes": [
-    "Entrada e saída preparadas para acessos simultâneos, com bloqueio atômico no servidor e prevenção de dupla presença",
-    "Talentos gravados de forma atômica: operações concorrentes são serializadas e lançamentos de salas/crianças diferentes não se sobrescrevem",
-    "Oferta vinculada ao Talentos continua com proteção contra duplicidade por criança e data",
-    "Novos cadastros de crianças podem ser gravados independentemente; edição simultânea da mesma criança continua protegida contra sobrescrita",
-    "Gravações em bloco, como financeiro, mantêm controle de revisão para impedir perda silenciosa de dados"
+    "Pré-cadastros do formulário público agora aparecem automaticamente na área Equipe do administrador",
+    "Contador vermelho mostra quantos cadastros aguardam análise",
+    "Administrador confere dados, visualiza a certidão, define perfil, área, sala e permissões antes de importar",
+    "A aprovação grava o cadastro na equipe e vincula a certidão ao relatório de vigência",
+    "Cadastros recusados saem da fila sem alterar a equipe já aprovada"
   ]
-}
+}\n
