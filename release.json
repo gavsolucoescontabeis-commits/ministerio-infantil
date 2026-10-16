@@ -1,12 +1,12 @@
 {
   "release": "Projeto V60 — pré-cadastros da equipe",
-  "build": "v60-20261016-1",
+  "build": "v60-20261016-2",
   "date": "2026-10-16",
   "changes": [
-    "Pré-cadastros do formulário público agora aparecem automaticamente na área Equipe do administrador",
-    "Contador vermelho mostra quantos cadastros aguardam análise",
-    "Administrador confere dados, visualiza a certidão, define perfil, área, sala e permissões antes de importar",
-    "A aprovação grava o cadastro na equipe e vincula a certidão ao relatório de vigência",
-    "Cadastros recusados saem da fila sem alterar a equipe já aprovada"
+    "Pré-cadastros recebidos aparecem automaticamente na área Equipe com contador vermelho",
+    "Administrador visualiza ficha e certidão antes de aprovar",
+    "Perfil, área, sala e permissões são definidos na própria análise do pré-cadastro",
+    "Ao aprovar, a certidão é transferida da área pendente para o armazenamento definitivo e vinculada ao relatório de vigência",
+    "A importação atualiza a equipe sem sobrescrever alterações simultâneas"
   ]
 }\n

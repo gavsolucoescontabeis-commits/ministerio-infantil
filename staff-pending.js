@@ -200,8 +200,8 @@ function renderCard(app){
   if(!confirm('Confirma a aprovação e importação de '+app.full_name+'?'))return;
   approve.disabled=true;reject.disabled=true;feedback.textContent='Importando cadastro...';
   try{
-   await request('/rest/v1/rpc/v60_import_staff_application',{method:'POST',body:JSON.stringify({
-    p_application_id:app.id,p_target_role:role.value,p_target_area:area.value,p_room:room.value||'',p_permissions:selectedPermissions(perms)
+   await request('/functions/v1/v60-admin-import-staff-application',{method:'POST',body:JSON.stringify({
+    applicationId:app.id,targetRole:role.value,targetArea:area.value,room:room.value||'',permissions:selectedPermissions(perms)
    })});
    feedback.textContent='Cadastro importado. Atualizando a equipe...';
    await window.miCloudInit?.(window.miAuthTokenV58);
