@@ -26,7 +26,7 @@ function ensure(){
  addStyle();
  panel=node('div');panel.id='miChildApplicationsPanel';panel.className='card';panel.hidden=true;
  const heading=node('h3','📥 Pré-cadastros enviados pelos pais');
- const desc=node('p','Você decide quando importar. Os cadastros de teste entram identificados como TESTE para conferir a integração, e podem ser excluídos aqui quando não tiverem históricos vinculados.');
+ const desc=node('p','Você decide quando importar. Os cadastros de teste entram identificados como TESTE. Ao remover um teste, a vinculação simples com sala da EBD será desfeita automaticamente; históricos de presença, talentos, ofertas ou transferência continuam protegidos.');
  desc.className='small';
  titleBtn=node('button','Conferir cadastros de crianças');titleBtn.type='button';titleBtn.className='primary';
  titleBtn.addEventListener('click',refresh);
@@ -72,11 +72,11 @@ async function decision(id,action,wasTest){
 }
 async function removeTest(id){
  if(!admin()||busy)return;
- if(!confirm('Remover este cadastro de TESTE do Cadastro Geral? A exclusão será recusada se houver presença, talentos ou outros históricos vinculados.'))return;
+ if(!confirm('Remover este cadastro de TESTE do Cadastro Geral e desvincular sua sala da EBD? Se houver presenças, talentos, ofertas, transferências ou outros históricos vinculados, a exclusão será bloqueada.'))return;
  busy=true;
  try{
-   await rpc('v64_remove_test_child_application',{p_application_id:id});
-   alert('Cadastro de TESTE removido. Atualize o aplicativo para conferir a lista.');
+   await rpc('v64_remove_test_child_with_room',{p_application_id:id});
+   alert('Cadastro de TESTE e vínculo com a sala removidos. Atualize o aplicativo para conferir a lista.');
    await refresh();
  }catch(err){alert(err.message||'Não foi possível remover o teste.')}
  finally{busy=false}
@@ -116,7 +116,7 @@ function draw(items){
    const no=node('button','Rejeitar');no.type='button';no.className='red';
    no.addEventListener('click',()=>decision(app.id,'reject',app.is_test));
    if(app.status==='test_approved'&&app.registry_child_id){
-     const summary=node('p','🧪 Registro importado no Cadastro Geral — ID '+app.registry_child_id+'. Você pode removê-lo, desde que não tenha históricos associados.');
+     const summary=node('p','🧪 Registro importado no Cadastro Geral — ID '+app.registry_child_id+'. A vinculação simples com sala será desfeita automaticamente ao remover o teste, se não houver outros históricos.');
      summary.className='small';card.append(summary);
      const remove=node('button','Remover cadastro de TESTE do sistema');
      remove.type='button';remove.className='red';
