@@ -157,3 +157,55 @@ revoke all on function public.v64_ebd_manage_room(text,text,text,bigint) from pu
 revoke all on function public.v64_ebd_period(text,date,date,text,bigint) from public, anon;
 grant execute on function public.v64_ebd_manage_room(text,text,text,bigint) to authenticated;
 grant execute on function public.v64_ebd_period(text,date,date,text,bigint) to authenticated;
+
+
+-- V64.2: Reorganizacao MANUAL de criancas da EBD entre salas.
+-- Nao altera historicos arquivados nem o cadastro geral das criancas.
+create or replace function public.v64_ebd_transfer_children(
+ p_from text,p_to text,p_child_ids jsonb,p_expected_revision bigint)
+returns jsonb language plpgsql security definer set search_path='' as $body$
+declare
+ a jsonb; s jsonb; rev bigint; v_owner uuid;
+ source_room text:=trim(coalesce(p_from,'')); target_room text:=trim(coalesce(p_to,''));
+ item jsonb; kid text; changed_ids jsonb:='[]'::jsonb; count_moved integer:=0;
+ timestamp_iso text:=to_char(clock_timestamp() at time zone 'America/Sao_Paulo','YYYY-MM-DD"T"HH24:MI:SS');
+ record_id bigint:=floor(extract(epoch from clock_timestamp())*1000000)::bigint;
+begin
+ if auth.uid() is null then raise exception 'AUTH_REQUIRED'; end if;
+ a:=public.v58_my_live_access();
+ if not (a->>'role'='developer' or
+   (a->>'role'='coordinator' and coalesce((a->'permissions'->>'ebd')::boolean,false)))
+ then raise exception 'EBD_COORDINATOR_PERMISSION_DENIED'; end if;
+ if source_room='' or target_room='' or lower(source_room)=lower(target_room)
+    or lower(source_room)='professores' or lower(target_room)='professores'
+ then raise exception 'INVALID_ROOM_SELECTION'; end if;
+ if jsonb_typeof(p_child_ids) is distinct from 'array' or jsonb_array_length(p_child_ids)<1
+   or jsonb_array_length(p_child_ids)>500 then raise exception 'INVALID_CHILD_LIST'; end if;
+ select x.owner_id,x.data,x.revision into v_owner,s,rev from public.app_state_v58 x
+ where x.owner_id=(select id from public.profiles where role='developer' and active=true order by created_at limit 1) for update;
+ if s is null then raise exception 'NO_STATE'; end if;
+ if p_expected_revision is distinct from rev then raise exception 'REVISION_CONFLICT'; end if;
+ if not (coalesce(s->'rooms','[]'::jsonb) ? source_room)
+    or not (coalesce(s->'rooms','[]'::jsonb) ? target_room) then raise exception 'ROOM_NOT_FOUND'; end if;
+ for item in select value from jsonb_array_elements(p_child_ids) loop
+   if jsonb_typeof(item)<>'string' then raise exception 'INVALID_CHILD_ID'; end if;
+   kid:=item#>>'{}';
+   if kid='' or changed_ids ? kid then raise exception 'DUPLICATE_OR_EMPTY_CHILD_ID'; end if;
+   if not exists(select 1 from jsonb_array_elements(coalesce(s->'kids','[]'::jsonb)) k
+      where k->>'id'=kid) then raise exception 'CHILD_NOT_FOUND'; end if;
+   if coalesce(s->'ebdRooms'->>kid,'')<>source_room then raise exception 'CHILD_NOT_IN_SOURCE_ROOM'; end if;
+   changed_ids:=changed_ids||jsonb_build_array(kid);
+   s:=jsonb_set(s,array['ebdRooms',kid],to_jsonb(target_room),true);
+   s:=jsonb_set(s,'{roomLinks}',coalesce(s->'roomLinks','[]'::jsonb)||jsonb_build_array(jsonb_build_object(
+    'id',record_id+count_moved,'kid',kid,'room',target_room,'from',source_room,'kind','transfer',
+    'date',timestamp_iso,'changedBy',a->>'name')),true);
+   count_moved:=count_moved+1;
+ end loop;
+ s:=jsonb_set(s,'{roomTransfers}',coalesce(s->'roomTransfers','[]'::jsonb)||jsonb_build_array(jsonb_build_object(
+  'id',record_id,'from',source_room,'to',target_room,'count',count_moved,'kids',changed_ids,
+  'date',timestamp_iso,'changedBy',a->>'name')),true);
+ update public.app_state_v58 set data=s,revision=rev+1,updated_at=now() where owner_id=v_owner;
+ return jsonb_build_object('ok',true,'revision',rev+1,'count',count_moved,'from',source_room,'to',target_room);
+end $body$;
+revoke all on function public.v64_ebd_transfer_children(text,text,jsonb,bigint) from public,anon;
+grant execute on function public.v64_ebd_transfer_children(text,text,jsonb,bigint) to authenticated;
