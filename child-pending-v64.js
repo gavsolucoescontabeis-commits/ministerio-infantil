@@ -55,13 +55,16 @@ function detail(parent,label,value){
 async function decision(id,action,wasTest){
  if(!admin())return alert('Somente o administrador pode analisar os pré-cadastros.');
  const name=action==='approve'?'aprovar':'rejeitar';
- const info=wasTest?'O cadastro de TESTE será incluído no Cadastro Geral com marcação visível e poderá ser removido aqui se não tiver histórico vinculado.':'Se aprovado, o cadastro será incluído no Cadastro Geral, sem sala da EBD.';
+ const info=action==='reject'?'A ficha pendente será rejeitada sem criar cadastro.':
+   wasTest?'O cadastro de TESTE será incluído no Cadastro Geral com marcação visível e poderá ser removido aqui se não tiver histórico vinculado.':
+   'Se aprovado, o cadastro será incluído no Cadastro Geral, sem sala da EBD.';
  if(!confirm('Deseja '+name+' este pré-cadastro?\n'+info))return;
  if(busy)return;busy=true;
  try{
    const res=await rpc('v64_review_child_application',{p_application_id:id,p_action:action});
-   const text=res.is_test?'Cadastro de TESTE importado! Ele aparece no Cadastro Geral identificado como teste. Atualize o aplicativo para conferir.':
-     action==='approve'?'Criança importada com sucesso no cadastro geral. Atualize o aplicativo para visualizar.':'Pré-cadastro rejeitado.';
+   const text=action==='reject'?'Pré-cadastro rejeitado.':
+     res.is_test?'Cadastro de TESTE importado! Ele aparece no Cadastro Geral identificado como teste. Atualize o aplicativo para conferir.':
+     'Criança importada com sucesso no cadastro geral. Atualize o aplicativo para visualizar.';
    alert(text);
    await refresh();
  }catch(err){alert(err.message||'Não foi possível concluir.')}
