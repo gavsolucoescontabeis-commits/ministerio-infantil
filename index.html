@@ -623,7 +623,7 @@ function openKid(id){
  <p><b>Endereço:</b> ${esc([k.street,k.num,k.comp,k.hood,k.city,k.uf,k.cep].filter(Boolean).join(', ')||'-')}</p>
  <p><b>Autorizados a buscar:</b> ${esc(auth)}</p><p><b>Observações:</b> ${esc(k.obs||'-')}</p>
  <button class="blue" onclick="editKid(${id});kidView.classList.add('hidden');kidFormCard.classList.remove('hidden')">Editar</button>
- ${window.miAuthRoleV58==='developer'?`<button class="red" onclick="delKid(${id});showKidHome()">Excluir</button>`:''}
+ ${window.miAuthRoleV58==='developer'&&!k.registrationTest?`<button class="red" onclick="delKid(${id});showKidHome()">Excluir</button>`:''}
  <button class="soft" onclick="showKidHome()">Voltar</button>`;
  kidView.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1910,5 +1910,5 @@ refresh();
  };
  document.addEventListener('DOMContentLoaded',()=>window.miV66TeamTab('access'));
 })();
-</script><script src="./child-pending-v64.js?v=20261018b" defer></script>
+</script><script src="./child-pending-v64.js?v=20261018c" defer></script>
 </body></html>
