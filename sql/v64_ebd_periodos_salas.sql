@@ -85,7 +85,7 @@ begin
  for update;
  if s is null then raise exception 'NO_STATE'; end if;
  periods:=coalesce(s->'ebdClosures','[]'::jsonb);
- if p_action='list' then return jsonb_build_object('ok',true,'closures',periods,'revision',rev); end if;
+ if p_action='list' then return jsonb_build_object('ok',true,'closures',periods,'transfers',coalesce(s->'roomTransfers','[]'::jsonb),'revision',rev); end if;
  if p_start is null or p_end is null or p_end<p_start or p_end>current_date
     or p_end-p_start>366 then raise exception 'INVALID_PERIOD'; end if;
  if length(label_clean)<3 or length(label_clean)>100 then raise exception 'INVALID_LABEL'; end if;
