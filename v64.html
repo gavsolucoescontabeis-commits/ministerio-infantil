@@ -378,7 +378,7 @@ function miV59CanOpen(id){
  const p=a.permissions;
  if(id==='home')return true;
  if(id==='children')return miV59CanRegisterKids();
- if(id==='ebd')return role==='teacher'?(p.tal===true||p.fin===true):role==='coordinator'&&(p.tal===true||p.fin===true||(a.area==='ebd'&&p.ebd===true));
+ if(id==='ebd')return role==='teacher'?(p.tal===true||p.fin===true):role==='coordinator'&&(p.tal===true||p.fin===true||p.ebd===true);
  if(id==='network')return p.check===true||(role==='coordinator'&&p.fin===true);
  if(id==='people')return false;
  if(id==='reports')return role==='teacher'?p.rep===true:role==='coordinator'&&(p.repEbd===true||p.repNet===true);
@@ -408,7 +408,7 @@ function go(id,b){if(!miV59CanOpen(id))return;document.querySelectorAll('.page')
  if(id==='tal')return (role==='teacher'||role==='coordinator')&&p.tal===true;
  if(id==='efin')return p.fin===true;
  if(id==='nfin')return role==='coordinator'&&p.fin===true;
- if(id==='rooms'||id==='ebdCloseV64')return role==='coordinator'&&a.area==='ebd'&&p.ebd===true;
+ if(id==='rooms'||id==='ebdCloseV64')return role==='coordinator'&&p.ebd===true;
  if(id==='check')return p.check===true;
  return miV59CanOpen(document.getElementById(id)?.closest('.page')?.id||'');
 }
@@ -1555,7 +1555,7 @@ refresh();
  const pt=n=>Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:2});
  const br=s=>String(s||'').split('-').reverse().join('/');
  const rs=()=>window.miAuthRoleV58;
- const eligible=()=>rs()==='developer'||(rs()==='coordinator'&&window.miLiveAccessV58?.area==='ebd'&&window.miLiveAccessV58?.permissions?.ebd===true);
+ const eligible=()=>rs()==='developer'||(rs()==='coordinator'&&window.miLiveAccessV58?.permissions?.ebd===true);
  const revision=()=>rs()==='developer'?window.miCloudState?.().revision:Number(d.revision);
  const status=(msg)=>{const x=elt('ebdCloseStatusV64');if(x)x.textContent=msg};
  function guard(){
