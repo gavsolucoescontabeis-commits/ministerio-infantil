@@ -24,6 +24,11 @@ function style(){
  #miPendingListV60 .mi-pending-card [hidden]{display:none!important}
  #miPendingListV60 .mi-pending-quick{font-size:13px;margin:6px 0 12px;line-height:1.5;color:#445}
  #miPendingListV60 .mi-pending-review{width:100%;min-height:44px;font-weight:700}
+ #miPendingSuccessV644[hidden]{display:none!important}
+ #miPendingListV60 .mi-pending-perm-extra{border:1px solid #dce5ee;padding:12px;border-radius:10px;margin:10px 0}
+ #miPendingListV60 .mi-pending-perm-extra summary{font-weight:700;cursor:pointer;line-height:1.5}
+ #miPendingListV60 .mi-pending-verify span{flex:1;min-width:0}
+ #miPendingListV60 .mi-pending-verify{cursor:pointer}
  #miPendingListV60 .mi-pending-config{padding-top:16px}
  #miPendingListV60 .mi-pending-danger{margin-top:14px;border-top:1px solid #eee;padding-top:12px}
  #miPendingListV60 .mi-pending-danger summary{cursor:pointer;font-size:13px;color:#8d2828}
@@ -301,6 +306,10 @@ function renderCard(app){
 
  const roomNote=document.createElement('p');roomNote.className='small';
  const perms=document.createElement('div');perms.className='mi-pending-perms';
+ const advanced=document.createElement('details');advanced.className='mi-pending-perm-extra';
+ const advancedLabel=document.createElement('summary');advancedLabel.textContent='⚙️ Ver ou alterar permissões individuais (opcional)';
+ advanced.append(advancedLabel,perms);
+ const permTip=document.createElement('p');permTip.className='small';permTip.textContent='As permissões sugeridas já estão preenchidas. Abra esta seção somente se precisar de alguma autorização diferente.';advanced.append(permTip);
  const actions=document.createElement('div');actions.className='mi-pending-actions';
  const approve=document.createElement('button');approve.type='button';approve.className='green';approve.textContent='✅ APROVAR CADASTRO E LIBERAR ACESSO';
  const reject=document.createElement('button');reject.type='button';reject.className='red';reject.textContent='Descartar pré-cadastro';
@@ -388,7 +397,7 @@ function renderCard(app){
   catch(e){feedback.textContent=e.message||'Não foi possível descartar.';approve.disabled=false;reject.disabled=false}
  });
 
- config.append(subtitle,grid,roomNote,perms,checkLabel,actions,feedback,danger);card.appendChild(config);
+ config.append(subtitle,grid,roomNote,advanced,checkLabel,actions,feedback,danger);card.appendChild(config);
  return card;
 }
 
