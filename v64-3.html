@@ -1211,7 +1211,7 @@ document.getElementById('miStaffExitV58').addEventListener('click',signOutV60);(
 #personCertCard .cert-entry{padding:12px;border:1px solid #ddd;border-radius:8px;margin:10px 0}#personCertCard .cert-note{font-size:.88rem;color:#555}
 #personCertCard .cert-verify-label{display:flex!important;align-items:flex-start;gap:12px;margin:14px 0!important;padding:14px!important;background:#eaf4ff!important;border:2px solid #1769aa!important;border-radius:10px!important;color:#102e50!important;font-weight:700!important;cursor:pointer}
 #personCertCard #personCertVerified{appearance:auto!important;-webkit-appearance:checkbox!important;accent-color:#0966c2!important;width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;flex:none!important;margin:0!important;opacity:1!important;visibility:visible!important;cursor:pointer!important}
-#personCertExistingBox[hidden]{display:none!important}#personCertExistingBox{border:1px solid #b9d2ef;border-radius:10px;padding:13px;margin:12px 0;background:#f8fbff}#personCertNewUpload{border-top:1px solid #d9e4ee;margin-top:16px;padding:14px 0}#personCertNewUpload summary{cursor:pointer;font-weight:bold}#personCertHistory .cert-entry button{margin:6px 8px 3px 0}
+#personCertCard #personCertExistingConfirmation{appearance:auto!important;-webkit-appearance:checkbox!important;width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;flex:none!important;margin:0!important;accent-color:#0966c2!important;opacity:1!important;visibility:visible!important}#personCertExistingBox[hidden]{display:none!important}#personCertExistingBox{border:1px solid #b9d2ef;border-radius:10px;padding:13px;margin:12px 0;background:#f8fbff}#personCertNewUpload{border-top:1px solid #d9e4ee;margin-top:16px;padding:14px 0}#personCertNewUpload summary{cursor:pointer;font-weight:bold}#personCertHistory .cert-entry button{margin:6px 8px 3px 0}
 </style>
 <div id="personCertOverlay" hidden role="dialog" aria-modal="true" aria-label="Certidão individual">
 <div id="personCertCard"><div class="cert-row"><h2>📄 Certidão de antecedentes</h2><button type="button" class="soft" onclick="closePersonCert()">Fechar ✕</button></div>
@@ -1236,7 +1236,7 @@ document.getElementById('miStaffExitV58').addEventListener('click',signOutV60);(
 <div id="certReportOverlay" hidden role="dialog" aria-modal="true" aria-label="Relatório de certidões">
 <div id="personCertCard"><div class="cert-row"><h2>📋 Relatório de certidões</h2><button class="soft" type="button" onclick="closeCertReport()">Fechar ✕</button></div>
 <p>Professores e coordenadores — alertas de renovação</p><div id="certReportSummary"></div><div id="certReportRows"></div>
-<p class="cert-note">Homologação: certidões armazenadas no Supabase; valide em outro dispositivo antes do uso real.</p></div></div>
+<p class="cert-note">As certidões recebidas no pré-cadastro ficam vinculadas ao cadastro aprovado. Confira a autenticidade no site oficial antes de confirmar.</p></div></div>
 <style>#certReportOverlay[hidden]{display:none!important}#certReportOverlay{position:fixed;inset:0;z-index:3501;background:#000a;overflow:auto;padding:14px;box-sizing:border-box}#certReportOverlay #personCertCard{max-width:850px}#certReportRows .cert-entry{padding:12px;border:1px solid #ddd;border-radius:9px;margin:8px 0}#certReportSummary{font-weight:bold;margin:12px 0}</style>
 <script id="person-cert-js">
 (()=>{
@@ -1312,7 +1312,7 @@ window.openCertReport=async()=>{
    return {p,latest,days,category,priority:!latest?1:!latest.verified?2:days<0?0:days<=15?3:days<=30?4:5};
   }).sort((a,b)=>a.priority-b.priority||((a.days??0)-(b.days??0))||a.p.name.localeCompare(b.p.name));
   const count=cat=>rows.filter(x=>x.category===cat).length;
-  $('certReportSummary').textContent=`🔴 ${count('Vencida')} vencidas  |  ⚪ ${count('Pendente')} pendentes  |  🟠 ${count('Até 15 dias')} até 15 dias  |  🟡 ${count('16 a 30 dias')} entre 16 e 30 dias  |  🟢 ${count('Regular')} regulares`;
+  $('certReportSummary').textContent=`🔴 ${count('Vencida')} vencidas  |  ⚪ ${count('Recebida — conferir')} recebidas para conferir  |  ⚪ ${count('Sem documento')} sem documento  |  🟠 ${count('Até 15 dias')} até 15 dias  |  🟡 ${count('16 a 30 dias')} entre 16 e 30 dias  |  🟢 ${count('Regular')} regulares`;
   $('certReportRows').innerHTML=rows.length?rows.map(r=>{
    const color=r.priority===0?'🔴':r.priority===1?'⚪':r.priority===2?'📎':r.priority===3?'🟠':r.priority===4?'🟡':'🟢';
    const due=r.latest?r.latest.due.split('-').reverse().join('/'):'—';
