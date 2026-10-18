@@ -1,6 +1,6 @@
 {
-  "release": "Ministério Infantil — V64.5 oficial",
-  "build": "v64-20261018-aprovacao-sala-corrigida5a",
+  "release": "Ministério Infantil — V64.6 oficial (Equipe reorganizada)",
+  "build": "v64-20261018-equipe-abas-separadas6",
   "date": "2026-10-18",
   "changes": [
     "Pré-cadastros: aprovação e documentação recebida integradas",
@@ -18,6 +18,10 @@
     "Botões Editar cadastro, Certidão e Excluir cadastro visíveis no celular, sem rolagem horizontal",
     "Editar leva diretamente ao formulário correto; excluir remove apenas a ficha da equipe, nunca o login",
     "Corrigida falha do servidor ao vincular professoras a salas válidas durante a aprovação",
-    "Erros de aprovação agora aparecem imediatamente na tela para o administrador"
+    "Erros de aprovação agora aparecem imediatamente na tela para o administrador",
+    "Equipe administrativa separada em duas abas: Pré-cadastros e Logins; Cadastro da Equipe",
+    "Controles de criação de login, ativação, exclusão de acesso e redefinição de senha agrupados e recolhidos",
+    "Cadastro manual de professores e coordenadores separado da aprovação de pré-cadastros",
+    "Vinculação da sala EBD na transação autenticada da aprovação, corrigindo a falha de cadastro"
   ]
 }
