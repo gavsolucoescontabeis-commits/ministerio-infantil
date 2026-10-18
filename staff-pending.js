@@ -47,11 +47,12 @@ function ensureUI(){
  shortcut.id='miPendingShortcutV60';shortcut.type='button';shortcut.className='soft';
  shortcut.textContent='Pré-cadastros pendentes: 0';
  hero.appendChild(shortcut);
+ const guide=document.createElement('p');guide.className='small';guide.textContent='Fluxo recomendado: 1. Abrir pré-cadastros; 2. Conferir documento e permissões; 3. Aprovar e importar; 4. Confirmar a autenticidade da certidão já anexada em Cadastros concluídos. Não precisa baixar para enviar outra vez.';hero.appendChild(guide);
 
  panel=document.createElement('section');
  panel.id='miPendingPanelV60';panel.className='card';panel.hidden=true;
  const title=document.createElement('h3');title.textContent='🔴 Pré-cadastros recebidos';
- const help=document.createElement('p');help.className='small';help.textContent='Confira cada ficha, veja a certidão e defina o cadastro e as permissões antes de importar para a equipe.';
+ const help=document.createElement('p');help.className='small';help.textContent='Confira a ficha e a certidão enviada. Ao aprovar, ambos serão transferidos automaticamente. Depois basta confirmar a autenticidade do mesmo arquivo, sem reanexar.';
  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px';
  const refresh=document.createElement('button');refresh.type='button';refresh.className='soft';refresh.textContent='Atualizar pendentes';
  const close=document.createElement('button');close.type='button';close.className='soft';close.textContent='Fechar';
@@ -88,7 +89,7 @@ function ensureRecentUI(){
  recentPanel=document.createElement('section');
  recentPanel.id='miRecentStaffV60';
  const title=document.createElement('h4');title.textContent='Cadastros concluídos recentemente';
- const help=document.createElement('p');help.className='small';help.textContent='Os pré-cadastros aprovados continuam visíveis aqui com CPF, telefone e e-mail. Assim você não perde os dados depois da confirmação.';
+ const help=document.createElement('p');help.className='small';help.textContent='Após aprovar, confira nesta lista o acesso, o e-mail e o documento recebido. Se aparecer “Certidão recebida — conferir”, abra-a e confirme a autenticidade, sem enviar um novo arquivo.';
  const refresh=document.createElement('button');refresh.type='button';refresh.className='soft';refresh.textContent='Atualizar concluídos';
  refresh.addEventListener('click',()=>refreshRecent());
  recentList=document.createElement('div');recentList.id='miRecentStaffListV60';recentList.setAttribute('role','status');
@@ -112,7 +113,11 @@ async function resendActivation(app,button,statusEl){
  finally{button.disabled=false;button.textContent=old}
 }
 
-function renderRecentRows(rows){
+async function loadRecentDocuments(){
+ const fields='person_key,issued_on,due_on,verified_manually,created_at';
+ return await request('/rest/v1/v58_staff_documents?select='+encodeURIComponent(fields)+'&order=issued_on.desc');
+}
+function renderRecentRows(rows,documents=null){
  if(!recentList)return;
  recentList.replaceChildren();
  if(!rows.length){recentList.textContent='Nenhum cadastro concluído ainda.';return}
@@ -135,6 +140,25 @@ function renderRecentRows(rows){
    else mail.textContent='Cadastro concluído antes da automação do e-mail; os dados permanecem disponíveis aqui.';
   }else mail.textContent='Pré-cadastro descartado; nenhum acesso foi criado.';
   card.append(title,meta,mail);
+  if(app.status==='imported'&&app.imported_person_key){
+   const docs=documents?.filter(d=>d.person_key===app.imported_person_key)||[];
+   const latest=docs.sort((a,b)=>String(b.issued_on||'').localeCompare(String(a.issued_on||''))||String(b.created_at||'').localeCompare(String(a.created_at||'')))[0];
+   const c=document.createElement('p');c.className='small';
+   c.textContent=documents===null?'📄 Situação da certidão indisponível nesta consulta.'
+    :!latest?'⚪ Certidão não localizada no histórico. Consulte o cadastro da equipe.'
+    :latest.verified_manually?'✅ Certidão recebida e autenticidade conferida.':'📎 Certidão recebida — falta somente confirmar a autenticidade. Não reenvie.';
+   card.appendChild(c);
+   const match=String(app.imported_person_key).match(/^(teacher|coord):([0-9]+)$/);
+   if(match){
+    const review=document.createElement('button');review.type='button';review.className='soft';
+    review.textContent=latest&&!latest.verified_manually?'📄 Abrir e conferir certidão recebida':'📄 Ver certidão e histórico';
+    review.addEventListener('click',()=>{
+     if(typeof window.openPersonCert==='function')window.openPersonCert(match[1],match[2]);
+     else alert('Abra a aba Equipe e Permissões para conferir o documento.');
+    });
+    card.append(review);
+   }
+  }
   if(app.status==='imported'&&app.account_user_id){
     const resend=document.createElement('button');resend.type='button';resend.className='soft';resend.textContent='✉️ Reenviar e-mail de criação da senha';
     const feedback=document.createElement('span');feedback.className='small';feedback.style.marginLeft='8px';
@@ -151,7 +175,7 @@ async function refreshRecent(silent=false){
  if(recentRefreshing)return;
  recentRefreshing=true;
  if(!silent)recentList.textContent='Carregando cadastros concluídos...';
- try{renderRecentRows(await loadRecentRows())}
+ try{const rows=await loadRecentRows();let docs=null;try{docs=await loadRecentDocuments()}catch(_){/*Exibe os cadastros mesmo se o histórico documental estiver indisponível.*/}renderRecentRows(rows,docs)}
  catch(e){if(!silent)recentList.textContent=e.message||'Não foi possível consultar os cadastros concluídos.'}
  finally{recentRefreshing=false}
 }
@@ -226,10 +250,13 @@ function renderCard(app){
  card.append(head,meta);
  if(app.notes){const obs=document.createElement('p');obs.className='small';obs.textContent='Observações: '+app.notes;card.appendChild(obs)}
 
- const cert=document.createElement('button');cert.type='button';cert.className='soft';cert.textContent='📄 Abrir/baixar certidão';cert.addEventListener('click',()=>openCertificate(app,cert));card.appendChild(cert);
+ const info=document.createElement('p');info.className='small';
+ info.textContent='📎 Certidão já recebida no pré-cadastro. Ao aprovar, o arquivo será arquivado automaticamente na equipe; não é necessário reenviar.';
+ card.appendChild(info);
+ const cert=document.createElement('button');cert.type='button';cert.className='soft';cert.textContent='📄 Baixar para conferir (não reenviar)';cert.addEventListener('click',()=>openCertificate(app,cert));card.appendChild(cert);
 
  const config=document.createElement('div');config.className='mi-pending-config';
- const subtitle=document.createElement('h4');subtitle.textContent='Confirmar cadastro e permissões';
+ const subtitle=document.createElement('h4');subtitle.textContent='Passo 2 — Confirmar perfil e permissões';
  const grid=document.createElement('div');grid.className='mi-pending-grid';
  const roleWrap=document.createElement('div'),areaWrap=document.createElement('div'),roomWrap=document.createElement('div');
  const roleLabelEl=document.createElement('label');roleLabelEl.textContent='Cadastrar como';
@@ -281,7 +308,7 @@ function renderCard(app){
    const result=await request('/functions/v1/v60-admin-import-staff-application',{method:'POST',body:JSON.stringify({
     applicationId:app.id,targetRole:role.value,targetArea:area.value,room:room.value||'',permissions:selectedPermissions(perms)
    })});
-   feedback.textContent=result.emailSent?'Cadastro importado e e-mail de criação da senha enviado.':'Cadastro importado; o e-mail não foi enviado. Veja “Cadastros concluídos recentemente” para reenviar.';
+   feedback.textContent=(result.emailSent?'Cadastro e acesso aprovados. E-mail de criação da senha enviado.':'Cadastro e acesso aprovados; o e-mail não foi enviado. Você pode reenviar nos concluídos.')+' A certidão foi vinculada automaticamente; abra Cadastros concluídos para conferir a autenticidade sem reenviá-la.';
    await window.miCloudInit?.(window.miAuthTokenV58);
    await refreshPending();
    await refreshRecent();
