@@ -1440,7 +1440,7 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
     const name=document.createElement('strong');name.textContent=(person.name||'Sem nome')+' — '+(person.role==='teacher'?'Professor(a)':'Coordenador(a)');
     const status=document.createElement('p');status.textContent=person.active?'Situação: ATIVO':'Situação: INATIVO';
     row.append(name,status);
-    for(const [action,label] of [['activate','Ativar'],['deactivate','Desativar'],['delete','Excluir']]){
+    for(const [action,label] of [['activate','Ativar LOGIN'],['deactivate','Desativar LOGIN'],['delete','Excluir LOGIN']]){
      if((action==='activate'&&person.active)||(action==='deactivate'&&!person.active))continue;
      const button=document.createElement('button');button.type='button';button.textContent=label;button.style.margin='3px';
      button.addEventListener('click',async()=>{
