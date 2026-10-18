@@ -50,3 +50,5 @@ begin
  return final_result || jsonb_build_object('room_unlinked',true);
 end $function$
 ;
+revoke all on function public.v64_remove_test_child_with_room(uuid) from public, anon, authenticated;
+grant execute on function public.v64_remove_test_child_with_room(uuid) to authenticated;
