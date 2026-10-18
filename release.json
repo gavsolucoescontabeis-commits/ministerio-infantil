@@ -1,6 +1,6 @@
 {
-  "release": "Ministério Infantil — V64.6a (aprovações sem bloqueio de sincronização local)",
-  "build": "v64-20261018-aprovacao-direta-nuvem6a",
+  "release": "Ministério Infantil — V64.7 oficial (relatório de certidões)",
+  "build": "v64-20261018-relatorio-certidoes-delegado7",
   "date": "2026-10-18",
   "changes": [
     "Pré-cadastros: aprovação e documentação recebida integradas",
@@ -24,6 +24,11 @@
     "Cadastro manual de professores e coordenadores separado da aprovação de pré-cadastros",
     "Vinculação da sala EBD na transação autenticada da aprovação, corrigindo a falha de cadastro",
     "Aprovação de pré-cadastros usa diretamente o servidor autenticado, sem depender do estado da sincronização local",
-    "Backups e alterações locais pendentes preservados; atualização da tela geral somente quando segura"
+    "Backups e alterações locais pendentes preservados; atualização da tela geral somente quando segura",
+    "Relatório de certidões integrado à área Relatórios, separado de cadastros e logins",
+    "Acompanhamento de vencidas, pendentes, aguardando conferência e a vencer em 15/30 dias",
+    "Coordenação/Escritório com permissão de relatórios podem acompanhar suas áreas sem acessar documentos privados",
+    "Impressão, exportação CSV, busca, filtros por situação e mensagem para solicitar renovação",
+    "Professores não recebem acesso ao relatório; os PDFs continuam restritos ao administrador"
   ]
 }
