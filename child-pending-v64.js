@@ -26,7 +26,7 @@ function ensure(){
  addStyle();
  panel=node('div');panel.id='miChildApplicationsPanel';panel.className='card';panel.hidden=true;
  const heading=node('h3','📥 Pré-cadastros enviados pelos pais');
- const desc=node('p','Você decide quando importar. Os cadastros de teste entram identificados como TESTE. Ao remover um teste, a vinculação simples com sala da EBD será desfeita automaticamente; históricos de presença, talentos, ofertas ou transferência continuam protegidos.');
+ const desc=node('p','Você decide quando importar. A exclusão de qualquer criança só é permitida antes da primeira movimentação. A vinculação simples à sala será desfeita, preservando os fechamentos da EBD.');
  desc.className='small';
  titleBtn=node('button','Conferir cadastros de crianças');titleBtn.type='button';titleBtn.className='primary';
  titleBtn.addEventListener('click',refresh);
@@ -70,13 +70,24 @@ async function decision(id,action,wasTest){
  }catch(err){alert(err.message||'Não foi possível concluir.')}
  finally{busy=false}
 }
-async function removeTest(id){
+async function removeTest(id,childId){
  if(!admin()||busy)return;
- if(!confirm('Remover este cadastro de TESTE do Cadastro Geral e desvincular sua sala da EBD? Se houver presenças, talentos, ofertas, transferências ou outros históricos vinculados, a exclusão será bloqueada.'))return;
+ if(!childId)return alert('Cadastro de teste não localizado.');
+ const cloud=window.miCloudState?.();
+ if(cloud&&(!cloud.connected||!cloud.saved||cloud.blocked))
+   return alert('Conclua primeiro as gravações pendentes na nuvem.');
  busy=true;
  try{
-   await rpc('v64_remove_test_child_with_room',{p_application_id:id});
-   alert('Cadastro de TESTE e vínculo com a sala removidos. Atualize o aplicativo para conferir a lista.');
+   const check=await rpc('v64_delete_child_if_pristine',{p_child_id:String(childId),p_action:'check'});
+   if(!check?.can_delete){
+     alert('Exclusão bloqueada: '+((check?.reasons||[]).join('; ')||check?.message||'Cadastro indisponível'));
+     return;
+   }
+   if(!confirm('Excluir este cadastro de TESTE e desvincular sua sala? Fechamentos da EBD serão preservados.'))return;
+   const result=await rpc('v64_delete_child_if_pristine',{p_child_id:String(childId),p_action:'delete'});
+   if(!result?.deleted)throw Error((result?.reasons||[]).join('; ')||result?.message||'Exclusão bloqueada');
+   alert('Cadastro de TESTE excluído. Fechamentos e dados históricos foram preservados.');
+   await window.miCloudRefreshIfChanged?.().catch(()=>false);
    await refresh();
  }catch(err){alert(err.message||'Não foi possível remover o teste.')}
  finally{busy=false}
@@ -120,7 +131,7 @@ function draw(items){
      summary.className='small';card.append(summary);
      const remove=node('button','Remover cadastro de TESTE do sistema');
      remove.type='button';remove.className='red';
-     remove.addEventListener('click',()=>removeTest(app.id));
+     remove.addEventListener('click',()=>removeTest(app.id,app.registry_child_id));
      actions.append(remove);
    }else{
      actions.append(yes,no);
