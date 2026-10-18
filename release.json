@@ -1,13 +1,13 @@
 {
-  "release": "Projeto V60 — liberação automática de acesso",
-  "build": "v60-20261016-4",
-  "date": "2026-10-16",
+  "release": "Ministério Infantil — V64.2 oficial",
+  "build": "v64-20261018-roster-transferencias-revisao2",
+  "date": "2026-10-18",
   "changes": [
-    "Pré-cadastros aprovados continuam visíveis em Cadastros concluídos recentemente, próximos da redefinição de senha",
-    "E-mail e telefone permanecem disponíveis depois da aprovação",
-    "Novas aprovações criam automaticamente a conta vinculada ao CPF e tentam enviar e-mail para criação da senha",
-    "Página Criar minha senha preparada para o primeiro acesso",
-    "E-mail obrigatório no pré-cadastro para permitir a liberação automática",
-    "Controles manuais anteriores preservados como fallback"
+    "Gestão de salas EBD: editar, excluir e cadastrar com permissão de coordenador/escritório",
+    "Fechamento EBD por período definido pela coordenação",
+    "Fotografia nominal das salas e crianças na data do fechamento, preservando o histórico",
+    "Reorganização anual manual de turmas e transferências auditadas",
+    "Demonstrativo de fechamento para consulta e impressão",
+    "Funcionalidades anteriores e cadastros preservados"
   ]
-}\n
+}
