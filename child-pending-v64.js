@@ -26,7 +26,7 @@ function ensure(){
  addStyle();
  panel=node('div');panel.id='miChildApplicationsPanel';panel.className='card';panel.hidden=true;
  const heading=node('h3','📥 Pré-cadastros enviados pelos pais');
- const desc=node('p','Os dados só entram no Cadastro Geral após sua aprovação. Envios de teste são apenas homologados, sem criar crianças na base oficial.');
+ const desc=node('p','Você decide quando importar. Os cadastros de teste entram identificados como TESTE para conferir a integração, e podem ser excluídos aqui quando não tiverem históricos vinculados.');
  desc.className='small';
  titleBtn=node('button','Conferir cadastros de crianças');titleBtn.type='button';titleBtn.className='primary';
  titleBtn.addEventListener('click',refresh);
@@ -55,16 +55,27 @@ function detail(parent,label,value){
 async function decision(id,action,wasTest){
  if(!admin())return alert('Somente o administrador pode analisar os pré-cadastros.');
  const name=action==='approve'?'aprovar':'rejeitar';
- const info=wasTest?'Este é um TESTE e não importará crianças para a base oficial.':'Se aprovado, o cadastro será incluído no Cadastro Geral, sem sala da EBD.';
+ const info=wasTest?'O cadastro de TESTE será incluído no Cadastro Geral com marcação visível e poderá ser removido aqui se não tiver histórico vinculado.':'Se aprovado, o cadastro será incluído no Cadastro Geral, sem sala da EBD.';
  if(!confirm('Deseja '+name+' este pré-cadastro?\n'+info))return;
  if(busy)return;busy=true;
  try{
    const res=await rpc('v64_review_child_application',{p_application_id:id,p_action:action});
-   const text=res.is_test?'Teste analisado. Nenhuma criança foi cadastrada na base oficial.':
+   const text=res.is_test?'Cadastro de TESTE importado! Ele aparece no Cadastro Geral identificado como teste. Atualize o aplicativo para conferir.':
      action==='approve'?'Criança importada com sucesso no cadastro geral. Atualize o aplicativo para visualizar.':'Pré-cadastro rejeitado.';
    alert(text);
    await refresh();
  }catch(err){alert(err.message||'Não foi possível concluir.')}
+ finally{busy=false}
+}
+async function removeTest(id){
+ if(!admin()||busy)return;
+ if(!confirm('Remover este cadastro de TESTE do Cadastro Geral? A exclusão será recusada se houver presença, talentos ou outros históricos vinculados.'))return;
+ busy=true;
+ try{
+   await rpc('v64_remove_test_child_application',{p_application_id:id});
+   alert('Cadastro de TESTE removido. Atualize o aplicativo para conferir a lista.');
+   await refresh();
+ }catch(err){alert(err.message||'Não foi possível remover o teste.')}
  finally{busy=false}
 }
 function draw(items){
@@ -96,12 +107,22 @@ function draw(items){
    detail(metadata,'WhatsApp do remetente',app.guardian_phone);
    detail(metadata,'Enviado em',new Date(app.created_at).toLocaleString('pt-BR'));
    const actions=node('div');actions.className='mi-child-actions';
-   const yes=node('button',app.is_test?'Confirmar teste (sem importar)':'Aprovar e importar para o Cadastro Geral');
+   const yes=node('button',app.is_test?'Importar como TESTE no Cadastro Geral':'Aprovar e importar para o Cadastro Geral');
    yes.className='green';yes.type='button';
    yes.addEventListener('click',()=>decision(app.id,'approve',app.is_test));
    const no=node('button','Rejeitar');no.type='button';no.className='red';
    no.addEventListener('click',()=>decision(app.id,'reject',app.is_test));
-   actions.append(yes,no);card.append(h,metadata,actions);results.append(card);
+   if(app.status==='test_approved'&&app.registry_child_id){
+     const summary=node('p','🧪 Registro importado no Cadastro Geral — ID '+app.registry_child_id+'. Você pode removê-lo, desde que não tenha históricos associados.');
+     summary.className='small';card.append(summary);
+     const remove=node('button','Remover cadastro de TESTE do sistema');
+     remove.type='button';remove.className='red';
+     remove.addEventListener('click',()=>removeTest(app.id));
+     actions.append(remove);
+   }else{
+     actions.append(yes,no);
+   }
+   card.append(h,metadata,actions);results.append(card);
  }
 }
 async function refresh(){
