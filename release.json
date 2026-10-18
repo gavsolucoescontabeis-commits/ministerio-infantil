@@ -1,13 +1,13 @@
 {
-  "release": "Ministério Infantil — V64.2 oficial",
-  "build": "v64-20261018-roster-transferencias-revisao2",
+  "release": "Ministério Infantil – V64.3 oficial",
+  "build": "v64-20261018-certidao-recebida-3",
   "date": "2026-10-18",
   "changes": [
-    "Gestão de salas EBD: editar, excluir e cadastrar com permissão de coordenador/escritório",
-    "Fechamento EBD por período definido pela coordenação",
-    "Fotografia nominal das salas e crianças na data do fechamento, preservando o histórico",
-    "Reorganização anual manual de turmas e transferências auditadas",
-    "Demonstrativo de fechamento para consulta e impressão",
-    "Funcionalidades anteriores e cadastros preservados"
+    "Pré-cadastros: aprovação e documentação recebida integradas",
+    "Status separado entre certidão recebida e autenticidade conferida",
+    "Confirmar autenticidade de certidão já arquivada, sem anexar novamente",
+    "Cadastros concluídos: acesso rápido à certidão e seu status",
+    "Envio de nova certidão apenas para substituição ou renovação",
+    "Funcionalidades de EBD, Rede de Crianças, fechamento, salas e usuários preservadas"
   ]
 }
