@@ -18,6 +18,34 @@ async function sha256(value:string){
 }
 const validPhone=(v:string)=>{const n=digits(v);return n.length===10||n.length===11||n.length===12||n.length===13};
 
+// Moderação básica contra ofensas, variações com acentos, números e letras separadas.
+const MI_BLOCKED_WORDS=[
+  'porra','caralho','carai','merda','bosta','putaria','puta','puto','cacete',
+  'foda','foder','fodase','fodido','fodida','fudido','fudida','buceta',
+  'cuzao','cusao','arrombado','arrombada','otario','otaria','idiota',
+  'imbecil','desgracado','desgracada','filhodaputa','filhadaputa',
+  'fdp','vsf','vtnc','tnc','pqp','escroto','escrota',
+  'vagabundo','vagabunda','vai se foder','vai tomar no cu','puta que pariu'
+];
+function miNormalizeMessage(value){
+  const t=String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+    .replace(/[@4]/g,'a').replace(/3/g,'e').replace(/[1!|]/g,'i')
+    .replace(/0/g,'o').replace(/\$/g,'s').replace(/5/g,'s').replace(/7/g,'t')
+    .replace(/[\u200b-\u200f\uFEFF]/g,'').replace(/[^a-z]+/g,' ').replace(/\s+/g,' ').trim();
+  return t;
+}
+function miInappropriate(value){
+  const raw=String(value||'');
+  if(/https?:\/\/|www\.|<\s*\/?\s*script\b|javascript\s*:|data\s*:\s*text\/html/i.test(raw))return true;
+  const plain=miNormalizeMessage(raw);
+  const lettersJoined=plain.replace(/\b(?:[a-z]\s+){2,}[a-z]\b/g,v=>v.replace(/\s+/g,''));
+  return MI_BLOCKED_WORDS.some(w=>
+    (' '+plain+' ').includes(' '+w+' ')||
+    (' '+lettersJoined+' ').includes(' '+w+' ')
+  );
+}
+
+
 Deno.serve(async(req:Request)=>{
   if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors});
   if(req.headers.get("origin")!==ALLOWED_ORIGIN)return respond(403,{ok:false,message:"Origem não autorizada."});
@@ -63,7 +91,19 @@ Deno.serve(async(req:Request)=>{
     if(child.visitor!=="sim")child.broughtBy="";
     child.visitorWithKidId=""; // Vínculo com outra criança é feito apenas pela coordenação autenticada.
 
+    const moderationFields:Record<string,string>={
+      name:"nome da criança",father:"nome do pai",mother:"nome da mãe",
+      resp:"nome do responsável",respRelation:"grau de parentesco",
+      street:"rua",num:"número",comp:"complemento",hood:"bairro",
+      city:"cidade",auth:"autorizados a buscar",obs:"observações",
+      broughtBy:"quem trouxe a criança"
+    };
+    for(const [key,label] of Object.entries(moderationFields)){
+      if(miInappropriate(child[key]))return respond(400,{ok:false,
+        message:"Encontramos linguagem inadequada ou um link não permitido no campo "+label+". Revise o texto antes de enviar."});
+    }
     const signer=txt(input.guardianName,180);
+    if(miInappropriate(signer))return respond(400,{ok:false,message:"Revise o nome do responsável. Linguagem inadequada não é permitida."});
     const signerPhone=txt(input.guardianPhone,22);
     const signerRelation=txt(input.guardianRelationship,80);
     if(signer.length<3||!validPhone(signerPhone)||!["Pai","Mãe","Responsável legal"].includes(signerRelation))
