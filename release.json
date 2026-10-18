@@ -1,6 +1,6 @@
 {
-  "release": "Ministério Infantil — V64.4 oficial",
-  "build": "v64-20261018-equipe-mobile-fluxo4",
+  "release": "Ministério Infantil — V64.5 oficial",
+  "build": "v64-20261018-cadastro-equipe-visivel5",
   "date": "2026-10-18",
   "changes": [
     "Pré-cadastros: aprovação e documentação recebida integradas",
@@ -13,6 +13,9 @@
     "Equipe: pesquisa por nome e revisão de uma pessoa por vez, inclusive no celular",
     "Função e área pré-selecionadas; permissões extras escondidas até serem abertas",
     "Conferência da certidão opcional na aprovação, sem enviar o arquivo novamente",
-    "Atualização da lista suspensa durante revisão para evitar perder alterações"
+    "Atualização da lista suspensa durante revisão para evitar perder alterações",
+    "Gerenciamento de cadastros da equipe no início da página Equipe e Permissões",
+    "Botões Editar cadastro, Certidão e Excluir cadastro visíveis no celular, sem rolagem horizontal",
+    "Editar leva diretamente ao formulário correto; excluir remove apenas a ficha da equipe, nunca o login"
   ]
 }
