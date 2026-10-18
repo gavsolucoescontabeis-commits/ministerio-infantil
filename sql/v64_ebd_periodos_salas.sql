@@ -10,7 +10,7 @@ begin
  if auth.uid() is null then raise exception 'AUTH_REQUIRED'; end if;
  a:=public.v58_my_live_access();
  if not (a->>'role'='developer' or
-   (a->>'role'='coordinator' and a->>'area'='ebd' and coalesce((a->'permissions'->>'ebd')::boolean,false)))
+   (a->>'role'='coordinator' and coalesce((a->'permissions'->>'ebd')::boolean,false)))
  then raise exception 'EBD_COORDINATOR_PERMISSION_DENIED'; end if;
  if p_action not in ('add','rename','delete') then raise exception 'INVALID_ACTION'; end if;
  if length(old_name)<1 or length(old_name)>80 then raise exception 'INVALID_ROOM'; end if;
@@ -77,7 +77,7 @@ begin
  if auth.uid() is null then raise exception 'AUTH_REQUIRED'; end if;
  a:=public.v58_my_live_access();
  if not (a->>'role'='developer' or
-   (a->>'role'='coordinator' and a->>'area'='ebd' and coalesce((a->'permissions'->>'ebd')::boolean,false)))
+   (a->>'role'='coordinator' and coalesce((a->'permissions'->>'ebd')::boolean,false)))
  then raise exception 'EBD_COORDINATOR_PERMISSION_DENIED'; end if;
  if p_action not in ('list','preview','close') then raise exception 'INVALID_ACTION'; end if;
  select x.owner_id,x.data,x.revision into v_owner,s,rev from public.app_state_v58 x
