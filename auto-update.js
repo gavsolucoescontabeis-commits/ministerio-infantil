@@ -10,6 +10,9 @@
 
   function inUse() {
     if (window.miV59Saving || window.miCloudSaving) return true;
+    // Evita recarga enquanto o administrador possui dados ainda pendentes na nuvem.
+    const cloud = window.miCloudState?.();
+    if (cloud?.connected && (!cloud.saved || cloud.blocked)) return true;
     if (window.miAuthRoleV58 && window.miAuthRoleV58 !== 'developer' &&
         typeof window.miV59CanReload === 'function' && !window.miV59CanReload()) return true;
     const focused = document.activeElement;
