@@ -67,7 +67,7 @@ function ensureUI(){
  shortcut=document.createElement('button');
  shortcut.id='miPendingShortcutV60';shortcut.type='button';shortcut.className='soft';
  shortcut.textContent='Pré-cadastros pendentes: 0';
- pane.insertBefore(shortcut,pane.firstChild);
+ const intro=pane.querySelector('.miV66Intro');if(intro)intro.insertAdjacentElement('afterend',shortcut);else pane.insertBefore(shortcut,pane.firstChild);
  const guide=document.createElement('p');guide.className='small';guide.textContent='Aprovar cadastro também cria o acesso e vincula a certidão já enviada. Para consultar ou bloquear um login, use a seção Contas e senhas abaixo.';pane.insertBefore(guide,shortcut.nextSibling);
 
  panel=document.createElement('section');
