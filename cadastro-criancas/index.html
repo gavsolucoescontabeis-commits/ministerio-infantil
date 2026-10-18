@@ -218,7 +218,7 @@ form.addEventListener('submit',async(ev)=>{
  if(testMode&&!get('testCode'))return status('Informe o código de teste.',false);
  const child={};
  for(const id of fields)child[id]=get(id);
- child.name=normalizeName(child.name);child.visitor=get('visitor');
+ child.name=normalizeName(child.name);child.father=normalizeName(child.father);child.mother=normalizeName(child.mother);child.resp=normalizeName(child.resp);child.visitor=get('visitor');
  child.respRelation=get('respRelation')==='Outro'?get('relationOther'):get('respRelation');
  child.auth=authorized;child.visitorWithKidId='';
  const payload={
