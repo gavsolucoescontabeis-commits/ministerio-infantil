@@ -152,7 +152,7 @@ e('cep').addEventListener('blur',async()=>{
    const data=await response.json();
    if(!response.ok||data.erro)throw Error('CEP não localizado; complete manualmente.');
    for(const pair of [['street','logradouro'],['hood','bairro'],['city','localidade'],['uf','uf']]){
-     if(!get(pair[0]))e(pair[0]).value=data[pair[1]]||'';
+     if(!get(pair[0])||pair[0]==='city'||pair[0]==='uf')e(pair[0]).value=data[pair[1]]||'';
    }
    e('cepStatus').textContent='Endereço localizado. Confira número e complemento.';
  }catch(err){e('cepStatus').textContent='Consulta do CEP indisponível. Preencha o endereço manualmente.'}
