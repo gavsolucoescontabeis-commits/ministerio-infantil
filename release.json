@@ -1,6 +1,6 @@
 {
-  "release": "Ministério Infantil — V64.7 oficial (relatório de certidões)",
-  "build": "v64-20261018-relatorio-certidoes-delegado7",
+  "release": "Ministério Infantil — V64.7a oficial (ordem dos relatórios)",
+  "build": "v64-20261018-certidoes-apos-relatorios7a",
   "date": "2026-10-18",
   "changes": [
     "Pré-cadastros: aprovação e documentação recebida integradas",
@@ -29,6 +29,7 @@
     "Acompanhamento de vencidas, pendentes, aguardando conferência e a vencer em 15/30 dias",
     "Coordenação/Escritório com permissão de relatórios podem acompanhar suas áreas sem acessar documentos privados",
     "Impressão, exportação CSV, busca, filtros por situação e mensagem para solicitar renovação",
-    "Professores não recebem acesso ao relatório; os PDFs continuam restritos ao administrador"
+    "Professores não recebem acesso ao relatório; os PDFs continuam restritos ao administrador",
+    "Exibir o relatório de certidões abaixo dos relatórios anteriores, sem alterar cálculos e permissões"
   ]
 }
