@@ -1,6 +1,6 @@
 {
-  "release": "Ministério Infantil — V64.6 oficial (Equipe reorganizada)",
-  "build": "v64-20261018-equipe-abas-separadas6",
+  "release": "Ministério Infantil — V64.6a (aprovações sem bloqueio de sincronização local)",
+  "build": "v64-20261018-aprovacao-direta-nuvem6a",
   "date": "2026-10-18",
   "changes": [
     "Pré-cadastros: aprovação e documentação recebida integradas",
@@ -22,6 +22,8 @@
     "Equipe administrativa separada em duas abas: Pré-cadastros e Logins; Cadastro da Equipe",
     "Controles de criação de login, ativação, exclusão de acesso e redefinição de senha agrupados e recolhidos",
     "Cadastro manual de professores e coordenadores separado da aprovação de pré-cadastros",
-    "Vinculação da sala EBD na transação autenticada da aprovação, corrigindo a falha de cadastro"
+    "Vinculação da sala EBD na transação autenticada da aprovação, corrigindo a falha de cadastro",
+    "Aprovação de pré-cadastros usa diretamente o servidor autenticado, sem depender do estado da sincronização local",
+    "Backups e alterações locais pendentes preservados; atualização da tela geral somente quando segura"
   ]
 }
