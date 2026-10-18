@@ -607,12 +607,12 @@ async function saveKid(){
  if(back==='net')go('network',document.querySelectorAll('nav button')[3]);
 }
 function editKid(id){let k=registryKidV59(id);if(!k)return;document.getElementById('kvisitor').value=k.visitor==='sim'?'sim':'nao';document.getElementById('kvisitorWithKidId').value=k.visitorWithKidId||'';document.getElementById('kvisitorWithSearch').value='';toggleVisitorV62();kn.value=k.name||'';kb.value=k.birth||'';kf.value=k.father||'';kfp.value=k.fphone||'';km.value=k.mother||'';kmp.value=k.mphone||'';kr.value=k.resp||'';krp.value=k.rphone||'';krrel.value=k.respRelation||'';krrelOther.value='';toggleRespRelation();toggleRespOther();kcep.value=k.cep||'';kst.value=k.street||'';knum.value=k.num||'';kcomp.value=k.comp||'';khood.value=k.hood||'';kcity.value=k.city||'';kuf.value=k.uf||'';kauth.value=k.auth||'';kobs.value=k.obs||'';renderAuthBtns();window.scrollTo({top:0,behavior:'smooth'})}
-function delKid(id){if(window.miAuthRoleV58&&window.miAuthRoleV58!=='developer')return alert('Exclusão disponível apenas para a administração.');let k=d.kids.find(x=>x.id===id);if(!k)return;let linked=d.talents.some(x=>x.kid===id)||d.checks.some(x=>x.kid===id);if(!confirm(`Excluir o cadastro de ${k.name}?${linked?' Existem históricos vinculados a esta criança.':''}`))return;d.kids=d.kids.filter(x=>x.id!==id);delete d.ebdRooms[id];save()}
+function delKid(id){if(window.miAuthRoleV58&&window.miAuthRoleV58!=='developer')return alert('Exclusão disponível apenas para a administração.');let k=d.kids.find(x=>x.id===id);if(!k)return;if(k.registrationTest)return alert('Remova este TESTE pelo painel Pré-cadastros enviados pelos pais, que confere os vínculos antes da exclusão.');let linked=d.talents.some(x=>x.kid===id)||d.checks.some(x=>x.kid===id);if(!confirm(`Excluir o cadastro de ${k.name}?${linked?' Existem históricos vinculados a esta criança.':''}`))return;d.kids=d.kids.filter(x=>x.id!==id);delete d.ebdRooms[id];save()}
 function openKid(id){
  const k=registryKidV59(id);if(!k)return alert('Cadastro não localizado. Atualize os dados.');
  const room=registryRoomV59(id)||'-',auth=(k.auth||'').split('||').filter(Boolean).join(' • ')||k.auth||'-';
  kidHome.classList.add('hidden');kidFormCard.classList.add('hidden');importBox.classList.add('hidden');
- kidView.innerHTML=`<h3>👧 ${esc(k.name)}</h3>
+ kidView.innerHTML=`<h3>👧 ${esc(k.name)}${k.registrationTest?' • 🧪 TESTE':''}</h3>
  <div class="grid"><div><b>Nascimento</b><p>${k.birth?esc(k.birth.split('-').reverse().join('/')):'-'}</p></div><div><b>Idade</b><p>${k.birth?age(k.birth)+' anos':'-'}</p></div><div><b>Sala EBD</b><p>${esc(room)}</p></div></div><hr>
  <p><b>Visitante:</b> ${k.visitor==='sim'?'Sim':'Não'}</p>
  ${k.visitor==='sim'?'<p><b>Quem trouxe:</b> '+esc(registryKidV59(k.visitorWithKidId)?.name||'Não informado')+'</p>':''}
@@ -714,7 +714,7 @@ function visitorIsFrequentV63(id){
 function renderKidHome(){
  if(!window.kidRecent)return;
  const rows=[...registryKidsV59()].sort((a,b)=>(a.name||'').localeCompare(b.name||'','pt-BR'));
- kidRecent.innerHTML=rows.length?`<p class="small"><b>${rows.length}</b> criança(s) no cadastro geral.</p><div class="listWrap"><table class="listTable"><tr><th>Nome</th><th>Idade</th><th>Ações</th></tr>${rows.map(k=>`<tr><td><b>${esc(k.name)}</b>${k.visitor==='sim'?' <span class="small">• Visitante</span>':''}${k.visitor==='sim'&&visitorIsFrequentV63(k.id)?' <b style="color:#a34700">• ⚠ Frequência: revisar cadastro</b>':''}</td><td>${k.birth?age(k.birth)+' anos':'-'}</td><td><div class="actions"><button class="soft" onclick="openKid(${k.id})">Abrir</button>${window.miAuthRoleV58==='developer'?`<button class="red" onclick="delKid(${k.id})">Excluir</button>`:''}</div></td></tr>`).join('')}</table></div>`:'<p>Nenhuma criança cadastrada.</p>';
+ kidRecent.innerHTML=rows.length?`<p class="small"><b>${rows.length}</b> criança(s) no cadastro geral.</p><div class="listWrap"><table class="listTable"><tr><th>Nome</th><th>Idade</th><th>Ações</th></tr>${rows.map(k=>`<tr><td><b>${esc(k.name)}</b>${k.registrationTest?' <b style="color:#a34700">• 🧪 TESTE</b>':''}${k.visitor==='sim'?' <span class="small">• Visitante</span>':''}${k.visitor==='sim'&&visitorIsFrequentV63(k.id)?' <b style="color:#a34700">• ⚠ Frequência: revisar cadastro</b>':''}</td><td>${k.birth?age(k.birth)+' anos':'-'}</td><td><div class="actions"><button class="soft" onclick="openKid(${k.id})">Abrir</button>${window.miAuthRoleV58==='developer'&&!k.registrationTest?`<button class="red" onclick="delKid(${k.id})">Excluir</button>`:''}</div></td></tr>`).join('')}</table></div>`:'<p>Nenhuma criança cadastrada.</p>';
 }
 function editRoom(i){let old=d.rooms[i],n=prompt('Novo nome da sala:',old);if(n===null)return;n=n.trim();if(!n||n===old)return;if(d.rooms.some((r,j)=>j!==i&&r===n))return alert('Já existe uma sala com esse nome.');d.rooms[i]=n;Object.keys(d.ebdRooms).forEach(id=>{if(d.ebdRooms[id]===old)d.ebdRooms[id]=n});d.teachers.forEach(t=>{if(t.room===old)t.room=n});save()}
 function delRoom(i){let r=d.rooms[i],usedKid=Object.values(d.ebdRooms).includes(r),usedTeacher=d.teachers.some(t=>t.room===r);if(usedKid||usedTeacher)return alert('Esta sala possui criança ou professor vinculado. Transfira os vínculos antes de excluir.');if(confirm(`Excluir a sala "${r}"?`)){d.rooms.splice(i,1);save()}}
@@ -1910,5 +1910,5 @@ refresh();
  };
  document.addEventListener('DOMContentLoaded',()=>window.miV66TeamTab('access'));
 })();
-</script><script src="./child-pending-v64.js?v=20261018a" defer></script>
+</script><script src="./child-pending-v64.js?v=20261018b" defer></script>
 </body></html>
