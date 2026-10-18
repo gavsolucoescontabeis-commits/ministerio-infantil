@@ -61,18 +61,18 @@ function ensureUI(){
  if(panel)return;
  style();
  const people=document.getElementById('people');
- const hero=people?.querySelector('.hero');
- if(!people||!hero)return;
+ const pane=document.getElementById('miTeamAccessPane');
+ if(!people||!pane)return;
 
  shortcut=document.createElement('button');
  shortcut.id='miPendingShortcutV60';shortcut.type='button';shortcut.className='soft';
  shortcut.textContent='Pré-cadastros pendentes: 0';
- hero.appendChild(shortcut);
- const guide=document.createElement('p');guide.className='small';guide.textContent='Fluxo recomendado: 1. Abrir pré-cadastros; 2. Conferir documento e permissões; 3. Aprovar e importar; 4. Confirmar a autenticidade da certidão já anexada em Cadastros concluídos. Não precisa baixar para enviar outra vez.';hero.appendChild(guide);
+ const intro=pane.querySelector('.miV66Intro');if(intro)intro.insertAdjacentElement('afterend',shortcut);else pane.insertBefore(shortcut,pane.firstChild);
+ const guide=document.createElement('p');guide.className='small';guide.textContent='Aprovar cadastro também cria o acesso e vincula a certidão já enviada. Para consultar ou bloquear um login, use a seção Contas e senhas abaixo.';pane.insertBefore(guide,shortcut.nextSibling);
 
  panel=document.createElement('section');
- panel.id='miPendingPanelV60';panel.className='card';panel.hidden=true;
- const title=document.createElement('h3');title.textContent='🔴 Pré-cadastros recebidos';
+ panel.id='miPendingPanelV60';panel.className='card';panel.hidden=false;
+ const title=document.createElement('h3');title.textContent='1. Pré-cadastros aguardando aprovação';
  const help=document.createElement('p');help.className='small';help.textContent='Selecione uma pessoa, confira função e sala quando necessário, e aprove. Se já verificou a certidão no órgão emissor, marque a conferência aqui mesmo. Você nunca precisa reenviar o arquivo recebido.';
  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px';
  const refresh=document.createElement('button');refresh.type='button';refresh.className='soft';refresh.textContent='Atualizar pendentes';
@@ -83,7 +83,7 @@ function ensureUI(){
  successLine=document.createElement('p');successLine.id='miPendingSuccessV644';successLine.className='notice';successLine.hidden=true;successLine.setAttribute('role','status');
  list=document.createElement('div');list.id='miPendingListV60';list.setAttribute('role','status');
  panel.append(title,help,actions,searchPending,successLine,list);
- hero.insertAdjacentElement('afterend',panel);
+ pane.insertBefore(panel,guide.nextSibling);
 
  shortcut.addEventListener('click',()=>{panel.hidden=false;panel.scrollIntoView({behavior:'smooth',block:'start'});refreshPending()});
  refresh.addEventListener('click',()=>refreshPending());
@@ -107,11 +107,11 @@ function ensureUI(){
 function ensureRecentUI(){
  if(recentPanel)return;
  // Mantenha a fila de aprovados junto dos pré-cadastros, não no final da página.
- const anchor=panel||document.getElementById('people')?.querySelector('.hero');
+ const anchor=panel||document.getElementById('miTeamAccessPane');
  if(!anchor)return;
- recentPanel=document.createElement('section');
+ recentPanel=document.createElement('details');
  recentPanel.id='miRecentStaffV60';recentPanel.className='card';recentPanel.style.cssText='margin:14px 0;border:1px solid #cbd8e5';
- const title=document.createElement('h4');title.textContent='Cadastros concluídos recentemente';
+ const title=document.createElement('summary');title.textContent='2. Pré-cadastros aprovados — consultar certidões e ativação';
  const help=document.createElement('p');help.className='small';help.textContent='Após aprovar, confira nesta lista o acesso, o e-mail e o documento recebido. Se aparecer “Certidão recebida — conferir”, abra-a e confirme a autenticidade, sem enviar um novo arquivo.';
  const refresh=document.createElement('button');refresh.type='button';refresh.className='soft';refresh.textContent='Atualizar concluídos';
  refresh.addEventListener('click',()=>refreshRecent());
@@ -384,6 +384,7 @@ function renderCard(app){
    const completed='✅ '+app.full_name+': CADASTRO APROVADO, acesso criado e certidão anexada. '+(checkedResult?'Autenticidade conferida.':certChecked.checked?'Não foi possível registrar a conferência: '+checkError+' Use a opção do cadastro concluído.':'Autenticidade ainda não conferida.')
     +(result.emailSent?' E-mail para criar a senha enviado.':' E-mail não enviado; poderá ser reenviado.');
    successLine.textContent=completed;successLine.hidden=false;
+   if(recentPanel)recentPanel.open=true;
    try{await window.miCloudInit?.(window.miAuthTokenV58);}catch(e){successLine.textContent+=' Atualize a tela para visualizar na equipe.';}
    try{await refreshPending();await refreshRecent();}catch(e){successLine.textContent+=' Atualize a lista para consultar o cadastro aprovado.';}
    if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
