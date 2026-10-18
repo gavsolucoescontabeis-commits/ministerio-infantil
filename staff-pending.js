@@ -356,9 +356,13 @@ function renderCard(app){
 
  approve.addEventListener('click',async()=>{
   if(role.value==='teacher'&&area.value==='ebd'&&!room.value){feedback.textContent='Selecione a sala da EBD antes de aprovar.';return}
-  const cloud=window.miCloudState?.();
-  if(!cloud?.connected||cloud.blocked){feedback.textContent='A nuvem não está disponível para uma aprovação segura.';return}
-  if(!cloud.saved){feedback.textContent='Aguarde as alterações atuais serem salvas na nuvem antes de importar este cadastro.';return}
+  // A aprovacao e operacao AUTENTICADA e TRANSACIONAL no Supabase.
+  // Nao depende do indicador de sincronizacao do estado local do admin.
+  // Dados locais nao salvos ficam preservados: ver sincronizacao apos sucesso.
+  if(!isAdmin()){
+   feedback.textContent='Sua sessao administrativa expirou. Entre novamente antes de aprovar.';
+   return;
+  }
   const verdict='Aprovar o cadastro de '+app.full_name+'?\n\nPerfil: '+roleLabel(role.value)+'\nÁrea: '+areaLabel(area.value)
    +(role.value==='teacher'&&area.value==='ebd'?'\nSala: '+room.value:'')
    +'\nCertidão: '+(certChecked.checked?'autenticidade conferida por você':'recebida, autenticidade a conferir')
@@ -385,8 +389,16 @@ function renderCard(app){
     +(result.emailSent?' E-mail para criar a senha enviado.':' E-mail não enviado; poderá ser reenviado.');
    successLine.textContent=completed;successLine.hidden=false;
    if(recentPanel)recentPanel.open=true;
-   try{await window.miCloudInit?.(window.miAuthTokenV58);}catch(e){successLine.textContent+=' Atualize a tela para visualizar na equipe.';}
-   try{await refreshPending();await refreshRecent();}catch(e){successLine.textContent+=' Atualize a lista para consultar o cadastro aprovado.';}
+   // A aprovacao ja foi confirmada no servidor. So atualizar o estado global
+   // se nao houver alteracoes locais pendentes, para nunca descartar trabalho.
+   const cloudAfter=window.miCloudState?.();
+   if(cloudAfter?.connected && cloudAfter.saved && !cloudAfter.blocked){
+    try{await window.miCloudInit?.(window.miAuthTokenV58);}
+    catch(e){successLine.textContent+=' A conta ja foi criada, mas nao foi possivel sincronizar a tela geral: '+(e?.message||'reabra a sessao')+'.';}
+   }else{
+    successLine.textContent+=' A aprovacao ficou registrada no servidor. A sincronizacao da tela geral continua pendente; preserve eventuais backups locais antes de recarregar.';
+   }
+   try{await refreshPending();await refreshRecent();}catch(e){successLine.textContent+=' Atualize a lista de aprovados para consultar este cadastro.';}
    if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
    if(!result.emailSent)alert('O cadastro foi aprovado e o acesso foi criado, mas o e-mail automático não foi enviado. Use o botão “Reenviar e-mail de criação da senha” nos cadastros concluídos.');
   }catch(e){
