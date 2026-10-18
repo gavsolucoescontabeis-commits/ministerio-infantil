@@ -118,13 +118,8 @@ Deno.serve(async(req:Request)=>{
     });
     if(aliasInsert) throw new Error("Falha ao vincular o CPF ao acesso.");
 
-    if(accountRole==="teacher"&&targetArea==="ebd"){
-      const {error:roomError}=await admin.from("v58_staff_room_assignments").insert({
-        staff_id:createdUserId,
-        room_name:room
-      });
-      if(roomError) throw new Error("Falha ao vincular a sala ao acesso.");
-    }
+    // Vinculacao EBD ocorre no RPC v60_import_staff_application,
+    // com o token do administrador e transacao do cadastro.
 
     if(!String(app.cert_storage_path||"").startsWith("pending/")) throw new Error("Documento pendente inconsistente.");
     const {data:file,error:downloadError}=await admin.storage.from("certidoes-ministerio").download(app.cert_storage_path);
