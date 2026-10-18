@@ -69,7 +69,7 @@ create or replace function public.v64_ebd_period(
 returns jsonb language plpgsql security definer set search_path='' as $body$
 declare
  a jsonb; s jsonb; rev bigint; v_owner uuid; periods jsonb; item jsonb;
- snapshot jsonb; details jsonb:='[]'::jsonb; room text; cr integer; te integer;
+ snapshot jsonb; details jsonb:='[]'::jsonb; room text; cr integer; te integer; roster jsonb; unassigned jsonb;
  tp numeric; amount numeric; general_amount numeric:=0; total_points numeric:=0;
  total_offers numeric:=0; total_entries integer:=0; total_children integer:=0;
  offer_count integer:=0; label_clean text:=trim(coalesce(p_label,''));
@@ -96,7 +96,132 @@ begin
    then raise exception 'PERIOD_OVERLAP'; end if;
  end if;
  for room in select value from jsonb_array_elements_text(coalesce(s->'rooms','[]'::jsonb)) loop
-  select count(*) into cr from jsonb_each_text(coalesce(s->'ebdRooms','{}'::jsonb)) k where k.value=room;
+  -- Guarda os nomes e IDs atuais por sala (nenhum vinculo alterado).
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'id',k->>'id','name',k->>'name','birth',k->>'birth',
+    'ageAtEnd',case when k->>'birth' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}
+  select count(*),coalesce(sum(
+    case when t->>'normal'~'^[0-9]+([.][0-9]+)?$' then (t->>'normal')::numeric else 0 end
+   +case when t->>'extra'~'^[0-9]+([.][0-9]+)?$' then (t->>'extra')::numeric else 0 end),0)
+  into te,tp from jsonb_array_elements(coalesce(s->'talents','[]'::jsonb)) t
+  where t->>'date'>=p_start::text and t->>'date'<=p_end::text
+   and (s->'ebdRooms'->>(t->>'kid')=room
+   or exists(select 1 from jsonb_array_elements(coalesce(s->'teachers','[]'::jsonb)) teacher
+     where 'T'||(teacher->>'id')=t->>'kid' and teacher->>'room'=room));
+  select coalesce(sum(case when o->>'value'~'^[0-9]+([.][0-9]+)?$'
+    then (o->>'value')::numeric else 0 end),0),count(*) into amount,offer_count
+  from jsonb_array_elements(coalesce(s->'fin'->'ebd'->'offers','[]'::jsonb)) o
+  where o->>'date'>=p_start::text and o->>'date'<=p_end::text and o->>'room'=room;
+  details:=details||jsonb_build_array(jsonb_build_object('room',room,'children',cr,'childRoster',roster,
+   'talentEntries',te,'talents',tp,'offers',amount,'offerEntries',offer_count));
+  total_children:=total_children+cr;total_entries:=total_entries+te;
+  total_points:=total_points+tp;total_offers:=total_offers+amount;
+ end loop;
+ select coalesce(sum(case when o->>'value'~'^[0-9]+([.][0-9]+)?$'
+   then (o->>'value')::numeric else 0 end),0) into general_amount
+ from jsonb_array_elements(coalesce(s->'fin'->'ebd'->'offers','[]'::jsonb)) o
+ where o->>'date'>=p_start::text and o->>'date'<=p_end::text
+   and (coalesce(o->>'room','')='' or not (coalesce(s->'rooms','[]'::jsonb) ? (o->>'room')));
+ total_offers:=total_offers+general_amount;
+ -- Crianças sem sala ou com vinculo para uma sala nao existente.
+ select coalesce(jsonb_agg(jsonb_build_object(
+   'id',k->>'id','name',k->>'name','birth',k->>'birth',
+   'room',coalesce(s->'ebdRooms'->>(k->>'id'),''),
+   'ageAtEnd',case when k->>'birth' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}'id',gen_random_uuid(),'label',label_clean,
+   'start',p_start,'end',p_end,'createdAt',clock_timestamp(),'createdBy',a->>'name',
+   'createdByRole',a->>'role','revisionBase',rev,'rooms',details,
+  'unassignedChildren',unassigned,'rosterSnapshotAt',clock_timestamp(),
+   'totalChildren',total_children,'talentEntries',total_entries,'talents',total_points,
+   'offers',total_offers,'generalOffers',general_amount,
+   'note','Fotografia nominal no momento do fechamento. Nenhuma transferencia automatica.');
+ if p_action='preview' then return jsonb_build_object('ok',true,'preview',snapshot,'revision',rev); end if;
+ s:=jsonb_set(s,'{ebdClosures}',periods||jsonb_build_array(snapshot),true);
+ update public.app_state_v58 set data=s,revision=rev+1,updated_at=now() where owner_id=v_owner;
+ return jsonb_build_object('ok',true,'closure',snapshot,'revision',rev+1);
+end $body$;
+
+-- Apenas contas autenticadas podem chamar estas funcoes, com autorizacao adicional por perfil.
+revoke all on function public.v64_ebd_manage_room(text,text,text,bigint) from public, anon;
+revoke all on function public.v64_ebd_period(text,date,date,text,bigint) from public, anon;
+grant execute on function public.v64_ebd_manage_room(text,text,text,bigint) to authenticated;
+grant execute on function public.v64_ebd_period(text,date,date,text,bigint) to authenticated;
+
+        then extract(year from age(p_end,(k->>'birth')::date))::integer else null end,
+    'visitor',coalesce(k->>'visitor','nao')
+  ) order by lower(coalesce(k->>'name',''))),'[]'::jsonb) into roster
+  from jsonb_array_elements(coalesce(s->'kids','[]'::jsonb)) k
+  where s->'ebdRooms'->>(k->>'id')=room;
+  cr:=jsonb_array_length(roster);
+  select count(*),coalesce(sum(
+    case when t->>'normal'~'^[0-9]+([.][0-9]+)?$' then (t->>'normal')::numeric else 0 end
+   +case when t->>'extra'~'^[0-9]+([.][0-9]+)?$' then (t->>'extra')::numeric else 0 end),0)
+  into te,tp from jsonb_array_elements(coalesce(s->'talents','[]'::jsonb)) t
+  where t->>'date'>=p_start::text and t->>'date'<=p_end::text
+   and (s->'ebdRooms'->>(t->>'kid')=room
+   or exists(select 1 from jsonb_array_elements(coalesce(s->'teachers','[]'::jsonb)) teacher
+     where 'T'||(teacher->>'id')=t->>'kid' and teacher->>'room'=room));
+  select coalesce(sum(case when o->>'value'~'^[0-9]+([.][0-9]+)?$'
+    then (o->>'value')::numeric else 0 end),0),count(*) into amount,offer_count
+  from jsonb_array_elements(coalesce(s->'fin'->'ebd'->'offers','[]'::jsonb)) o
+  where o->>'date'>=p_start::text and o->>'date'<=p_end::text and o->>'room'=room;
+  details:=details||jsonb_build_array(jsonb_build_object('room',room,'children',cr,
+   'talentEntries',te,'talents',tp,'offers',amount,'offerEntries',offer_count));
+  total_children:=total_children+cr;total_entries:=total_entries+te;
+  total_points:=total_points+tp;total_offers:=total_offers+amount;
+ end loop;
+ select coalesce(sum(case when o->>'value'~'^[0-9]+([.][0-9]+)?$'
+   then (o->>'value')::numeric else 0 end),0) into general_amount
+ from jsonb_array_elements(coalesce(s->'fin'->'ebd'->'offers','[]'::jsonb)) o
+ where o->>'date'>=p_start::text and o->>'date'<=p_end::text
+   and (coalesce(o->>'room','')='' or not (coalesce(s->'rooms','[]'::jsonb) ? (o->>'room')));
+ total_offers:=total_offers+general_amount;
+ snapshot:=jsonb_build_object('id',gen_random_uuid(),'label',label_clean,
+   'start',p_start,'end',p_end,'createdAt',clock_timestamp(),'createdBy',a->>'name',
+   'createdByRole',a->>'role','revisionBase',rev,'rooms',details,
+   'totalChildren',total_children,'talentEntries',total_entries,'talents',total_points,
+   'offers',total_offers,'generalOffers',general_amount,
+   'note','Retrato historico por sala e vinculacao atual. Sem exclusao de dados.');
+ if p_action='preview' then return jsonb_build_object('ok',true,'preview',snapshot,'revision',rev); end if;
+ s:=jsonb_set(s,'{ebdClosures}',periods||jsonb_build_array(snapshot),true);
+ update public.app_state_v58 set data=s,revision=rev+1,updated_at=now() where owner_id=v_owner;
+ return jsonb_build_object('ok',true,'closure',snapshot,'revision',rev+1);
+end $body$;
+
+-- Apenas contas autenticadas podem chamar estas funcoes, com autorizacao adicional por perfil.
+revoke all on function public.v64_ebd_manage_room(text,text,text,bigint) from public, anon;
+revoke all on function public.v64_ebd_period(text,date,date,text,bigint) from public, anon;
+grant execute on function public.v64_ebd_manage_room(text,text,text,bigint) to authenticated;
+grant execute on function public.v64_ebd_period(text,date,date,text,bigint) to authenticated;
+
+     then extract(year from age(p_end,(k->>'birth')::date))::integer else null end
+ ) order by lower(coalesce(k->>'name',''))),'[]'::jsonb) into unassigned
+ from jsonb_array_elements(coalesce(s->'kids','[]'::jsonb)) k
+ where s->'ebdRooms'->>(k->>'id') is null
+   or not (coalesce(s->'rooms','[]'::jsonb) ? (s->'ebdRooms'->>(k->>'id')));
+ snapshot:=jsonb_build_object('id',gen_random_uuid(),'label',label_clean,
+   'start',p_start,'end',p_end,'createdAt',clock_timestamp(),'createdBy',a->>'name',
+   'createdByRole',a->>'role','revisionBase',rev,'rooms',details,
+   'totalChildren',total_children,'talentEntries',total_entries,'talents',total_points,
+   'offers',total_offers,'generalOffers',general_amount,
+   'note','Retrato historico por sala e vinculacao atual. Sem exclusao de dados.');
+ if p_action='preview' then return jsonb_build_object('ok',true,'preview',snapshot,'revision',rev); end if;
+ s:=jsonb_set(s,'{ebdClosures}',periods||jsonb_build_array(snapshot),true);
+ update public.app_state_v58 set data=s,revision=rev+1,updated_at=now() where owner_id=v_owner;
+ return jsonb_build_object('ok',true,'closure',snapshot,'revision',rev+1);
+end $body$;
+
+-- Apenas contas autenticadas podem chamar estas funcoes, com autorizacao adicional por perfil.
+revoke all on function public.v64_ebd_manage_room(text,text,text,bigint) from public, anon;
+revoke all on function public.v64_ebd_period(text,date,date,text,bigint) from public, anon;
+grant execute on function public.v64_ebd_manage_room(text,text,text,bigint) to authenticated;
+grant execute on function public.v64_ebd_period(text,date,date,text,bigint) to authenticated;
+
+        then extract(year from age(p_end,(k->>'birth')::date))::integer else null end,
+    'visitor',coalesce(k->>'visitor','nao')
+  ) order by lower(coalesce(k->>'name',''))),'[]'::jsonb) into roster
+  from jsonb_array_elements(coalesce(s->'kids','[]'::jsonb)) k
+  where s->'ebdRooms'->>(k->>'id')=room;
+  cr:=jsonb_array_length(roster);
   select count(*),coalesce(sum(
     case when t->>'normal'~'^[0-9]+([.][0-9]+)?$' then (t->>'normal')::numeric else 0 end
    +case when t->>'extra'~'^[0-9]+([.][0-9]+)?$' then (t->>'extra')::numeric else 0 end),0)
