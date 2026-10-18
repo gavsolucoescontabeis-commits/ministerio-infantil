@@ -82,19 +82,18 @@ function ensureUI(){
 
 function ensureRecentUI(){
  if(recentPanel)return;
- const adminPanel=document.getElementById('miTeamAssignPanel');
- const resetForm=document.getElementById('miResetStaffForm');
- const resetSection=resetForm?.closest('section');
- if(!adminPanel||!resetSection)return;
+ // Mantenha a fila de aprovados junto dos pré-cadastros, não no final da página.
+ const anchor=panel||document.getElementById('people')?.querySelector('.hero');
+ if(!anchor)return;
  recentPanel=document.createElement('section');
- recentPanel.id='miRecentStaffV60';
+ recentPanel.id='miRecentStaffV60';recentPanel.className='card';recentPanel.style.cssText='margin:14px 0;border:1px solid #cbd8e5';
  const title=document.createElement('h4');title.textContent='Cadastros concluídos recentemente';
  const help=document.createElement('p');help.className='small';help.textContent='Após aprovar, confira nesta lista o acesso, o e-mail e o documento recebido. Se aparecer “Certidão recebida — conferir”, abra-a e confirme a autenticidade, sem enviar um novo arquivo.';
  const refresh=document.createElement('button');refresh.type='button';refresh.className='soft';refresh.textContent='Atualizar concluídos';
  refresh.addEventListener('click',()=>refreshRecent());
  recentList=document.createElement('div');recentList.id='miRecentStaffListV60';recentList.setAttribute('role','status');
  recentPanel.append(title,help,refresh,recentList);
- resetSection.insertAdjacentElement('afterend',recentPanel);
+ anchor.insertAdjacentElement('afterend',recentPanel);
 }
 
 async function loadRecentRows(){
