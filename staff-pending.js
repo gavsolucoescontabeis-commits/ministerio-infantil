@@ -388,7 +388,15 @@ function renderCard(app){
    try{await refreshPending();await refreshRecent();}catch(e){successLine.textContent+=' Atualize a lista para consultar o cadastro aprovado.';}
    if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
    if(!result.emailSent)alert('O cadastro foi aprovado e o acesso foi criado, mas o e-mail automático não foi enviado. Use o botão “Reenviar e-mail de criação da senha” nos cadastros concluídos.');
-  }catch(e){feedback.textContent=e.message||'Não foi possível importar o cadastro.';approve.disabled=false;reject.disabled=false}
+  }catch(e){
+   const reason=e?.message||'Não foi possível importar o cadastro.';
+   const message='❌ Aprovação não concluída para '+app.full_name+': '+reason;
+   feedback.textContent=message;
+   if(successLine){successLine.textContent=message+' O pré-cadastro permanece pendente e pode ser tentado novamente.';successLine.hidden=false;}
+   approve.disabled=false;reject.disabled=false;
+   alert(message+'\n\nO cadastro não foi aprovado. Confira a mensagem antes de tentar novamente.');
+   if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
+  }
  });
 
  reject.addEventListener('click',async()=>{
