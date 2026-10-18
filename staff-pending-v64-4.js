@@ -380,6 +380,7 @@ function renderCard(app){
     }catch(e){checkError=e.message||'Não foi possível marcar a conferência.';}
    }
    focusedApplicationId=null;
+   if(searchPending)searchPending.value='';
    const completed='✅ '+app.full_name+': CADASTRO APROVADO, acesso criado e certidão anexada. '+(checkedResult?'Autenticidade conferida.':certChecked.checked?'Não foi possível registrar a conferência: '+checkError+' Use a opção do cadastro concluído.':'Autenticidade ainda não conferida.')
     +(result.emailSent?' E-mail para criar a senha enviado.':' E-mail não enviado; poderá ser reenviado.');
    successLine.textContent=completed;successLine.hidden=false;
