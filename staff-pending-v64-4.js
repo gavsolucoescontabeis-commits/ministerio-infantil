@@ -283,7 +283,7 @@ function renderCard(app){
  const info=document.createElement('p');info.className='small';
  info.textContent='📎 Certidão já recebida no pré-cadastro. Ao aprovar, o arquivo será arquivado automaticamente na equipe; não é necessário reenviar.';
  card.appendChild(info);
- const cert=document.createElement('button');cert.type='button';cert.className='soft';cert.textContent='📄 Baixar para conferir (não reenviar)';cert.addEventListener('click',()=>openCertificate(app,cert));card.appendChild(cert);
+ const cert=document.createElement('button');cert.type='button';cert.className='soft';cert.textContent='📄 Ver / baixar certidão recebida';cert.addEventListener('click',()=>openCertificate(app,cert));card.appendChild(cert);
 
  const config=document.createElement('div');config.className='mi-pending-config';config.hidden=true;
  const subtitle=document.createElement('h4');subtitle.textContent='Confirmar função e permissões';
@@ -319,7 +319,7 @@ function renderCard(app){
  feedback.textContent='O cadastro será aprovado com os dados e permissões acima. A certidão recebida já será vinculada automaticamente.';
  const checkLabel=document.createElement('label');checkLabel.className='mi-pending-verify';
  const certChecked=document.createElement('input');certChecked.type='checkbox';
- const checkText=document.createElement('span');checkText.textContent='Já conferi a autenticidade da certidão no site oficial do órgão emissor. Se marcado, o sistema também registrará essa conferência após aprovar. Se não marquei, o arquivo continuará guardado para verificar depois.';
+ const checkText=document.createElement('span');checkText.textContent='Já conferi a autenticidade da certidão no site oficial. Marcar é opcional: se não conferi, posso aprovar e verificar o documento depois.';
  checkLabel.append(certChecked,checkText);
  const detailToggle=()=>{
   const opening=config.hidden;
@@ -417,6 +417,8 @@ async function refreshPending(silent=false){
  ensureUI();
  if(!isAdmin()){setCount(0);if(panel)panel.hidden=true;return}
  if(refreshing)return;
+ // Não recrie campos no meio da revisão de um administrador.
+ if(silent&&focusedApplicationId)return;
  refreshing=true;
  if(!silent&&list)list.textContent='Carregando pré-cadastros...';
  try{
