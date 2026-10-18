@@ -3,6 +3,7 @@
 const BASE='https://jthxnjvqmvtydyfuqcct.supabase.co';
 const KEY='sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs';
 let panel=null,list=null,shortcut=null,navBadge=null,homeBadge=null,refreshing=false,recentPanel=null,recentList=null,recentRefreshing=false;
+let focusedApplicationId=null, searchPending=null, successLine=null;
 
 function isAdmin(){return window.miAuthRoleV58==='developer'&&!!window.miAuthTokenV58}
 function escText(v){return String(v??'')}
@@ -20,6 +21,26 @@ function style(){
  #miPendingPanelV60{border:2px solid #efb2ae;background:#fffafa}
  #miPendingPanelV60[hidden]{display:none!important}
  #miPendingListV60 .mi-pending-card{border:1px solid #e0e5e8;border-left:6px solid #d93636;border-radius:13px;padding:14px;margin:12px 0;background:#fff}
+ #miPendingListV60 .mi-pending-card [hidden]{display:none!important}
+ #miPendingListV60 .mi-pending-quick{font-size:13px;margin:6px 0 12px;line-height:1.5;color:#445}
+ #miPendingListV60 .mi-pending-review{width:100%;min-height:44px;font-weight:700}
+ #miPendingSuccessV644[hidden]{display:none!important}
+ #miPendingListV60 .mi-pending-perm-extra{border:1px solid #dce5ee;padding:12px;border-radius:10px;margin:10px 0}
+ #miPendingListV60 .mi-pending-perm-extra summary{font-weight:700;cursor:pointer;line-height:1.5}
+ #miPendingListV60 .mi-pending-verify span{flex:1;min-width:0}
+ #miPendingListV60 .mi-pending-verify{cursor:pointer}
+ #miPendingListV60 .mi-pending-config{padding-top:16px}
+ #miPendingListV60 .mi-pending-danger{margin-top:14px;border-top:1px solid #eee;padding-top:12px}
+ #miPendingListV60 .mi-pending-danger summary{cursor:pointer;font-size:13px;color:#8d2828}
+ #miPendingListV60 .mi-pending-danger button{margin-top:10px;min-height:44px}
+ #miPendingListV60 .mi-pending-verify{display:flex;gap:9px;padding:12px;margin:12px 0;border:1px solid #c9dce8;border-radius:10px;background:#f5fbff;align-items:flex-start;line-height:1.5}
+ #miPendingListV60 .mi-pending-verify input{width:22px;min-width:22px;height:22px;min-height:22px;margin:0;appearance:auto;-webkit-appearance:checkbox;accent-color:#0b68b8}
+ #miPendingListV60 .mi-pending-actions{display:block!important;margin-top:14px}
+ #miPendingListV60 .mi-pending-actions button{width:100%;min-height:48px;white-space:normal}
+ #miPendingListV60 .mi-pending-review-status{margin:10px 0;padding:10px;border-radius:8px;background:#f6f8fa;font-size:13px}
+ #miPendingPanelV60 #miPendingSearchV644{width:100%;min-height:46px;font-size:16px;margin:10px 0;box-sizing:border-box}
+ @media(max-width:620px){#miPendingListV60 .mi-pending-card{padding:12px;margin:8px 0}#miPendingListV60 .mi-pending-grid{grid-template-columns:minmax(0,1fr)}#miPendingListV60 .mi-pending-meta{grid-template-columns:minmax(0,1fr)}#miPendingListV60 .mi-pending-perms label{flex:1 1 100%;min-height:42px;box-sizing:border-box}#miPendingPanelV60{padding:12px}#miPendingListV60 button{font-size:15px}}
+
  #miPendingListV60 .mi-pending-title{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
  #miPendingListV60 .mi-pending-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:5px 14px;margin:10px 0;font-size:13px}
  #miPendingListV60 .mi-pending-config{margin-top:12px;padding-top:12px;border-top:1px solid #e7eaec}
@@ -52,13 +73,16 @@ function ensureUI(){
  panel=document.createElement('section');
  panel.id='miPendingPanelV60';panel.className='card';panel.hidden=true;
  const title=document.createElement('h3');title.textContent='🔴 Pré-cadastros recebidos';
- const help=document.createElement('p');help.className='small';help.textContent='Confira a ficha e a certidão enviada. Ao aprovar, ambos serão transferidos automaticamente. Depois basta confirmar a autenticidade do mesmo arquivo, sem reanexar.';
+ const help=document.createElement('p');help.className='small';help.textContent='Selecione uma pessoa, confira função e sala quando necessário, e aprove. Se já verificou a certidão no órgão emissor, marque a conferência aqui mesmo. Você nunca precisa reenviar o arquivo recebido.';
  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px';
  const refresh=document.createElement('button');refresh.type='button';refresh.className='soft';refresh.textContent='Atualizar pendentes';
  const close=document.createElement('button');close.type='button';close.className='soft';close.textContent='Fechar';
  actions.append(refresh,close);
+ searchPending=document.createElement('input');searchPending.id='miPendingSearchV644';searchPending.type='search';searchPending.placeholder='🔎 Encontrar pessoa pelo nome';searchPending.autocomplete='off';searchPending.setAttribute('aria-label','Pesquisar pré-cadastros por nome');
+ searchPending.addEventListener('input',filterPendingCards);
+ successLine=document.createElement('p');successLine.id='miPendingSuccessV644';successLine.className='notice';successLine.hidden=true;successLine.setAttribute('role','status');
  list=document.createElement('div');list.id='miPendingListV60';list.setAttribute('role','status');
- panel.append(title,help,actions,list);
+ panel.append(title,help,actions,searchPending,successLine,list);
  hero.insertAdjacentElement('afterend',panel);
 
  shortcut.addEventListener('click',()=>{panel.hidden=false;panel.scrollIntoView({behavior:'smooth',block:'start'});refreshPending()});
@@ -234,6 +258,7 @@ async function openCertificate(app,button){
 
 function renderCard(app){
  const card=document.createElement('article');card.className='mi-pending-card';
+ card.dataset.applicationId=String(app.id);card.dataset.searchName=String(app.full_name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
  const head=document.createElement('div');head.className='mi-pending-title';
  const name=document.createElement('strong');name.textContent=escText(app.full_name);
  const when=document.createElement('span');when.className='small';when.textContent='Enviado em '+fmtDateTime(app.created_at);
@@ -246,16 +271,22 @@ function renderCard(app){
   ['Sala/turma informada',app.current_room||'—'],['Emissão da certidão',fmtDate(app.cert_issued_on)]
  ];
  for(const [k,v] of entries){const d=document.createElement('div');const b=document.createElement('b');b.textContent=k+': ';d.append(b,document.createTextNode(escText(v)));meta.appendChild(d)}
- card.append(head,meta);
+ meta.hidden=true;
+ card.append(head);
+ const quick=document.createElement('p');quick.className='mi-pending-quick';
+ quick.textContent='⏳ Aguardando aprovação • '+roleLabel(app.declared_role)+' • '+areaLabel(app.area)+' • 📎 Certidão recebida';
+ const review=document.createElement('button');review.type='button';review.className='soft mi-pending-review';
+ review.textContent='Revisar e aprovar este cadastro';
+ card.append(quick,review,meta);
  if(app.notes){const obs=document.createElement('p');obs.className='small';obs.textContent='Observações: '+app.notes;card.appendChild(obs)}
 
  const info=document.createElement('p');info.className='small';
  info.textContent='📎 Certidão já recebida no pré-cadastro. Ao aprovar, o arquivo será arquivado automaticamente na equipe; não é necessário reenviar.';
  card.appendChild(info);
- const cert=document.createElement('button');cert.type='button';cert.className='soft';cert.textContent='📄 Baixar para conferir (não reenviar)';cert.addEventListener('click',()=>openCertificate(app,cert));card.appendChild(cert);
+ const cert=document.createElement('button');cert.type='button';cert.className='soft';cert.textContent='📄 Ver / baixar certidão recebida';cert.addEventListener('click',()=>openCertificate(app,cert));card.appendChild(cert);
 
- const config=document.createElement('div');config.className='mi-pending-config';
- const subtitle=document.createElement('h4');subtitle.textContent='Passo 2 — Confirmar perfil e permissões';
+ const config=document.createElement('div');config.className='mi-pending-config';config.hidden=true;
+ const subtitle=document.createElement('h4');subtitle.textContent='Confirmar função e permissões';
  const grid=document.createElement('div');grid.className='mi-pending-grid';
  const roleWrap=document.createElement('div'),areaWrap=document.createElement('div'),roomWrap=document.createElement('div');
  const roleLabelEl=document.createElement('label');roleLabelEl.textContent='Cadastrar como';
@@ -275,19 +306,46 @@ function renderCard(app){
 
  const roomNote=document.createElement('p');roomNote.className='small';
  const perms=document.createElement('div');perms.className='mi-pending-perms';
+ const advanced=document.createElement('details');advanced.className='mi-pending-perm-extra';
+ const advancedLabel=document.createElement('summary');advancedLabel.textContent='⚙️ Ver ou alterar permissões individuais (opcional)';
+ advanced.append(advancedLabel,perms);
+ const permTip=document.createElement('p');permTip.className='small';permTip.textContent='As permissões sugeridas já estão preenchidas. Abra esta seção somente se precisar de alguma autorização diferente.';advanced.append(permTip);
  const actions=document.createElement('div');actions.className='mi-pending-actions';
- const approve=document.createElement('button');approve.type='button';approve.className='green';approve.textContent='✅ Aprovar e importar';
+ const approve=document.createElement('button');approve.type='button';approve.className='green';approve.textContent='✅ APROVAR CADASTRO E LIBERAR ACESSO';
  const reject=document.createElement('button');reject.type='button';reject.className='red';reject.textContent='Descartar pré-cadastro';
- actions.append(approve,reject);
- const feedback=document.createElement('p');feedback.className='small';feedback.setAttribute('role','status');
+ actions.append(approve);
+ const danger=document.createElement('details');danger.className='mi-pending-danger';const dangerTitle=document.createElement('summary');dangerTitle.textContent='Outras opções: descartar este pré-cadastro';danger.append(dangerTitle,reject);
+ const feedback=document.createElement('p');feedback.className='small mi-pending-review-status';feedback.setAttribute('role','status');
+ feedback.textContent='O cadastro será aprovado com os dados e permissões acima. A certidão recebida já será vinculada automaticamente.';
+ const checkLabel=document.createElement('label');checkLabel.className='mi-pending-verify';
+ const certChecked=document.createElement('input');certChecked.type='checkbox';
+ const checkText=document.createElement('span');checkText.textContent='Já conferi a autenticidade da certidão no site oficial. Marcar é opcional: se não conferi, posso aprovar e verificar o documento depois.';
+ checkLabel.append(certChecked,checkText);
+ const detailToggle=()=>{
+  const opening=config.hidden;
+  document.querySelectorAll('#miPendingListV60 .mi-pending-config').forEach(el=>{el.hidden=true;});
+  document.querySelectorAll('#miPendingListV60 .mi-pending-meta').forEach(el=>{el.hidden=true;});
+  document.querySelectorAll('#miPendingListV60 .mi-pending-review').forEach(el=>{el.textContent='Revisar e aprovar este cadastro';});
+  document.querySelectorAll('#miPendingListV60 .mi-pending-card').forEach(el=>el.classList.remove('mi-pending-expanded'));
+  const cards=[...document.querySelectorAll('#miPendingListV60 .mi-pending-card')];
+  cards.forEach(el=>el.querySelectorAll('.mi-pending-intro-detail').forEach(n=>n.hidden=true));
+  config.hidden=!opening;meta.hidden=!opening;info.hidden=!opening;cert.hidden=!opening;
+  focusedApplicationId=opening?String(app.id):null;
+  review.textContent=opening?'Fechar revisão deste cadastro':'Revisar e aprovar este cadastro';
+  if(opening){card.classList.add('mi-pending-expanded');card.scrollIntoView({behavior:'smooth',block:'start'});}
+ };
+ review.addEventListener('click',detailToggle);
+ const shouldExpand=focusedApplicationId===String(app.id);
+ if(shouldExpand){config.hidden=false;meta.hidden=false;review.textContent='Fechar revisão deste cadastro';card.classList.add('mi-pending-expanded');}
+ info.classList.add('mi-pending-intro-detail');cert.classList.add('mi-pending-intro-detail');info.hidden=cert.hidden=!shouldExpand;
 
  const syncRoom=()=>{
   room.replaceChildren();
   const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Selecione a sala...';room.appendChild(placeholder);
-  for(const r of (window.d?.rooms||[])){}
   const rooms=(typeof d!=='undefined'&&Array.isArray(d.rooms))?d.rooms:[];
   for(const r of rooms){const o=document.createElement('option');o.value=r;o.textContent=r;room.appendChild(o)}
   if(app.current_room&&rooms.includes(app.current_room))room.value=app.current_room;
+  else if(rooms.length===1&&role.value==='teacher'&&area.value==='ebd')room.value=rooms[0];
   const need=role.value==='teacher'&&area.value==='ebd';
   roomWrap.style.display=need?'block':'none';room.required=need;
   roomNote.textContent=app.area==='both'?'A pessoa informou atuação nas duas áreas; escolha aqui a área principal para este acesso.':'';
@@ -301,16 +359,34 @@ function renderCard(app){
   const cloud=window.miCloudState?.();
   if(!cloud?.connected||cloud.blocked){feedback.textContent='A nuvem não está disponível para uma aprovação segura.';return}
   if(!cloud.saved){feedback.textContent='Aguarde as alterações atuais serem salvas na nuvem antes de importar este cadastro.';return}
-  if(!confirm('Confirma a aprovação e importação de '+app.full_name+'?'))return;
+  const verdict='Aprovar o cadastro de '+app.full_name+'?\n\nPerfil: '+roleLabel(role.value)+'\nÁrea: '+areaLabel(area.value)
+   +(role.value==='teacher'&&area.value==='ebd'?'\nSala: '+room.value:'')
+   +'\nCertidão: '+(certChecked.checked?'autenticidade conferida por você':'recebida, autenticidade a conferir')
+   +'\n\nO acesso será criado e a certidão existente será vinculada automaticamente.';
+  if(!confirm(verdict))return;
   approve.disabled=true;reject.disabled=true;feedback.textContent='Importando cadastro...';
   try{
    const result=await request('/functions/v1/v60-admin-import-staff-application',{method:'POST',body:JSON.stringify({
     applicationId:app.id,targetRole:role.value,targetArea:area.value,room:room.value||'',permissions:selectedPermissions(perms)
    })});
-   feedback.textContent=(result.emailSent?'Cadastro e acesso aprovados. E-mail de criação da senha enviado.':'Cadastro e acesso aprovados; o e-mail não foi enviado. Você pode reenviar nos concluídos.')+' A certidão foi vinculada automaticamente; abra Cadastros concluídos para conferir a autenticidade sem reenviá-la.';
-   await window.miCloudInit?.(window.miAuthTokenV58);
-   await refreshPending();
-   await refreshRecent();
+   let checkedResult=false,checkError='';
+   if(certChecked.checked&&result.personKey){
+    try{
+     const docs=await request('/rest/v1/v58_staff_documents?select=id,person_key,verified_manually&person_key=eq.'+encodeURIComponent(result.personKey)+'&order=created_at.desc&limit=1');
+     const doc=Array.isArray(docs)?docs[0]:null;
+     if(!doc)throw Error('Documento transferido ainda não localizado.');
+     if(!doc.verified_manually)await request('/rest/v1/rpc/v64_confirm_existing_staff_certificate',{method:'POST',body:JSON.stringify({p_document_id:doc.id})});
+     checkedResult=true;
+    }catch(e){checkError=e.message||'Não foi possível marcar a conferência.';}
+   }
+   focusedApplicationId=null;
+   if(searchPending)searchPending.value='';
+   const completed='✅ '+app.full_name+': CADASTRO APROVADO, acesso criado e certidão anexada. '+(checkedResult?'Autenticidade conferida.':certChecked.checked?'Não foi possível registrar a conferência: '+checkError+' Use a opção do cadastro concluído.':'Autenticidade ainda não conferida.')
+    +(result.emailSent?' E-mail para criar a senha enviado.':' E-mail não enviado; poderá ser reenviado.');
+   successLine.textContent=completed;successLine.hidden=false;
+   try{await window.miCloudInit?.(window.miAuthTokenV58);}catch(e){successLine.textContent+=' Atualize a tela para visualizar na equipe.';}
+   try{await refreshPending();await refreshRecent();}catch(e){successLine.textContent+=' Atualize a lista para consultar o cadastro aprovado.';}
+   if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
    if(!result.emailSent)alert('O cadastro foi aprovado e o acesso foi criado, mas o e-mail automático não foi enviado. Use o botão “Reenviar e-mail de criação da senha” nos cadastros concluídos.');
   }catch(e){feedback.textContent=e.message||'Não foi possível importar o cadastro.';approve.disabled=false;reject.disabled=false}
  });
@@ -322,20 +398,28 @@ function renderCard(app){
   catch(e){feedback.textContent=e.message||'Não foi possível descartar.';approve.disabled=false;reject.disabled=false}
  });
 
- config.append(subtitle,grid,roomNote,perms,actions,feedback);card.appendChild(config);
+ config.append(subtitle,grid,roomNote,advanced,checkLabel,actions,feedback,danger);card.appendChild(config);
  return card;
 }
 
+function filterPendingCards(){
+ if(!list)return;
+ const query=(searchPending?.value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+ list.querySelectorAll('.mi-pending-card').forEach(card=>{card.hidden=!!query&&!card.dataset.searchName.includes(query)});
+}
 function renderRows(rows){
  list.replaceChildren();
  if(!rows.length){const p=document.createElement('p');p.textContent='Nenhum pré-cadastro aguardando análise.';list.appendChild(p);return}
  for(const app of rows)list.appendChild(renderCard(app));
+ filterPendingCards();
 }
 
 async function refreshPending(silent=false){
  ensureUI();
  if(!isAdmin()){setCount(0);if(panel)panel.hidden=true;return}
  if(refreshing)return;
+ // Não recrie campos no meio da revisão de um administrador.
+ if(silent&&focusedApplicationId)return;
  refreshing=true;
  if(!silent&&list)list.textContent='Carregando pré-cadastros...';
  try{
