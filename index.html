@@ -634,18 +634,18 @@ async function delKid(id){
   if(check.not_found){alert('Este cadastro já foi removido. Atualize a página.');return}
   if(!check.ok)throw Error('Não foi possível verificar o cadastro.');
   if(!check.can_delete){
-   return alert('Não é possível excluir '+k.name+'.\\n\\nMotivos:\\n• '+(check.reasons||[]).join('\\n• ')
-    +'\\n\\nOs registros existentes e fechamentos da EBD serão preservados.');
+   return alert('Não é possível excluir '+k.name+'.\n\nMotivos:\n• '+(check.reasons||[]).join('\n• ')
+    +'\n\nOs registros existentes e fechamentos da EBD serão preservados.');
   }
   const keep=Number(check.preserved_closures||0);
   if(!confirm('Excluir o cadastro de '+k.name+(check.is_test?' (TESTE)':'')+
-    '?\\n\\nA vinculação atual à sala será retirada. O histórico da EBD'+
+    '?\n\nA vinculação atual à sala será retirada. O histórico da EBD'+
     (keep?' ('+keep+' fechamento(s) arquivado(s))':'')+
-    ' será preservado.\\n\\nEsta exclusão do cadastro geral não pode ser desfeita.'))return;
+    ' será preservado.\n\nEsta exclusão do cadastro geral não pode ser desfeita.'))return;
   const result=await call('delete');
   if(!result.ok)throw Error(result.message||'Exclusão não confirmada.');
   if(!result.deleted){
-   alert('A exclusão foi impedida porque surgiu uma movimentação:\\n• '+(result.reasons||[]).join('\\n• '));
+   alert('A exclusão foi impedida porque surgiu uma movimentação:\n• '+(result.reasons||[]).join('\n• '));
    return;
   }
   alert('Cadastro excluído com sucesso. A sala foi desvinculada e os fechamentos da EBD permaneceram arquivados.');
