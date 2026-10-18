@@ -4,7 +4,7 @@ create or replace function public.v64_ebd_manage_room(
  p_action text, p_room text, p_new_name text default null, p_expected_revision bigint default null)
 returns jsonb language plpgsql security definer set search_path='' as $body$
 declare
- a jsonb; s jsonb; rev bigint; owner_id uuid; old_name text:=trim(coalesce(p_room,''));
+ a jsonb; s jsonb; rev bigint; v_owner uuid; old_name text:=trim(coalesce(p_room,''));
  new_name text:=trim(coalesce(p_new_name,'')); rooms jsonb; updated_rooms jsonb;
 begin
  if auth.uid() is null then raise exception 'AUTH_REQUIRED'; end if;
@@ -15,7 +15,7 @@ begin
  if p_action not in ('add','rename','delete') then raise exception 'INVALID_ACTION'; end if;
  if length(old_name)<1 or length(old_name)>80 then raise exception 'INVALID_ROOM'; end if;
  if p_action='rename' and (length(new_name)<1 or length(new_name)>80) then raise exception 'INVALID_NEW_ROOM'; end if;
- select x.owner_id,x.data,x.revision into owner_id,s,rev
+ select x.owner_id,x.data,x.revision into v_owner,s,rev
  from public.app_state_v58 x where x.owner_id=(
    select id from public.profiles where role='developer' and active=true order by created_at limit 1
  ) for update;
@@ -59,7 +59,7 @@ begin
   end if;
  end if;
  s:=jsonb_set(s,'{rooms}',updated_rooms,true);
- update public.app_state_v58 set data=s,revision=rev+1,updated_at=now() where owner_id=owner_id;
+ update public.app_state_v58 set data=s,revision=rev+1,updated_at=now() where owner_id=v_owner;
  return jsonb_build_object('ok',true,'revision',rev+1,'rooms',updated_rooms);
 end $body$;
 
@@ -68,7 +68,7 @@ create or replace function public.v64_ebd_period(
  p_label text default null, p_expected_revision bigint default null)
 returns jsonb language plpgsql security definer set search_path='' as $body$
 declare
- a jsonb; s jsonb; rev bigint; owner_id uuid; periods jsonb; item jsonb;
+ a jsonb; s jsonb; rev bigint; v_owner uuid; periods jsonb; item jsonb;
  snapshot jsonb; details jsonb:='[]'::jsonb; room text; cr integer; te integer;
  tp numeric; amount numeric; general_amount numeric:=0; total_points numeric:=0;
  total_offers numeric:=0; total_entries integer:=0; total_children integer:=0;
@@ -80,7 +80,7 @@ begin
    (a->>'role'='coordinator' and a->>'area'='ebd' and coalesce((a->'permissions'->>'ebd')::boolean,false)))
  then raise exception 'EBD_COORDINATOR_PERMISSION_DENIED'; end if;
  if p_action not in ('list','preview','close') then raise exception 'INVALID_ACTION'; end if;
- select x.owner_id,x.data,x.revision into owner_id,s,rev from public.app_state_v58 x
+ select x.owner_id,x.data,x.revision into v_owner,s,rev from public.app_state_v58 x
  where x.owner_id=(select id from public.profiles where role='developer' and active=true order by created_at limit 1)
  for update;
  if s is null then raise exception 'NO_STATE'; end if;
@@ -128,7 +128,7 @@ begin
    'note','Retrato historico por sala e vinculacao atual. Sem exclusao de dados.');
  if p_action='preview' then return jsonb_build_object('ok',true,'preview',snapshot,'revision',rev); end if;
  s:=jsonb_set(s,'{ebdClosures}',periods||jsonb_build_array(snapshot),true);
- update public.app_state_v58 set data=s,revision=rev+1,updated_at=now() where owner_id=owner_id;
+ update public.app_state_v58 set data=s,revision=rev+1,updated_at=now() where owner_id=v_owner;
  return jsonb_build_object('ok',true,'closure',snapshot,'revision',rev+1);
 end $body$;
 
