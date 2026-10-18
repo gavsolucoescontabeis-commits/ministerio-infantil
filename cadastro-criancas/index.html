@@ -122,6 +122,34 @@ footer{text-align:center;color:var(--muted);padding:0 12px 30px;font-size:12px}
 <script>
 (function(){
 'use strict';
+// Moderação básica contra ofensas, variações com acentos, números e letras separadas.
+const MI_BLOCKED_WORDS=[
+  'porra','caralho','carai','merda','bosta','putaria','puta','puto','cacete',
+  'foda','foder','fodase','fodido','fodida','fudido','fudida','buceta',
+  'cuzao','cusao','arrombado','arrombada','otario','otaria','idiota',
+  'imbecil','desgracado','desgracada','filhodaputa','filhadaputa',
+  'fdp','vsf','vtnc','tnc','pqp','escroto','escrota',
+  'vagabundo','vagabunda','vai se foder','vai tomar no cu','puta que pariu'
+];
+function miNormalizeMessage(value){
+  const t=String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+    .replace(/[@4]/g,'a').replace(/3/g,'e').replace(/[1!|]/g,'i')
+    .replace(/0/g,'o').replace(/\$/g,'s').replace(/5/g,'s').replace(/7/g,'t')
+    .replace(/[\u200b-\u200f\uFEFF]/g,'').replace(/[^a-z]+/g,' ').replace(/\s+/g,' ').trim();
+  return t;
+}
+function miInappropriate(value){
+  const raw=String(value||'');
+  if(/https?:\/\/|www\.|<\s*\/?\s*script\b|javascript\s*:|data\s*:\s*text\/html/i.test(raw))return true;
+  const plain=miNormalizeMessage(raw);
+  const lettersJoined=plain.replace(/\b(?:[a-z]\s+){2,}[a-z]\b/g,v=>v.replace(/\s+/g,''));
+  return MI_BLOCKED_WORDS.some(w=>
+    (' '+plain+' ').includes(' '+w+' ')||
+    (' '+lettersJoined+' ').includes(' '+w+' ')
+  );
+}
+
+
 const endpoint='https://jthxnjvqmvtydyfuqcct.supabase.co/functions/v1/v64-child-application-submit';
 const e=id=>document.getElementById(id);
 const form=e('childForm'),testMode=new URLSearchParams(location.search).get('teste')==='1';
@@ -216,6 +244,13 @@ form.addEventListener('submit',async(ev)=>{
    const val=get(id);if(val&&![10,11,12,13].includes(onlyDigits(val).length))return status('Verifique os telefones preenchidos.',false);
  }
  if(testMode&&!get('testCode'))return status('Informe o código de teste.',false);
+ const moderated=['name','father','mother','resp','respRelation','street','num','comp','hood','city','obs','broughtBy','guardianName'];
+ for(const field of moderated){
+   if(miInappropriate(get(field))){
+     status('O campo '+(document.querySelector('label[for="'+field+'"]')?.textContent||field)+' contém linguagem inadequada ou um link não permitido. Corrija antes de enviar.',false);
+     e(field).focus();return;
+   }
+ }
  const child={};
  for(const id of fields)child[id]=get(id);
  child.name=normalizeName(child.name);child.father=normalizeName(child.father);child.mother=normalizeName(child.mother);child.resp=normalizeName(child.resp);child.visitor=get('visitor');
