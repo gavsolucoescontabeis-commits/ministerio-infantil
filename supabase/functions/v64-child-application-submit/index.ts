@@ -73,7 +73,14 @@ Deno.serve(async(req:Request)=>{
     const otherPhone=[child.fphone,child.mphone,child.rphone].filter(Boolean);
     if(otherPhone.some(v=>!validPhone(v)))return respond(400,{ok:false,message:"Confira os telefones informados."});
     if(!otherPhone.length)return respond(400,{ok:false,message:"Informe pelo menos um contato dos responsáveis."});
-    if(!child.auth)return respond(400,{ok:false,message:"Selecione ao menos uma pessoa autorizada para buscar a criança."});
+    const candidates=[
+      child.father?"Pai — "+child.father.replace(/\s+/g," ").trim():"",
+      child.mother?"Mãe — "+child.mother.replace(/\s+/g," ").trim():"",
+      child.resp?"Outro responsável — "+child.resp.replace(/\s+/g," ").trim():""
+    ].filter(Boolean);
+    const pickup=child.auth.split("||").filter(Boolean);
+    if(!pickup.length||pickup.length>3||pickup.some(value=>!candidates.includes(value)))
+      return respond(400,{ok:false,message:"Confira as pessoas autorizadas a buscar a criança."});
 
     const ip=(req.headers.get("cf-connecting-ip")||req.headers.get("x-forwarded-for")||"").split(",")[0].trim();
     const ipHash=await sha256((ip||"unknown")+"|"+SECRET.slice(-24));
@@ -81,7 +88,7 @@ Deno.serve(async(req:Request)=>{
     const {count,error:countError}=await admin.from("child_applications_v64").select("id",{head:true,count:"exact"})
       .eq("ip_hash",ipHash).gte("created_at",oneHour);
     if(countError)return respond(503,{ok:false,message:"Serviço temporariamente indisponível."});
-    if((count||0)>=8)return respond(429,{ok:false,message:"Limite de envios alcançado. Tente mais tarde."});
+    if((count||0)>=40)return respond(429,{ok:false,message:"Limite de envios alcançado. Tente mais tarde."});
 
     const {data:saved,error:saveError}=await admin.from("child_applications_v64")
       .insert({child_data:child,guardian_name:signer,guardian_phone:signerPhone,
