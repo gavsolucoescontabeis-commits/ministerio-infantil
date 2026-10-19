@@ -4,6 +4,13 @@ const BASE='https://jthxnjvqmvtydyfuqcct.supabase.co';
 const KEY='sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs';
 let panel,results,titleBtn,busy=false;
 const admin=()=>window.miAuthRoleV58==='developer'&&Boolean(window.miAuthTokenV58);
+const canReview=()=>{
+ if(!window.miAuthTokenV58)return false;
+ if(window.miAuthRoleV58==='developer')return true;
+ const access=window.miLiveAccessV58,role=window.miAuthRoleV58;
+ if(!access||access.role!==role||!access.permissions)return false;
+ return role==='coordinator'||(role==='teacher'&&access.permissions.kids===true);
+};
 const fmtDate=v=>String(v||'').slice(0,10).split('-').reverse().join('/');
 function node(tag,txt){const x=document.createElement(tag);if(txt!=null)x.textContent=String(txt);return x}
 function addStyle(){
@@ -39,7 +46,7 @@ function ensure(){
 }
 async function rpc(method,data){
  const token=window.miAuthTokenV58;
- if(!token||!admin())throw Error('Entre com a conta do administrador.');
+ if(!token||!canReview())throw Error('Entre com uma conta com permissão de cadastrar crianças.');
  const response=await fetch(BASE+'/rest/v1/rpc/'+method,{
    method:'POST',headers:{'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+token},
    body:JSON.stringify(data||{}),cache:'no-store'
@@ -53,7 +60,7 @@ function detail(parent,label,value){
  const div=node('div');const b=node('strong',label+': ');div.append(b,document.createTextNode(String(value)));parent.append(div);
 }
 async function decision(id,action,wasTest){
- if(!admin())return alert('Somente o administrador pode analisar os pré-cadastros.');
+ if(!canReview())return alert('Você precisa ter permissão de cadastrar crianças para confirmar os pré-cadastros.');
  const name=action==='approve'?'aprovar':'rejeitar';
  const info=action==='reject'?'A ficha pendente será rejeitada sem criar cadastro.':
    wasTest?'O cadastro de TESTE será incluído no Cadastro Geral com marcação visível e poderá ser removido aqui se não tiver histórico vinculado.':
@@ -65,6 +72,13 @@ async function decision(id,action,wasTest){
    const text=action==='reject'?'Pré-cadastro rejeitado.':
      res.is_test?'Cadastro de TESTE importado! Ele aparece no Cadastro Geral identificado como teste. Atualize o aplicativo para conferir.':
      'Criança importada com sucesso no cadastro geral. Atualize o aplicativo para visualizar.';
+   if(action==='approve'){
+     if(window.miAuthRoleV58==='developer'){
+       await window.miCloudRefreshIfChanged?.().catch(()=>false);
+     }else{
+       await window.miV59ReloadStaff?.().catch(()=>null);
+     }
+   }
    alert(text);
    await refresh();
  }catch(err){alert(err.message||'Não foi possível concluir.')}
@@ -132,7 +146,7 @@ function draw(items){
      const remove=node('button','Remover cadastro de TESTE do sistema');
      remove.type='button';remove.className='red';
      remove.addEventListener('click',()=>removeTest(app.id,app.registry_child_id));
-     actions.append(remove);
+     if(admin())actions.append(remove);
    }else{
      actions.append(yes,no);
    }
@@ -140,7 +154,7 @@ function draw(items){
  }
 }
 async function refresh(){
- ensure();if(!admin())return;
+ ensure();if(!canReview())return;
  results.hidden=false;
  results.replaceChildren(node('p','Consultando cadastros no Supabase...'));
  try{draw(await rpc('v64_list_child_applications',{}))}
@@ -148,7 +162,7 @@ async function refresh(){
 }
 function sync(){
  ensure();
- if(panel)panel.hidden=!admin();
+ if(panel)panel.hidden=!canReview();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{sync();setInterval(sync,1800)});
 else{sync();setInterval(sync,1800)}
