@@ -111,3 +111,11 @@
 .lesson-suggestion-option p{white-space:pre-line;font-size:12px;line-height:1.7;color:#354d5b;margin:8px 0 10px;overflow-wrap:anywhere}
 .lesson-suggestion-option .soft-btn{font-size:12px;background:#e7f6fb;color:#216581}
 @media(max-width:650px){.lesson-suggestion-panel{padding:11px}.lesson-suggestion-heading button{width:100%}.lesson-suggestion-option{padding:11px}}
+
+.lesson-license{font-size:10px!important;line-height:1.5!important;color:#7b8892!important;margin-top:14px!important;border-top:1px solid #e7edf0;padding-top:10px}
+.lesson-license a{color:#277f9b}
+@media print{
+ .lesson-suggestion-panel,.topic-reference-help,#topicSuggestions,#scriptureSearchResults{display:none!important}
+ .lesson-license{display:block!important;font-size:8pt!important;color:#333!important;border-top:1px solid #bbb;padding-top:7px!important}
+ .lesson-license a{color:#333!important;text-decoration:underline}
+}
