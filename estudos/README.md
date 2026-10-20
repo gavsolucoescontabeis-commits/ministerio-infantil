@@ -16,6 +16,15 @@ Módulo **integrado ao aplicativo oficial** pela aba **Estudos**, dentro do menu
 - As sugestões automáticas são **editoriais e baseadas em regras e no texto bíblico**: **não há IA generativa integrada**. O botão opcional **Copiar Pedido para IA** prepara um pedido para ChatGPT, mas não faz chamadas externas automaticamente.
 - Minhas Aulas: salvar, editar, duplicar, excluir, imprimir e exportar/importar backups JSON.
 
+## Narração Bíblica por Faixa Etária
+- A opção **Sugerir Aula** agora gera, para 21 histórias selecionadas e conferíveis, narrativas em linguagem adequada para **4–6, 7–8, 9, 10–12 anos e adolescentes**, além de idades personalizadas (campo **Outra Faixa Etária**).
+- Dois formatos de História Bíblica Explicada: narrativa contínua e narrativa participativa, com pausas para perguntas. Os fatos seguem a referência da Bíblia e o professor escolhe a opção desejada.
+- **Comparações atuais** (escola, família, amizades, uso responsável de mensagens e redes sociais etc.) são identificadas como exemplos do cotidiano, nunca parte da história bíblica. Também aparecem em Aplicação Prática.
+- Objetivos, perguntas, atividades e oração variam com a faixa etária; as opções selecionadas são preservadas no documento **Aula Preparada**.
+- Se o capítulo/intervalo escolhido ainda não possuir um roteiro revisado e correspondente, o sistema apresenta **Leitura Bíblica Guiada** com versículos da Bíblia Livre, identificada com clareza, em vez de inventar uma narrativa.
+- Este módulo permanece **editorial e orientado por regras, sem IA generativa integrada**. A conferência e a decisão pedagógica final são do professor.
+- Mudanças na faixa etária exigem gerar as sugestões novamente; o texto já aplicado não é apagado automaticamente.
+
 ## Dados e privacidade
 - Os rascunhos de aula permanecem em **localStorage deste navegador**; não são sincronizados com Supabase. Em outro dispositivo, é necessário importar o arquivo de backup. Isso é informado diretamente na tela.
 - O módulo não consulta nem transmite dados pessoais de crianças ou professores.
