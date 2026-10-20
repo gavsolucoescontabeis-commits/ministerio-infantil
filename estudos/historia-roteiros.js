@@ -208,13 +208,14 @@ const stories=[
 const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
 function storyFor(topic,reference){
  const query=normalize(topic),ref=normalize(reference);
- return stories.find(s=>s.passages.some(p=>ref.startsWith(normalize(p)))&&s.titles.some(t=>query.includes(normalize(t))))||null;
+ return stories.find(s=>ref.startsWith(normalize(s.passages[0]))&&s.titles.some(t=>query.includes(normalize(t))))||null;
 }
 function ageGroup(age){
  const v=normalize(age);
  if(/4 a 6|pre|infantil|4 anos|5 anos|6 anos/.test(v))return 'little';
- if(/7 a 8|7 anos|8 anos/.test(v))return 'middle';
- if(/adolescent|10 a 12|10 anos|11 anos|12 anos|13 anos|14 anos|15 anos/.test(v))return 'older';
+ if(/7 a 8|7 anos|8 anos/.test(v))return 'early';
+ if(/adolescent|13 anos|14 anos|15 anos|16 anos|17 anos/.test(v))return 'teen';
+ if(/10 a 12|10 anos|11 anos|12 anos/.test(v))return 'older';
  return 'middle';
 }
 function rangeFor(reference,first,last){return {first:Number(first)||1,last:Number(last)||999,chapter:normalize(reference)}}
@@ -228,12 +229,14 @@ function narration({title,reference,age,firstVerse=1,lastVerse=999,interactive=f
  const scenes=accessibleBeats(story,firstVerse,lastVerse);
  if(!scenes.length)return null;
  const group=ageGroup(age);
- const plain=group==='little',older=group==='older';
- const opening=plain?'Hoje vamos conhecer uma passagem da Bíblia. Preste atenção ao que aconteceu.':
-   older?'Vamos acompanhar o relato bíblico, observando o que os personagens fizeram e o que a passagem revela sobre Deus.':
-    'Abra a Bíblia nesta passagem e acompanhe comigo os acontecimentos na ordem em que são narrados.';
+ const plain=group==='little',older=group==='older'||group==='teen',early=group==='early';
+ const opening=plain?'Vamos ouvir uma história verdadeira registrada na Bíblia. Preste atenção ao que aconteceu.':
+   group==='early'?'Hoje vamos descobrir quem aparece nesta história, o que aconteceu e o que podemos aprender.':
+   group==='middle'?'Abra a Bíblia e acompanhe comigo esta história. Vamos observar a ordem dos fatos e aquilo que Deus ensina.':
+   group==='older'?'Vamos acompanhar atentamente os acontecimentos, observando suas causas, consequências e o que eles ensinam sobre Deus.':
+    'Vamos examinar os acontecimentos da passagem, seu contexto e as decisões dos personagens, sem acrescentar ao texto o que não foi narrado.';
  const paragraphs=scenes.map(([from,to,short,long],i)=>{
-   let line=plain?short:long;
+   let line=(plain||early)?short:long;
    if(interactive){
     const endings=plain?['O que aconteceu nessa parte?','Quem você percebeu nessa história?','O que a Bíblia nos contou até aqui?']:
        ['O que podemos observar neste trecho?','Como esse acontecimento se relaciona com a parte anterior?','Qual é a informação mais importante deste momento?'];
@@ -241,10 +244,12 @@ function narration({title,reference,age,firstVerse=1,lastVerse=999,interactive=f
    }
    return line;
  });
- let final=plain?'Esta é a história que lemos na Palavra de Deus. Vamos lembrar juntos o que aconteceu?':
-   older?'Ao concluir, retome o texto bíblico e destaque seu ensinamento central sem misturar o relato com opiniões ou comparações.':
-     'Agora vamos recordar a sequência da história e conversar sobre o que aprendemos.';
- const analogy=story.analogy[group]||story.analogy.middle;
+ let final=plain?'Vamos lembrar juntos o que aconteceu nessa história?':
+   early?'Que parte da história você consegue contar com suas próprias palavras?':
+   group==='middle'?'O que os personagens fizeram? Qual ensinamento podemos levar para nossa vida?':
+   older?'Ao concluir, retome o texto bíblico, a motivação dos personagens e as consequências de suas escolhas.':
+     'Que elementos do relato ajudam a compreender a mensagem central? Compare suas conclusões com o texto bíblico.';
+ const analogy=story.analogy[group]||story.analogy[(group==='early'?'little':group==='teen'?'older':'middle')];
  const appBlock='\n\nCOMPARAÇÃO COM A VIDA DE HOJE (não faz parte da história bíblica):\n'+analogy;
  const script=[opening,...paragraphs,final].join('\n\n')+appBlock;
  return {script,comparison:analogy,group,storyId:story.id,scenes:scenes.length,interactive};
