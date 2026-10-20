@@ -7,9 +7,9 @@
   <meta name="description" content="Estudos bíblicos, leitura, devocionais e preparação de aulas para o Ministério Infantil da 4ª IEQ Curitiba.">
   <title>Estudos • Ministério Infantil – 4ª IEQ</title>
   <link rel="icon" type="image/svg+xml" href="./logo-ministerio.svg">
-  <link rel="stylesheet" href="./estudos.css?v=6">
+  <link rel="stylesheet" href="./estudos.css?v=7">
   <script src="./temas.js?v=2" defer></script>
-  <script src="./sugestoes-aula.js?v=2" defer></script><script src="./estudos.js?v=6" defer></script>
+  <script src="./sugestoes-aula.js?v=2" defer></script><script src="./estudos.js?v=7" defer></script>
 </head>
 <body>
   <div class="workspace">
@@ -125,9 +125,9 @@
                 <label for="lessonActivity">Atividade / Dinâmica / Ilustração</label><textarea id="lessonActivity" rows="3" placeholder="Sugestões para ajudar a compreender e lembrar da lição."></textarea>
                 <label for="lessonPrayer">Encerramento e Oração</label><textarea id="lessonPrayer" rows="2" placeholder="Como concluir a aula e orar com as crianças?"></textarea>
               </div>
-              <div class="lesson-buttons"><button type="button" id="generateLessonSuggestions" class="primary-btn">✦ Sugerir Aula</button><button type="submit" class="primary-btn">Salvar Preparação</button><button type="button" id="printLesson" class="soft-btn">Imprimir Aula</button><button type="button" id="copyMasterPrompt" class="outline-btn">Copiar Pedido para IA ↗</button></div>
+              <div class="lesson-buttons"><button type="button" id="generateLessonSuggestions" class="primary-btn">✦ Sugerir Aula</button><button type="button" id="assembleLesson" class="primary-btn">✓ Montar Aula e Visualizar</button><button type="submit" class="soft-btn">Salvar Rascunho</button><button type="button" id="printLesson" class="soft-btn">Visualizar Aula</button><button type="button" id="copyMasterPrompt" class="outline-btn">Copiar Pedido para IA ↗</button></div>
               <p class="tiny">“Sugerir Aula” oferece alternativas editoriais baseadas no texto bíblico, para você conferir e escolher. “Copiar Pedido para IA” permite solicitar uma preparação mais detalhada no ChatGPT.</p>
-              <section id="lessonSuggestionPanel" class="lesson-suggestion-panel" hidden aria-live="polite"><div class="lesson-suggestion-heading"><div><strong>Sugestões para a Aula</strong><p>Escolha o conteúdo que desejar. Nada substitui seus textos sem confirmação.</p></div><button type="button" id="fillEmptyLessonFields" class="soft-btn">Preencher Campos Vazios</button></div><div id="lessonSuggestionOptions"></div></section>
+              <section id="lessonSuggestionPanel" class="lesson-suggestion-panel" hidden aria-live="polite"><div class="lesson-suggestion-heading"><div><strong>Escolha as Sugestões da Aula</strong><p>Selecione uma opção em cada parte. Ao terminar, clique em <strong>Montar Aula e Visualizar</strong>.</p></div><button type="button" id="fillEmptyLessonFields" class="soft-btn">Preencher Campos Vazios</button></div><div id="lessonSuggestionOptions"></div><div class="suggestion-finish"><strong id="lessonChoicesStatus">Nenhuma opção selecionada.</strong><button type="button" class="primary-btn" id="finishSuggestedLesson">✓ Montar Aula e Visualizar</button></div></section>
               <div id="lessonFeedback" class="feedback" aria-live="polite"></div>
               <p class="lesson-license">Citações Bíblicas: Bíblia Livre (BLIVRE), edição 2017. Diego Santos, Mario Sérgio e Marco Teles. Licença Creative Commons CC BY 3.0 Brasil • <a href="https://creativecommons.org/licenses/by/3.0/br/" target="_blank" rel="noopener noreferrer">Ver Licença</a>.</p>
             </form>
@@ -137,6 +137,22 @@
               <div class="card tip-muted"><h3>Backup das Preparações</h3><p>As preparações são guardadas neste navegador. Para usá-las em outro aparelho, exporte o backup na aba <strong>Minhas Aulas</strong>.</p></div>
             </aside>
           </div>
+        </section>
+
+        <section class="page lesson-ready-page" id="view-aula-pronta" aria-labelledby="readyPageTitle">
+          <div class="page-title ready-screen-heading"><div><div class="eyebrow">MATERIAL ORGANIZADO</div><h1 id="readyPageTitle">Aula Preparada</h1><p>Confira o conteúdo antes de imprimir ou compartilhar com sua equipe.</p></div></div>
+          <div class="ready-actions">
+            <button type="button" class="outline-btn" id="readyEditLesson">← Voltar e Editar</button>
+            <button type="button" class="soft-btn" id="readySavedLessons">Minhas Aulas</button>
+            <button type="button" class="primary-btn" id="readyPrintLesson">Imprimir / Salvar em PDF</button>
+          </div>
+          <article class="ready-sheet card" id="readyLessonSheet" aria-label="Aula formatada para impressão">
+            <div class="ready-logo"><img src="./logo-ministerio.svg" alt="Ministério Infantil – 4ª IEQ Curitiba"></div>
+            <div class="ready-head"><div class="eyebrow">MINISTÉRIO INFANTIL • 4ª IEQ CURITIBA</div><h2 id="readyLessonTitle"></h2><div class="ready-meta" id="readyLessonMeta"></div></div>
+            <div id="readyLessonSections"></div>
+            <footer class="ready-credits">Texto bíblico: Bíblia Livre (BLIVRE), Diego Santos, Mario Sérgio e Marco Teles. Licença <a href="https://creativecommons.org/licenses/by/3.0/br/" target="_blank" rel="noopener noreferrer">CC BY 3.0 Brasil</a>. Verifique as referências e os fatos bíblicos antes da aula.</footer>
+          </article>
+          <div class="ready-actions ready-bottom-actions"><button type="button" class="outline-btn" id="readyEditLessonBottom">Editar Aula</button><button type="button" class="primary-btn" id="readyPrintLessonBottom">Imprimir / Salvar em PDF</button></div>
         </section>
 
         <section class="page" id="view-acervo">
