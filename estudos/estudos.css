@@ -170,3 +170,11 @@
  .ready-credits{color:#444!important;font-size:8pt!important}
  a{color:#222!important}
 }
+
+/* Narrativas por faixa etária e idade personalizada. */
+#customLessonAgeWrap[hidden]{display:none!important}
+#customLessonAgeWrap{margin-top:9px;padding:10px 11px;border:1px solid #d8eaf2;background:#f6fbfe;border-radius:9px}
+#customLessonAgeWrap label{margin:0 0 6px!important}
+#lessonAgeCustom{min-height:40px;font-size:13px}
+.story-age-notice{margin-top:8px!important;padding:10px 12px;background:#f0f9f4;border-left:3px solid #238f61;color:#36604c!important;font-size:12px!important;line-height:1.55}
+.lesson-suggestion-option p{line-height:1.7;white-space:pre-wrap}
