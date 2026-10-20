@@ -205,6 +205,102 @@ const stories=[
  analogy:{little:'Quando sentimos medo, podemos pedir ajuda e falar com Jesus em oração.',middle:'Muitas vezes começamos uma tarefa corajosamente e depois ficamos inseguros. A história mostra Pedro pedindo ajuda a Jesus.',older:'A experiência de Pedro convida a refletir sobre confiança, medo e dependência de Jesus, sem transformar o milagre numa promessa de que nunca teremos dificuldades.'}
 }
 ];
+
+// Roteiros alternativos por capítulo: nunca reutilizar fatos de outra passagem.
+stories.push(
+{
+ id:'semeador-marcos',titles:['semeador','parabola do semeador'],passages:['Marcos 4'],
+ scenes:[
+ [1,9,'Jesus contou uma parábola sobre sementes que caíram em lugares diferentes. Algumas não cresceram, mas outras deram fruto.','Jesus ensinava uma multidão e contou a história de um semeador. Parte da semente caiu pelo caminho; outra em solo pedregoso; outra entre espinhos; e outra em boa terra. Apenas a boa terra produziu fruto em abundância.'],
+ [10,13,'Depois, os discípulos perguntaram sobre a parábola. Jesus começou a explicar seu significado.','Quando Jesus ficou a sós com os que O seguiam, explicou o sentido das parábolas. Ele queria que os ouvintes prestassem atenção ao ensino e o compreendessem.'],
+ [14,20,'Jesus explicou que a semente representa a Palavra. Quem a ouve e a recebe pode produzir bons frutos.','Jesus explicou que o semeador semeia a Palavra. Algumas pessoas a perdem logo; outras não perseveram nas dificuldades; outras permitem que preocupações e desejos sufoquem seu crescimento. A boa terra representa os que ouvem, acolhem e produzem fruto.']
+ ],
+ analogy:{little:'Quando plantamos uma semente, precisamos cuidar dela. Assim, precisamos ouvir com atenção o que Jesus ensina.',middle:'Ouvir uma orientação e praticá-la são coisas diferentes. Podemos mostrar que aprendemos quando respeitamos os colegas.',older:'As distrações e pressões de hoje podem disputar nossa atenção; o ensino de Jesus desafia a acolher a Palavra e perseverar.'}
+},
+{
+ id:'semeador-lucas',titles:['semeador','parabola do semeador'],passages:['Lucas 8'],
+ scenes:[
+ [4,8,'Jesus contou sobre um semeador que espalhou sementes. Elas caíram pelo caminho, sobre pedras, entre espinhos e em boa terra.','Diante de muita gente, Jesus contou que um semeador saiu para semear. Algumas sementes foram pisadas ou comidas pelas aves; outras murcharam por falta de umidade; outras ficaram sufocadas pelos espinhos. As sementes em boa terra cresceram e produziram fruto.'],
+ [9,10,'Os discípulos perguntaram a Jesus o que aquela parábola significava.','Os discípulos quiseram entender o significado daquela história, e Jesus começou a explicar o ensino das parábolas.'],
+ [11,15,'Jesus explicou que a semente representa a Palavra de Deus. A boa terra lembra quem a recebe e persevera.','Jesus explicou que a semente é a Palavra de Deus. O caminho, a pedra e os espinhos representam maneiras diferentes de ouvir sem perseverar. A boa terra lembra quem conserva a Palavra num coração bom e persevera até produzir fruto.']
+ ],
+ analogy:{little:'Uma planta precisa de cuidado para crescer. Podemos prestar atenção à Palavra de Jesus.',middle:'Quando aprendemos a respeitar alguém, precisamos praticar esse ensino, e não apenas ouvi-lo.',older:'Perseverar na Palavra exige atenção quando outras coisas disputam nosso tempo e nossas decisões.'}
+},
+{
+ id:'esau-jaco-bencao',titles:['esau','jaco','esau e jaco'],passages:['Gênesis 27'],
+ scenes:[
+ [1,17,'Isaque estava idoso e pediu a Esaú que preparasse uma refeição. Rebeca ouviu e orientou Jacó a se apresentar como Esaú.','Isaque, já idoso e com dificuldades para enxergar, pediu a Esaú que caçasse e preparasse uma refeição para receber uma bênção. Rebeca ouviu a conversa e orientou Jacó a usar roupas e uma aparência que fariam o pai confundi-lo com Esaú.'],
+ [18,29,'Jacó enganou seu pai, dizendo ser Esaú, e recebeu a bênção que Isaque pretendia dar ao irmão.','Jacó entrou na presença de Isaque e afirmou ser Esaú. Apesar de estranhar sua voz, Isaque acabou acreditando no que ouviu e concedeu a bênção que pretendia dar a seu filho mais velho. O texto não apresenta o engano como exemplo a seguir.'],
+ [30,40,'Esaú chegou depois e descobriu o que tinha acontecido. Os dois irmãos e o pai ficaram profundamente envolvidos nas consequências da mentira.','Quando Esaú chegou com sua refeição, Isaque percebeu que havia sido enganado. Esaú ficou muito angustiado e pediu uma bênção. Isaque explicou a situação e pronunciou palavras sobre o futuro de Esaú.'],
+ [41,45,'Esaú ficou com muita raiva de Jacó. Rebeca tomou providências para afastar Jacó por algum tempo.','Esaú passou a guardar rancor de Jacó. Rebeca soube do risco e orientou Jacó a fugir para a casa de seu irmão Labão, até que a ira de Esaú diminuísse.']
+ ],
+ analogy:{little:'Mentir pode machucar as pessoas e causar problemas na família. Podemos aprender a contar a verdade.',middle:'Quando enganamos alguém para conseguir uma vantagem, a confiança se quebra e as consequências podem durar muito tempo.',older:'O relato permite discutir manipulação, escolhas familiares e a dificuldade de recuperar confiança depois de uma mentira.'}
+},
+{
+ id:'esau-jaco-reencontro',titles:['esau','jaco','esau e jaco'],passages:['Gênesis 33'],
+ scenes:[
+ [1,4,'Depois de muito tempo, Jacó reencontrou Esaú. Ele se aproximou com respeito, e Esaú correu para abraçá-lo.','Jacó viu Esaú se aproximando acompanhado de homens. Organizou a família e adiantou-se para encontrar o irmão, inclinando-se em sinal de respeito. Esaú correu ao seu encontro, abraçou-o e os dois choraram.'],
+ [5,11,'Esaú conheceu a família de Jacó. Jacó insistiu em entregar presentes e falou da alegria de ser recebido pelo irmão.','Esaú perguntou quem eram as pessoas que acompanhavam Jacó. O irmão apresentou sua família. Os dois conversaram sobre os presentes que Jacó havia preparado, e Esaú acabou aceitando-os depois da insistência de Jacó.'],
+ [12,17,'Os irmãos seguiram seus caminhos depois daquele reencontro.','Esaú propôs que seguissem viagem juntos, mas Jacó explicou que precisava caminhar mais devagar por causa das crianças e dos rebanhos. Eles combinaram seguir seus caminhos.']
+ ],
+ analogy:{little:'Quando brigamos com alguém, conversar com respeito pode ajudar a fazer as pazes.',middle:'Pedir perdão e tentar reconstruir a confiança pode ser um processo demorado, mas vale agir com humildade.',older:'A reconciliação dos irmãos permite conversar sobre arrependimento, limites e retomada de relacionamentos feridos.'}
+},
+{
+ id:'jonas-oracao',titles:['jonas','jonas e o peixe'],passages:['Jonas 2'],
+ scenes:[
+ [1,6,'Dentro do grande peixe, Jonas orou ao Senhor. Ele falou das dificuldades pelas quais estava passando e pediu socorro.','Jonas, dentro do peixe, dirigiu uma oração ao Senhor. Suas palavras recordam o perigo de estar nas águas e reconhecem que Deus ouviu seu clamor.'],
+ [7,9,'Jonas lembrou-se do Senhor e declarou que a salvação vem de Deus.','Na oração, Jonas disse que, quando sua vida parecia se acabar, lembrou-se do Senhor. Expressou gratidão e declarou que a salvação pertence ao Senhor.'],
+ [10,10,'O Senhor ordenou ao peixe que devolvesse Jonas à terra.','Depois da oração de Jonas, o Senhor falou ao peixe, e Jonas foi lançado de volta à terra firme.']
+ ],
+ analogy:{little:'Quando estamos com medo, podemos orar a Deus e pedir ajuda a um adulto responsável.',middle:'Mesmo depois de uma escolha errada, podemos reconhecer nossa responsabilidade e falar com Deus.',older:'A oração de Jonas convida à reflexão sobre arrependimento, livramento e confiança na misericórdia do Senhor.'}
+},
+{
+ id:'jonas-ninive',titles:['jonas','ninive'],passages:['Jonas 3'],
+ scenes:[
+ [1,4,'Deus falou novamente com Jonas e o mandou ir a Nínive. Desta vez, Jonas foi e anunciou a mensagem que recebeu.','A palavra do Senhor veio a Jonas uma segunda vez, ordenando que ele fosse a Nínive. Jonas obedeceu e proclamou uma advertência à cidade, conforme Deus havia mandado.'],
+ [5,9,'O povo de Nínive ouviu a mensagem e demonstrou arrependimento. Até o rei ordenou que todos se afastassem do mal.','Os habitantes de Nínive creram em Deus e proclamaram um jejum. A notícia chegou ao rei, que também se humilhou e ordenou que todos clamassem a Deus e abandonassem a violência.'],
+ [10,10,'Deus viu que as pessoas mudaram de atitude e não trouxe sobre a cidade a destruição anunciada.','Deus observou as atitudes dos ninivitas, que se afastaram de seus maus caminhos, e não executou naquele momento a calamidade que havia anunciado.']
+ ],
+ analogy:{little:'Quando fazemos algo errado, podemos reconhecer e procurar mudar nossas atitudes.',middle:'Arrependimento verdadeiro não é só dizer “desculpa”; envolve agir de modo diferente.',older:'A transformação de Nínive permite conversar sobre responsabilidade coletiva, justiça e misericórdia.'}
+},
+{
+ id:'noe-diluvio',titles:['noe','arca'],passages:['Gênesis 7'],
+ scenes:[
+ [1,9,'Deus disse a Noé que entrasse na arca com sua família. Noé seguiu as instruções que recebeu.','O Senhor orientou Noé a entrar na arca com sua família e os animais, conforme as instruções recebidas anteriormente. Noé fez o que Deus havia ordenado.'],
+ [10,16,'A chuva começou, e as águas cresceram. Noé, sua família e os animais estavam na arca, e o Senhor fechou a porta.','Depois de sete dias, as águas do dilúvio começaram a cobrir a terra. Noé e os que estavam com ele entraram na arca. O texto afirma que o Senhor fechou a porta.'],
+ [17,24,'As águas subiram e cobriram a terra. A arca permaneceu sobre as águas.','O dilúvio continuou por muitos dias, e as águas aumentaram, levantando a arca. A narrativa descreve um julgamento sério e não deve ser tratada apenas como uma aventura divertida.']
+ ],
+ analogy:{little:'Podemos aprender que é importante prestar atenção às orientações que Deus deu a Noé.',middle:'A obediência de Noé nos ensina sobre perseverança e atenção quando uma responsabilidade é grande.',older:'A narrativa mostra obediência e julgamento. É importante tratar suas consequências com respeito e fidelidade ao texto.'}
+},
+{
+ id:'noe-saida',titles:['noe','arca'],passages:['Gênesis 8'],
+ scenes:[
+ [1,5,'Deus se lembrou de Noé e dos que estavam na arca. As águas começaram a diminuir.','Depois do dilúvio, Deus Se lembrou de Noé e dos seres vivos que estavam com ele na arca. As águas começaram a baixar, e a arca repousou sobre os montes de Ararate.'],
+ [6,14,'Noé soltou aves para verificar a situação da terra. Aos poucos, a superfície foi secando.','Noé abriu uma janela da arca e soltou um corvo. Depois soltou uma pomba, que retornou. Mais tarde, a pomba trouxe uma folha nova de oliveira, sinal de que as águas haviam baixado. Finalmente, a terra ficou seca.'],
+ [15,22,'Deus mandou Noé sair da arca. Noé saiu com sua família e os animais e ofereceu um sacrifício ao Senhor.','O Senhor orientou Noé a sair da arca, levando sua família e os animais. Noé construiu um altar e apresentou ofertas ao Senhor. O texto registra também as palavras de Deus sobre a continuidade das estações e da vida na terra.']
+ ],
+ analogy:{little:'Esperar pode ser difícil, mas Noé precisou aguardar até receber a orientação para sair da arca.',middle:'Mesmo depois de uma situação difícil, podemos cultivar gratidão e perseverança.',older:'A passagem permite conversar sobre paciência, responsabilidade e gratidão após tempos de crise.'}
+},
+{
+ id:'paralitico-lucas',titles:['paralitico','paralisado'],passages:['Lucas 5'],
+ scenes:[
+ [17,19,'Jesus ensinava numa casa, e havia muita gente ao redor. Alguns homens levaram um paralítico e, sem conseguir entrar pela multidão, o desceram pelo telhado.','Enquanto Jesus ensinava, homens carregavam um paralítico sobre uma cama. A multidão impedia a passagem. Eles subiram ao telhado e o desceram com sua cama até o lugar onde Jesus estava.'],
+ [20,24,'Jesus declarou o perdão dos pecados daquele homem. Alguns líderes religiosos questionaram Suas palavras, e Jesus ensinou sobre Sua autoridade.','Ao ver a fé daqueles homens, Jesus afirmou que os pecados do paralítico estavam perdoados. Escribas e fariseus questionaram essas palavras. Jesus respondeu, mostrando Sua autoridade para perdoar pecados.'],
+ [25,26,'Jesus mandou o homem se levantar. Ele se levantou e foi para casa glorificando a Deus; todos ficaram admirados.','O homem se levantou imediatamente diante de todos, pegou a cama em que estivera deitado e foi para casa glorificando a Deus. As pessoas ficaram admiradas e louvaram a Deus.']
+ ],
+ analogy:{little:'Podemos ajudar alguém que precisa de apoio e chamar um adulto quando necessário.',middle:'Os amigos daquele homem não desistiram de ajudá-lo. Podemos aprender a incluir e apoiar os colegas.',older:'A história destaca o cuidado dos amigos e, principalmente, a autoridade de Jesus para perdoar pecados e curar.'}
+},
+{
+ id:'paralitico-mateus',titles:['paralitico','paralisado'],passages:['Mateus 9'],
+ scenes:[
+ [1,2,'Algumas pessoas levaram um paralítico até Jesus. Jesus viu sua fé e disse que seus pecados estavam perdoados.','Jesus voltou para Sua cidade, e trouxeram-lhe um paralítico deitado numa cama. Ao perceber a fé demonstrada, Jesus falou ao homem sobre o perdão de seus pecados.'],
+ [3,6,'Alguns escribas questionaram a autoridade de Jesus para perdoar pecados. Jesus respondeu e mostrou Sua autoridade.','Certos escribas consideraram as palavras de Jesus uma blasfêmia. Jesus percebeu seus pensamentos e explicou a autoridade do Filho do Homem para perdoar pecados.'],
+ [7,8,'Jesus mandou o homem se levantar. Ele se levantou, e a multidão glorificou a Deus.','O homem levantou-se e foi para casa. As multidões ficaram admiradas e glorificaram a Deus, que havia concedido tal autoridade.']
+ ],
+ analogy:{little:'Quando alguém tem dificuldade, podemos ajudar com cuidado e respeito.',middle:'Ajudar um colega pode ser uma atitude concreta de amizade; na passagem, quem perdoa e cura é Jesus.',older:'O texto destaca a autoridade de Jesus; é importante não reduzi-lo apenas a uma lição sobre amizade.'}
+}
+);
+
 const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
 function storyFor(topic,reference){
  const query=normalize(topic),ref=normalize(reference);
