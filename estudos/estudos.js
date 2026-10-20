@@ -58,11 +58,58 @@ const state={view:'inicio',reader:{book:43,ch:3,selected:16,verses:[]},cadence:'
 const chapterCache=new Map();
 let toastTimer=0;
 function toast(msg){const e=$('toast');e.textContent=String(msg);e.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove('show'),3500)}
-function stopAudio(){if('speechSynthesis'in window)window.speechSynthesis.cancel()}
-function speak(text){if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window))return toast('A leitura em voz alta não está disponível neste navegador.');
- stopAudio();const u=new SpeechSynthesisUtterance(String(text||''));u.lang='pt-BR';u.rate=.88;u.pitch=1;
- const voices=window.speechSynthesis.getVoices();const selected=voices.find(v=>v.lang.toLowerCase()==='pt-br')||voices.find(v=>v.lang.toLowerCase().startsWith('pt'));if(selected)u.voice=selected;
- window.speechSynthesis.speak(u);toast('Reproduzindo com a voz do dispositivo.');}
+const VOICE_KEY='mi_estudos_piloto_voice_v1';
+let speechGeneration=0;
+let voiceOptions=[];
+function stopAudio(){
+ speechGeneration++;
+ if('speechSynthesis'in window)window.speechSynthesis.cancel();
+ const readBtn=$('readerListen');if(readBtn)updateListenLabel();
+}
+function refreshVoices(){
+ const select=$('voiceSelect');if(!select||!('speechSynthesis'in window))return;
+ const previous=select.value||(()=>{try{return localStorage.getItem(VOICE_KEY)||''}catch(e){return ''}})();
+ voiceOptions=window.speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith('pt'));
+ select.replaceChildren(new Option('Automática (Melhor Voz Disponível)',''));
+ for(const v of voiceOptions){select.add(new Option(v.name+' · '+v.lang+(v.localService?'':' · Rede'),v.voiceURI))}
+ select.value=voiceOptions.some(v=>v.voiceURI===previous)?previous:'';
+}
+function chooseVoice(){
+ const selected=$('voiceSelect')?.value;
+ if(selected&&voiceOptions.some(v=>v.voiceURI===selected))return voiceOptions.find(v=>v.voiceURI===selected);
+ const voices=voiceOptions.length?voiceOptions:window.speechSynthesis.getVoices().filter(v=>v.lang?.toLowerCase().startsWith('pt'));
+ const rank=v=>(v.lang.toLowerCase()==='pt-br'?100:0)+(/natural|neural|premium|enhanced|online|google|microsoft/i.test(v.name)?30:0)+(v.default?10:0);
+ return [...voices].sort((a,b)=>rank(b)-rank(a))[0]||null;
+}
+function speakSeries(parts){
+ if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){toast('Este navegador não oferece leitura em voz alta.');return}
+ stopAudio();const current=++speechGeneration;
+ const voice=chooseVoice();
+ const fragments=parts.map(String).filter(Boolean);
+ if(!fragments.length){toast('Não há versículos disponíveis para leitura.');return}
+ let index=0;
+ const next=()=>{
+  if(current!==speechGeneration||index>=fragments.length)return;
+  const u=new SpeechSynthesisUtterance(fragments[index++]);u.lang='pt-BR';u.rate=1;u.pitch=1;
+  if(voice)u.voice=voice;
+  u.onend=()=>{if(current===speechGeneration)next()};
+  u.onerror=e=>{if(current===speechGeneration){if(e.error!=='canceled'&&e.error!=='interrupted')toast('A voz do dispositivo interrompeu a leitura. Experimente outra voz.');stopAudio()}};
+  try{window.speechSynthesis.speak(u)}catch(e){toast('Não foi possível iniciar a leitura neste dispositivo.');stopAudio()}
+ };
+ next();toast('Reproduzindo com a voz do aparelho. Você pode experimentar outra voz em “Voz da Leitura”.');
+}
+function speak(text){speakSeries([text])}
+function readerAudioParts(){
+ const vs=state.reader.verses;
+ const start=state.reader.selected&&vs.some(v=>v.verse===state.reader.selected)?state.reader.selected:vs[0]?.verse||1;
+ return vs.filter(v=>v.verse>=start).map(v=>'Versículo '+v.verse+'. '+v.text);
+}
+function updateListenLabel(){
+ const e=$('readerListen');if(!e)return;
+ const exists=state.reader.verses.some(v=>v.verse===state.reader.selected);
+ const start=exists?state.reader.selected:state.reader.verses[0]?.verse;
+ e.textContent=exists?'♫ Ouvir do Versículo '+start:'♫ Ouvir Capítulo';
+}
 async function copy(text){try{await navigator.clipboard.writeText(text);toast('Copiado!')}catch(e){const t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.top='-9999px';document.body.append(t);t.select();try{document.execCommand('copy');toast('Copiado!')}catch(x){toast('Não foi possível copiar neste navegador.')}t.remove()}}
 function navigate(view,skipReaderLoad=false){if(!['inicio','biblia','aulas','acervo'].includes(view))return;stopAudio();state.view=view;document.querySelectorAll('.page').forEach(n=>n.classList.toggle('active',n.id==='view-'+view));document.querySelectorAll('[data-view]').forEach(n=>{const active=n.dataset.view===view;n.classList.toggle('active',active);if(active)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current')});$('sidebar').classList.remove('open');$('menuToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});if(view==='biblia'&&!state.reader.verses.length&&!skipReaderLoad)loadReader();if(view==='acervo')renderArchive();}
 async function getChapter(book,ch){const key=book+'/'+ch;if(chapterCache.has(key))return chapterCache.get(key);
@@ -89,7 +136,7 @@ function renderChapters(){const book=B[state.reader.book-1];const sel=$('chapter
  if(state.reader.ch>book.chapters)state.reader.ch=book.chapters;
  sel.value=String(state.reader.ch)}
 function selectVerse(n,scroll=true){state.reader.selected=n;const list=$('versesContainer');list.querySelectorAll('.verse').forEach(e=>e.classList.toggle('selected',Number(e.dataset.verse)===n));
- $('verseSelect').value=n?String(n):'';const selected=list.querySelector('[data-verse="'+Number(n)+'"]');if(selected&&scroll)selected.scrollIntoView({behavior:'smooth',block:'center'});}
+ $('verseSelect').value=n?String(n):'';updateListenLabel();const selected=list.querySelector('[data-verse="'+Number(n)+'"]');if(selected&&scroll)selected.scrollIntoView({behavior:'smooth',block:'center'});}
 function renderVerses(){const verses=state.reader.verses;
  $('chapterHeading').textContent=bookName(state.reader.book)+' '+state.reader.ch;
  const container=$('versesContainer');container.replaceChildren();
@@ -220,7 +267,7 @@ function saveLesson(e){if(e)e.preventDefault();const data=getLessonForm();
 function lessonPrompt(){const x=getLessonForm();
  if(!x.title||!x.reference){toast('Preencha o tema e a referência bíblica antes de pedir a aula.');return null}
  const details=[['Objetivo',x.goal],['Contexto já anotado',x.context],['História já anotada',x.story],['Aplicação desejada',x.application],['Perguntas desejadas',x.questions],['Atividade sugerida',x.activity],['Encerramento',x.prayer]].filter(row=>row[1]).map(row=>row[0]+': '+row[1]).join('\n');
- return 'MESTRE BÍBLICA CRISTÃ EVANGÉLICA — MINISTÉRIO INFANTIL 4ª IEQ\n\n'+
+ return 'SUGESTÃO DE AULA — MINISTÉRIO INFANTIL 4ª IEQ\n\n'+
  'Prepare uma aula bíblica cristã evangélica para crianças de '+x.age+'.\n'+
  'Tema: '+x.title+'\nPassagem principal: '+x.reference+'\n'+(x.date?'Data prevista: '+showDate(x.date)+'\n':'')+'\n'+
  'Confirme a referência e leia o texto bíblico antes de escrever. Seja fiel à narrativa, ao contexto histórico, à ordem dos acontecimentos, aos personagens e às quantidades mencionadas. '+
@@ -268,8 +315,8 @@ function init(){
  $('verseSelect').addEventListener('change',e=>selectVerse(Number(e.target.value)||0));
  $('prevChapter').addEventListener('click',()=>adjChapter(-1));$('nextChapter').addEventListener('click',()=>adjChapter(1));
  $('refForm').addEventListener('submit',e=>{e.preventDefault();const r=parseReference($('refInput').value);if(!r){toast('Referência não reconhecida. Ex.: João 3:16 ou Salmos 23.');return}switchChapter(r.book,r.ch,r.verse)});
- $('readerListen').addEventListener('click',()=>{if(!state.reader.verses.length)return toast('Carregue a passagem primeiro.');speak(bookName(state.reader.book)+' '+state.reader.ch+'. '+state.reader.verses.map(v=>'Versículo '+v.verse+'. '+v.text).join(' '))});
- $('readerStop').addEventListener('click',stopAudio);
+ $('readerListen').addEventListener('click',()=>{if(!state.reader.verses.length)return toast('Carregue a passagem primeiro.');speakSeries(readerAudioParts())});
+ $('readerStop').addEventListener('click',stopAudio);refreshVoices();if('speechSynthesis'in window){window.speechSynthesis.addEventListener?.('voiceschanged',refreshVoices)}$('voiceSelect').addEventListener('change',e=>{try{localStorage.setItem(VOICE_KEY,e.target.value)}catch(_){}stopAudio()});
  $('copySelectedVerse').addEventListener('click',()=>{const t=chapterSelectedText();if(t)copy(t);else toast('A passagem ainda não está carregada.')});
  $('useSelectedVerse').addEventListener('click',useReaderInLesson);$('readFromLesson').addEventListener('click',useReaderInLesson);
  $('lessonTitle').addEventListener('input',()=>{clearTimeout(topicTimer);topicTimer=setTimeout(renderTopicSuggestions,230)});
