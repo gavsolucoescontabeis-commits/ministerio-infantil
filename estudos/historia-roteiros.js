@@ -212,10 +212,17 @@ function storyFor(topic,reference){
 }
 function ageGroup(age){
  const v=normalize(age);
- if(/4 a 6|pre|infantil|4 anos|5 anos|6 anos/.test(v))return 'little';
- if(/7 a 8|7 anos|8 anos/.test(v))return 'early';
- if(/adolescent|13 anos|14 anos|15 anos|16 anos|17 anos/.test(v))return 'teen';
- if(/10 a 12|10 anos|11 anos|12 anos/.test(v))return 'older';
+ if(/adolescent/.test(v))return 'teen';
+ if(/infantil|pre/.test(v))return 'little';
+ const ages=(v.match(/\d{1,2}/g)||[]).map(Number).filter(n=>n>=1&&n<=99);
+ if(ages.length){
+  const first=ages[0];
+  if(first<=6)return 'little';
+  if(first<=8)return 'early';
+  if(first===9)return 'middle';
+  if(first<=12)return 'older';
+  return 'teen';
+ }
  return 'middle';
 }
 function rangeFor(reference,first,last){return {first:Number(first)||1,last:Number(last)||999,chapter:normalize(reference)}}
