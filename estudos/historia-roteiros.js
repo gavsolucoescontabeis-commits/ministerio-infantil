@@ -230,7 +230,7 @@ function narration({title,reference,age,firstVerse=1,lastVerse=999,interactive=f
  if(!scenes.length)return null;
  const group=ageGroup(age);
  const plain=group==='little',older=group==='older'||group==='teen',early=group==='early';
- const opening=plain?'Vamos ouvir uma história verdadeira registrada na Bíblia. Preste atenção ao que aconteceu.':
+ const opening=plain?'Vamos ouvir com atenção esta passagem da Bíblia e conhecer o que Jesus ensinou ou o que aconteceu.':
    group==='early'?'Hoje vamos descobrir quem aparece nesta história, o que aconteceu e o que podemos aprender.':
    group==='middle'?'Abra a Bíblia e acompanhe comigo esta história. Vamos observar a ordem dos fatos e aquilo que Deus ensina.':
    group==='older'?'Vamos acompanhar atentamente os acontecimentos, observando suas causas, consequências e o que eles ensinam sobre Deus.':
