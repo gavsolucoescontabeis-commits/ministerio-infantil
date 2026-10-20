@@ -67,11 +67,9 @@ function stopAudio(){
  if($('readerListen'))updateListenLabel();
 }
 function refreshVoices(){
- const note=$('voiceNotice');
- if(!('speechSynthesis'in window)){danielVoice=null;if(note)note.textContent='Áudio não disponível neste navegador.';return}
+ if(!('speechSynthesis'in window)){danielVoice=null;return}
  const voices=window.speechSynthesis.getVoices();
  danielVoice=voices.find(v=>/\bdaniel\b/i.test(v.name)&&/^pt(?:-|$)/i.test(v.lang))||null;
- if(note)note.textContent=danielVoice?'♫ Voz da Leitura: Daniel':'♫ Voz Daniel não disponível neste aparelho.';
 }
 function speakSeries(parts){
  if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){toast('A leitura não está disponível neste navegador.');return}
