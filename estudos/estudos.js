@@ -459,7 +459,7 @@ function renderArchive(){const list=$('archiveList');list.replaceChildren();cons
   bottom.append(edit,dup,del);card.append(bottom);list.append(card)}
 }
 function exportArchive(){if(!state.lessons.length)return toast('Não há aulas para exportar.');
- const data={kind:'ministerio-infantil-estudos',version:1,exportedAt:new Date().toISOString(),items:state.lessons};
+ const data={kind:'ministerio-infantil-estudos',version:1,exportedAt:new Date().toISOString(),biblicalSource:{name:'Bíblia Livre (BLIVRE)',edition:'2017, versão GetBible 1.0.1',authors:'Diego Santos; Mario Sérgio; Marco Teles',license:'CC BY 3.0 Brasil',licenseUrl:'https://creativecommons.org/licenses/by/3.0/br/',source:'https://github.com/blivre/BibliaLivre'},items:state.lessons};
  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ministerio-infantil-aulas-'+dateNow()+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Backup de aulas gerado. Guarde o arquivo em local seguro.')}
 async function importArchive(e){const file=e.target.files?.[0];if(!file)return;try{if(file.size>2_000_000)throw Error('O backup ultrapassa 2 MB.');
  const input=JSON.parse(await file.text());if(input?.kind!=='ministerio-infantil-estudos'||input?.version!==1||!Array.isArray(input.items))throw Error('Arquivo não é um backup válido de Estudos.');
