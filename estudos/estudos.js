@@ -135,6 +135,70 @@ async function loadDevotional(){const request=++state.devRequest;const theme=THE
   $('devVerse').textContent=v.text;theme.text=v.text;$('devListenBtn').disabled=false;
  }catch(e){if(request!==state.devRequest)return;theme.text=null;$('devVerse').textContent='Não foi possível consultar o versículo agora. Use “Ler passagem” para tentar novamente.';}
 }
+
+/* Referências por assunto: catálogo editorial fixo, nunca seleção aleatória. */
+let topicTimer=0,topicAutoRef=null;
+const TOPICS=Array.isArray(window.MI_ESTUDOS_TOPICS)?window.MI_ESTUDOS_TOPICS:[];
+function topicMatches(raw){
+ const q=norm(raw);if(q.length<3)return [];
+ const queryWords=q.split(' ').filter(w=>w.length>2);
+ return TOPICS.map(topic=>{
+  const aliases=[topic.title,...topic.aliases].map(norm);
+  let score=0;
+  for(const alias of aliases){
+   if(q===alias){score=Math.max(score,120);continue}
+   if(alias.startsWith(q)&&q.length>=4){score=Math.max(score,72);continue}
+   if(q.startsWith(alias)&&alias.length>=5){score=Math.max(score,88);continue}
+   if(alias.includes(q)&&q.length>=5){score=Math.max(score,60);continue}
+   if(queryWords.length>=2){
+    const words=alias.split(' ').filter(w=>w.length>2);
+    const shared=queryWords.filter(w=>words.includes(w)).length;
+    if(shared>=2&&shared/queryWords.length>=.66)score=Math.max(score,40+shared*4);
+   }
+  }
+  return {topic,score,exact:aliases.includes(q)};
+ }).filter(x=>x.score>=40).sort((a,b)=>b.score-a.score||a.topic.title.localeCompare(b.topic.title,'pt-BR')).slice(0,5);
+}
+function fillTopicReference(ref){
+ const parsed=parseReference(ref);if(!parsed){toast('Referência não reconhecida.');return}
+ $('lessonReference').value=ref;topicAutoRef=ref;
+ $('lessonReference').dispatchEvent(new Event('change',{bubbles:true}));
+ toast('Passagem '+ref+' inserida na aula.');
+}
+function renderTopicSuggestions(){
+ const input=$('lessonTitle'),container=$('topicSuggestions');const matches=topicMatches(input.value);
+ container.replaceChildren();container.hidden=!input.value.trim()||norm(input.value).length<3;
+ if(container.hidden)return;
+ const head=document.createElement('div');head.className='topic-head';
+ const label=document.createElement('strong');label.textContent=matches.length?'Passagens bíblicas sugeridas':'Nenhuma referência encontrada no catálogo';
+ const badge=document.createElement('span');badge.className='topic-badge';badge.textContent=matches.length?'SUGESTÕES POR ASSUNTO':'BUSCA POR ASSUNTO';
+ head.append(label,badge);container.append(head);
+ if(!matches.length){
+  const p=document.createElement('p');p.className='topic-help';p.textContent='Este assunto ainda não está no nosso catálogo. Informe uma referência manualmente ou procure na Bíblia on-line. Não sugerimos versículos aleatórios.';container.append(p);
+  if(topicAutoRef&&$('lessonReference').value===topicAutoRef){$('lessonReference').value='';topicAutoRef=null}
+  return;
+ }
+ const top=matches[0];
+ if(top.exact&&(!$('lessonReference').value.trim()||$('lessonReference').value===topicAutoRef)){
+  $('lessonReference').value=top.topic.references[0];topicAutoRef=top.topic.references[0];
+ }
+ for(const {topic,score} of matches){
+  const block=document.createElement('div');block.className='topic-result';
+  const title=document.createElement('div');title.className='topic-result-title';const strong=document.createElement('strong');strong.textContent=topic.title;
+  const small=document.createElement('span');small.textContent=topic.note;title.append(strong,small);block.append(title);
+  const refs=document.createElement('div');refs.className='topic-refs';
+  for(const ref of topic.references){
+   const btn=document.createElement('button');btn.type='button';btn.className='topic-ref-btn';
+   btn.textContent=ref;btn.setAttribute('aria-label','Usar '+ref+' na preparação de aula');
+   btn.addEventListener('click',()=>{fillTopicReference(ref);renderTopicSuggestions()});
+   if($('lessonReference').value===ref)btn.classList.add('chosen');
+   refs.append(btn);
+  }
+  block.append(refs);container.append(block);
+ }
+ const p=document.createElement('p');p.className='topic-help';p.textContent='As referências são sugestões de estudo. Leia o contexto antes de montar a aula; você pode alterar a passagem escolhida.';container.append(p);
+}
+
 function getLessonForm(){const read=id=>$(id).value.trim();return {
  id:state.editingId,title:read('lessonTitle'),date:read('lessonDate'),age:read('lessonAge'),reference:read('lessonReference'),
  goal:read('lessonGoal'),context:read('lessonContext'),story:read('lessonStory'),application:read('lessonApplication'),
@@ -142,7 +206,7 @@ function getLessonForm(){const read=id=>$(id).value.trim();return {
 }}
 function putLessonForm(x){const ids={lessonTitle:'title',lessonDate:'date',lessonAge:'age',lessonReference:'reference',lessonGoal:'goal',lessonContext:'context',lessonStory:'story',lessonApplication:'application',lessonQuestions:'questions',lessonActivity:'activity',lessonPrayer:'prayer'};
  for(const [id,key] of Object.entries(ids))$(id).value=x?.[key]??(id==='lessonDate'?dateNow():id==='lessonAge'?'9 anos':'');
- state.editingId=x?.id||null;$('lessonFeedback').textContent=state.editingId?'Editando preparação existente.':'Nova preparação — ainda não salva.'}
+ state.editingId=x?.id||null;topicAutoRef=null;$('topicSuggestions').hidden=true;$('topicSuggestions').replaceChildren();$('lessonFeedback').textContent=state.editingId?'Editando preparação existente.':'Nova preparação — ainda não salva.'}
 function loadLessons(){try{const raw=JSON.parse(localStorage.getItem(SAVE_KEY)||'[]');if(Array.isArray(raw))return raw.filter(isLesson).slice(0,500)}catch(e){console.warn('Falha na leitura dos rascunhos',e)}return []}
 function isLesson(x){return !!(x&&typeof x==='object'&&!Array.isArray(x)&&typeof x.id==='string'&&typeof x.title==='string'&&typeof x.reference==='string'&&x.id.length<90&&x.title.length<=160&&x.reference.length<=90)}
 function saveLessons(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state.lessons));return true}catch(e){toast('Não foi possível salvar. Verifique o armazenamento do dispositivo.');return false}}
@@ -208,6 +272,9 @@ function init(){
  $('readerStop').addEventListener('click',stopAudio);
  $('copySelectedVerse').addEventListener('click',()=>{const t=chapterSelectedText();if(t)copy(t);else toast('A passagem ainda não está carregada.')});
  $('useSelectedVerse').addEventListener('click',useReaderInLesson);$('readFromLesson').addEventListener('click',useReaderInLesson);
+ $('lessonTitle').addEventListener('input',()=>{clearTimeout(topicTimer);topicTimer=setTimeout(renderTopicSuggestions,230)});
+ $('lessonTitle').addEventListener('blur',()=>{clearTimeout(topicTimer);renderTopicSuggestions()});
+ $('lessonReference').addEventListener('input',()=>{topicAutoRef=null;renderTopicSuggestions()});
  $('lessonForm').addEventListener('submit',saveLesson);$('newLesson').addEventListener('click',()=>{if(confirm('Iniciar uma preparação em branco? As alterações ainda não salvas serão descartadas.'))putLessonForm(null)});
  $('copyMasterPrompt').addEventListener('click',()=>{const prompt=lessonPrompt();if(prompt)copy(prompt)});
  $('printLesson').addEventListener('click',()=>window.print());$('acervoNew').addEventListener('click',()=>{putLessonForm(null);navigate('aulas')});
