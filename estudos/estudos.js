@@ -357,6 +357,15 @@ const LESSON_FIELDS=Object.freeze({
  activity:['lessonActivity','Atividade, Dinâmica e Ilustração'],
  prayer:['lessonPrayer','Encerramento e Oração']
 });
+function selectedAge(){
+ const age=$('lessonAge').value;
+ return age==='Outra faixa etária'?$('lessonAgeCustom').value.trim():age;
+}
+function syncCustomAge(){
+ const enabled=$('lessonAge').value==='Outra faixa etária';
+ $('customLessonAgeWrap').hidden=!enabled;
+ $('lessonAgeCustom').required=enabled;
+}
 function clearLessonSuggestions(){
  lessonSuggestRequest++;lessonSuggestVariants=null;lessonChoiceIndices={};
  const panel=$('lessonSuggestionPanel');
@@ -402,7 +411,7 @@ function renderLessonSuggestionVariants(reference){
  }
  panel.hidden=false;updateChosenLessonOptions();
  const kind=lessonSuggestVariants?.meta?.narrativeMode;
- const age=$('lessonAge').value;
+ const age=selectedAge();
  $('storyAgeNotice').textContent=kind==='narrative'?
   'História narrada e comparações do cotidiano preparadas para '+age+'. São sugestões editoriais; confira sempre os acontecimentos na Bíblia.':
   'Leitura Bíblica Guiada preparada para '+age+'. Esta passagem ainda não tem roteiro narrativo revisado; o aplicativo não inventa acontecimentos.';
@@ -410,8 +419,9 @@ function renderLessonSuggestionVariants(reference){
  panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function createLessonSuggestions(){
- const title=$('lessonTitle').value.trim(),reference=$('lessonReference').value.trim(),age=$('lessonAge').value;
+ const title=$('lessonTitle').value.trim(),reference=$('lessonReference').value.trim(),age=selectedAge();
  if(!title||!reference){toast('Informe o Tema da Aula e a Passagem Bíblica Principal antes de pedir sugestões.');return}
+ if(!age){toast('Informe a idade ou faixa etária das crianças.');$('lessonAgeCustom').focus();return}
  const found=parseReference(reference);if(!found){toast('A referência bíblica informada não foi reconhecida. Ex.: João 2:1-11.');return}
  const match=reference.match(/:\s*(\d{1,3})\s*[-–]\s*(\d{1,3})\s*$/u);
  const first=found.verse||1;const last=match?Number(match[2]):found.verse||999;
@@ -437,19 +447,29 @@ function fillEmptyLessonFields(){
  toast(applied?applied+' campo(s) vazio(s) preenchido(s). Clique em Montar Aula e Visualizar para finalizar.':'Nenhum campo vazio. Escolha uma opção específica para substituir o texto.');
 }
 function getLessonForm(){const read=id=>$(id).value.trim();return {
- id:state.editingId,title:read('lessonTitle'),date:read('lessonDate'),age:read('lessonAge'),reference:read('lessonReference'),
+ id:state.editingId,title:read('lessonTitle'),date:read('lessonDate'),age:selectedAge(),reference:read('lessonReference'),
  goal:read('lessonGoal'),context:read('lessonContext'),story:read('lessonStory'),application:read('lessonApplication'),
  questions:read('lessonQuestions'),activity:read('lessonActivity'),prayer:read('lessonPrayer')
 }}
-function putLessonForm(x){const ids={lessonTitle:'title',lessonDate:'date',lessonAge:'age',lessonReference:'reference',lessonGoal:'goal',lessonContext:'context',lessonStory:'story',lessonApplication:'application',lessonQuestions:'questions',lessonActivity:'activity',lessonPrayer:'prayer'};
- for(const [id,key] of Object.entries(ids))$(id).value=x?.[key]??(id==='lessonDate'?dateNow():id==='lessonAge'?'9 anos':'');
- state.editingId=x?.id||null;clearLessonSuggestions();topicAutoRef=null;$('topicSuggestions').hidden=true;$('topicSuggestions').replaceChildren();clearBibleSearch();$('lessonFeedback').textContent=state.editingId?'Editando preparação existente.':'Nova preparação — ainda não salva.'}
+function putLessonForm(x){
+ const ids={lessonTitle:'title',lessonDate:'date',lessonReference:'reference',lessonGoal:'goal',lessonContext:'context',lessonStory:'story',lessonApplication:'application',lessonQuestions:'questions',lessonActivity:'activity',lessonPrayer:'prayer'};
+ for(const [id,key] of Object.entries(ids))$(id).value=x?.[key]??(id==='lessonDate'?dateNow():'');
+ const chosenAge=String(x?.age||'9 anos');
+ const known=['9 anos','4 a 6 anos','7 a 8 anos','10 a 12 anos','Adolescentes','Outra faixa etária'];
+ $('lessonAge').value=known.includes(chosenAge)?chosenAge:'Outra faixa etária';
+ $('lessonAgeCustom').value=known.includes(chosenAge)?'':chosenAge;
+ syncCustomAge();
+ state.editingId=x?.id||null;clearLessonSuggestions();topicAutoRef=null;
+ $('topicSuggestions').hidden=true;$('topicSuggestions').replaceChildren();clearBibleSearch();
+ $('lessonFeedback').textContent=state.editingId?'Editando preparação existente.':'Nova preparação — ainda não salva.';
+}
 function loadLessons(){try{const raw=JSON.parse(localStorage.getItem(SAVE_KEY)||'[]');if(Array.isArray(raw))return raw.filter(isLesson).slice(0,500)}catch(e){console.warn('Falha na leitura dos rascunhos',e)}return []}
 function isLesson(x){return !!(x&&typeof x==='object'&&!Array.isArray(x)&&typeof x.id==='string'&&typeof x.title==='string'&&typeof x.reference==='string'&&x.id.length<90&&x.title.length<=160&&x.reference.length<=90)}
 function saveLessons(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state.lessons));return true}catch(e){toast('Não foi possível salvar. Verifique o armazenamento do dispositivo.');return false}}
 function persistLesson(){
  const data=getLessonForm();
  if(!data.title||!data.reference){toast('Informe o Tema e a Passagem Bíblica Principal para concluir a aula.');return null}
+ if(!data.age){toast('Informe a idade ou faixa etária antes de salvar.');return null}
  const old=state.lessons.find(x=>x.id===data.id);
  data.id=old?.id||('aula-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9));
  data.createdAt=old?.createdAt||new Date().toISOString();data.updatedAt=new Date().toISOString();
@@ -567,7 +587,8 @@ function init(){
  $('lessonTitle').addEventListener('input',()=>{clearLessonSuggestions();clearTimeout(topicTimer);topicTimer=setTimeout(renderTopicSuggestions,230);planScriptureSearch()});
  $('lessonTitle').addEventListener('blur',()=>{clearTimeout(topicTimer);renderTopicSuggestions()});
  $('lessonReference').addEventListener('input',()=>{clearLessonSuggestions();topicAutoRef=null;renderTopicSuggestions()});
- $('lessonAge').addEventListener('change',()=>{if(lessonSuggestVariants){clearLessonSuggestions();toast('Faixa etária alterada. Clique em Sugerir Aula para gerar as versões apropriadas à nova idade.')}});
+ $('lessonAge').addEventListener('change',()=>{syncCustomAge();if(lessonSuggestVariants){clearLessonSuggestions();toast('Faixa etária alterada. Clique em Sugerir Aula para gerar as versões apropriadas à nova idade.')}});
+ $('lessonAgeCustom').addEventListener('input',()=>{if(lessonSuggestVariants)clearLessonSuggestions()});
  $('generateLessonSuggestions').addEventListener('click',createLessonSuggestions);
  $('assembleLesson').addEventListener('click',assembleLesson);
  $('finishSuggestedLesson').addEventListener('click',assembleLesson);
