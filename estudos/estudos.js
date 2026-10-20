@@ -5,7 +5,12 @@
  * Não grava textos bíblicos no repositório nem coleta dados de crianças.
  * Rascunhos locais: localStorage do navegador, com exportação de backup.
  */
-const API='https://api.getbible.net/v2/almeida';
+const API_ROOT='https://api.getbible.net/v2';
+const TRANSLATION_KEY='mi_estudos_biblia_traducao_v1';
+const TRANSLATIONS=Object.freeze({
+ almeida:{label:'Almeida 1911',heading:'ALMEIDA • EDIÇÃO DE 1911',attribution:'Almeida 1911 • texto histórico de domínio público; arquivo digital GetBible marcado GPL.',url:'https://api.getbible.net/v2/translations.json'},
+ livre:{label:'Bíblia Livre',heading:'BÍBLIA LIVRE • CC BY 3.0 BRASIL',attribution:'Bíblia Livre • CC BY 3.0 Brasil • Fonte: projeto Bíblia Livre, GetBible.',url:'https://github.com/blivre/BibliaLivre/blob/master/LICENCA.md'}
+});
 const SAVE_KEY='mi_estudos_piloto_aulas_v1';
 const LAST_READER='mi_estudos_piloto_leitura_v1';
 const B=[
@@ -54,66 +59,61 @@ const norm=t=>String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLo
 const bookName=n=>B.find(b=>b.id===Number(n))?.name||('Livro '+n);
 const dateNow=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const showDate=s=>{if(!s)return 'Sem data';const [y,m,d]=s.split('-');return [d,m,y].join('/')};
-const state={view:'inicio',reader:{book:43,ch:3,selected:16,verses:[]},cadence:'daily',theme:null,lessons:[],editingId:null,readerRequest:0,devRequest:0,booksLoaded:false};
+const state={view:'inicio',translation:'almeida',reader:{book:43,ch:3,selected:16,verses:[]},cadence:'daily',theme:null,lessons:[],editingId:null,readerRequest:0,devRequest:0,booksLoaded:false};
 const chapterCache=new Map();
 let toastTimer=0;
 function toast(msg){const e=$('toast');e.textContent=String(msg);e.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove('show'),3500)}
-const VOICE_KEY='mi_estudos_piloto_voice_v1';
 let speechGeneration=0;
-let voiceOptions=[];
+let danielVoice=null;
 function stopAudio(){
  speechGeneration++;
  if('speechSynthesis'in window)window.speechSynthesis.cancel();
- const readBtn=$('readerListen');if(readBtn)updateListenLabel();
+ if($('readerListen'))updateListenLabel();
 }
 function refreshVoices(){
- const select=$('voiceSelect');if(!select||!('speechSynthesis'in window))return;
- const previous=select.value||(()=>{try{return localStorage.getItem(VOICE_KEY)||''}catch(e){return ''}})();
- voiceOptions=window.speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith('pt'));
- select.replaceChildren(new Option('Automática (Melhor Voz Disponível)',''));
- for(const v of voiceOptions){select.add(new Option(v.name+' · '+v.lang+(v.localService?'':' · Rede'),v.voiceURI))}
- select.value=voiceOptions.some(v=>v.voiceURI===previous)?previous:'';
-}
-function chooseVoice(){
- const selected=$('voiceSelect')?.value;
- if(selected&&voiceOptions.some(v=>v.voiceURI===selected))return voiceOptions.find(v=>v.voiceURI===selected);
- const voices=voiceOptions.length?voiceOptions:window.speechSynthesis.getVoices().filter(v=>v.lang?.toLowerCase().startsWith('pt'));
- const rank=v=>(v.lang.toLowerCase()==='pt-br'?100:0)+(/natural|neural|premium|enhanced|online|google|microsoft/i.test(v.name)?30:0)+(v.default?10:0);
- return [...voices].sort((a,b)=>rank(b)-rank(a))[0]||null;
+ const note=$('voiceNotice');
+ if(!('speechSynthesis'in window)){danielVoice=null;if(note)note.textContent='Áudio não disponível neste navegador.';return}
+ const voices=window.speechSynthesis.getVoices();
+ danielVoice=voices.find(v=>/\\bdaniel\\b/i.test(v.name)&&/^pt(?:-|$)/i.test(v.lang))||null;
+ if(note)note.textContent=danielVoice?'♫ Voz da Leitura: Daniel':'♫ Voz Daniel não disponível neste aparelho.';
 }
 function speakSeries(parts){
- if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){toast('Este navegador não oferece leitura em voz alta.');return}
+ if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){toast('A leitura não está disponível neste navegador.');return}
+ refreshVoices();
+ if(!danielVoice){toast('A voz Daniel não está disponível neste navegador. Não usamos outra voz automaticamente.');return}
  stopAudio();const current=++speechGeneration;
- const voice=chooseVoice();
- const fragments=parts.map(String).filter(Boolean);
- if(!fragments.length){toast('Não há versículos disponíveis para leitura.');return}
+ const fragments=parts.map(x=>String(x||'').trim()).filter(Boolean);
+ if(!fragments.length){toast('Não há texto disponível para leitura.');return}
+ // Agrupar trechos curtos para evitar uma pausa artificial em cada versículo.
+ const chunks=[];let buffer='';
+ for(const part of fragments){if(buffer&&buffer.length+part.length>490){chunks.push(buffer);buffer=''}buffer+=(buffer?' ':'')+part}
+ if(buffer)chunks.push(buffer);
  let index=0;
  const next=()=>{
-  if(current!==speechGeneration||index>=fragments.length)return;
-  const u=new SpeechSynthesisUtterance(fragments[index++]);u.lang='pt-BR';u.rate=1;u.pitch=1;
-  if(voice)u.voice=voice;
+  if(current!==speechGeneration||index>=chunks.length)return;
+  const u=new SpeechSynthesisUtterance(chunks[index++]);
+  u.voice=danielVoice;u.lang=danielVoice.lang||'pt-BR';u.rate=.97;u.pitch=1;
   u.onend=()=>{if(current===speechGeneration)next()};
-  u.onerror=e=>{if(current===speechGeneration){if(e.error!=='canceled'&&e.error!=='interrupted')toast('A voz do dispositivo interrompeu a leitura. Experimente outra voz.');stopAudio()}};
-  try{window.speechSynthesis.speak(u)}catch(e){toast('Não foi possível iniciar a leitura neste dispositivo.');stopAudio()}
+  u.onerror=e=>{if(current===speechGeneration){if(e.error!=='canceled'&&e.error!=='interrupted')toast('Não foi possível continuar a leitura com Daniel.');stopAudio()}};
+  try{window.speechSynthesis.speak(u)}catch(_){toast('A narração com Daniel não pôde iniciar.');stopAudio()}
  };
- next();toast('Reproduzindo com a voz do aparelho. Você pode experimentar outra voz em “Voz da Leitura”.');
+ next();toast('Lendo com a voz Daniel.');
 }
 function speak(text){speakSeries([text])}
 function readerAudioParts(){
- const vs=state.reader.verses;
- const start=state.reader.selected&&vs.some(v=>v.verse===state.reader.selected)?state.reader.selected:vs[0]?.verse||1;
- return vs.filter(v=>v.verse>=start).map(v=>'Versículo '+v.verse+'. '+v.text);
+ const verses=state.reader.verses;
+ const start=state.reader.selected&&verses.some(v=>v.verse===state.reader.selected)?state.reader.selected:verses[0]?.verse||1;
+ return verses.filter(v=>v.verse>=start).map((v,i)=>(i===0?'Versículo '+v.verse+'. ':'')+v.text);
 }
 function updateListenLabel(){
- const e=$('readerListen');if(!e)return;
- const exists=state.reader.verses.some(v=>v.verse===state.reader.selected);
- const start=exists?state.reader.selected:state.reader.verses[0]?.verse;
- e.textContent=exists?'♫ Ouvir do Versículo '+start:'♫ Ouvir Capítulo';
+ const btn=$('readerListen');if(!btn)return;
+ const found=state.reader.verses.some(v=>v.verse===state.reader.selected);
+ btn.textContent=found?'♫ Ouvir do Versículo '+state.reader.selected:'♫ Ouvir Capítulo';
 }
 async function copy(text){try{await navigator.clipboard.writeText(text);toast('Copiado!')}catch(e){const t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.top='-9999px';document.body.append(t);t.select();try{document.execCommand('copy');toast('Copiado!')}catch(x){toast('Não foi possível copiar neste navegador.')}t.remove()}}
 function navigate(view,skipReaderLoad=false){if(!['inicio','biblia','aulas','acervo'].includes(view))return;stopAudio();state.view=view;document.querySelectorAll('.page').forEach(n=>n.classList.toggle('active',n.id==='view-'+view));document.querySelectorAll('[data-view]').forEach(n=>{const active=n.dataset.view===view;n.classList.toggle('active',active);if(active)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current')});$('sidebar').classList.remove('open');$('menuToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});if(view==='biblia'&&!state.reader.verses.length&&!skipReaderLoad)loadReader();if(view==='acervo')renderArchive();}
-async function getChapter(book,ch){const key=book+'/'+ch;if(chapterCache.has(key))return chapterCache.get(key);
- const response=await fetch(API+'/'+Number(book)+'/'+Number(ch)+'.json',{cache:'default',headers:{'Accept':'application/json'}});if(!response.ok){if(response.status===429)throw Error('O serviço bíblico atingiu o limite de consultas. Tente novamente mais tarde.');throw Error('A fonte bíblica retornou erro '+response.status+'.')}
+async function getChapter(book,ch,translation=state.translation){const key=translation+'/'+book+'/'+ch;if(chapterCache.has(key))return chapterCache.get(key);
+ const response=await fetch(API_ROOT+'/'+translation+'/'+Number(book)+'/'+Number(ch)+'.json',{cache:'default',headers:{'Accept':'application/json'}});if(!response.ok){if(response.status===429)throw Error('O serviço bíblico atingiu o limite de consultas. Tente novamente mais tarde.');throw Error('A fonte bíblica retornou erro '+response.status+'.')}
  const parsed=await response.json();if(!parsed||!Array.isArray(parsed.verses)||!parsed.verses.length)throw Error('A passagem não está disponível nesta tradução.');
  const verses=parsed.verses.map(v=>({verse:Number(v.verse),text:String(v.text||'').trim()})).filter(v=>Number.isSafeInteger(v.verse)&&v.verse>0&&v.text);
  if(!verses.length)throw Error('O capítulo está sem versículos disponíveis.');
@@ -121,7 +121,7 @@ async function getChapter(book,ch){const key=book+'/'+ch;if(chapterCache.has(key
 }
 async function loadBookCatalogue(){
  try{
-  const response=await fetch(API+'/books.json',{cache:'default'});
+  const response=await fetch(API_ROOT+'/'+state.translation+'/books.json',{cache:'default'});
   if(!response.ok)throw Error('HTTP '+response.status);
   const books=await response.json();if(!books||typeof books!=='object')throw Error('Índice indisponível');
   const published=new Set(Object.keys(books).map(Number));
@@ -148,8 +148,8 @@ function renderVerses(){const verses=state.reader.verses;
  const exists=verses.some(v=>v.verse===state.reader.selected);selectVerse(exists?state.reader.selected:0,false);
  if(state.reader.selected)requestAnimationFrame(()=>selectVerse(state.reader.selected,true));
 }
-async function loadReader(){const request=++state.readerRequest;stopAudio();$('readerStatus').className='reader-status';$('readerStatus').textContent='Carregando '+bookName(state.reader.book)+' '+state.reader.ch+'...';$('versesContainer').replaceChildren();state.reader.verses=[];
- try{const verses=await getChapter(state.reader.book,state.reader.ch);if(request!==state.readerRequest)return;state.reader.verses=verses;renderVerses();$('readerStatus').textContent='Toque em um versículo para selecioná-lo. A leitura abaixo vem da Bíblia Almeida 1911.';try{localStorage.setItem(LAST_READER,JSON.stringify({book:state.reader.book,ch:state.reader.ch}))}catch(_){}}
+async function loadReader(){const request=++state.readerRequest;const translation=state.translation;stopAudio();$('readerStatus').className='reader-status';$('readerStatus').textContent='Carregando '+bookName(state.reader.book)+' '+state.reader.ch+'...';$('versesContainer').replaceChildren();state.reader.verses=[];
+ try{const verses=await getChapter(state.reader.book,state.reader.ch,translation);if(request!==state.readerRequest)return;state.reader.verses=verses;renderVerses();$('readerStatus').textContent='Toque em um versículo para selecioná-lo. Você está lendo: '+TRANSLATIONS[translation].label+'.';try{localStorage.setItem(LAST_READER,JSON.stringify({book:state.reader.book,ch:state.reader.ch}))}catch(_){}}
  catch(e){if(request!==state.readerRequest)return;$('readerStatus').className='reader-status error';$('readerStatus').textContent='Não foi possível carregar a Bíblia on-line: '+e.message+' Verifique sua conexão e tente novamente.';}
 }
 function switchChapter(book,ch,verse=0){if(!B[Number(book)-1]||!Number.isInteger(Number(ch))||ch<1||ch>B[book-1].chapters)return toast('Capítulo não encontrado.');
@@ -170,14 +170,14 @@ function referenceSelected(){const base=bookName(state.reader.book)+' '+state.re
 function useReaderInLesson(){const ref=referenceSelected();$('lessonReference').value=ref;if(!$('lessonTitle').value.trim())$('lessonTitle').value='Estudo de '+ref;navigate('aulas');toast('Referência inserida na preparação da aula.')}
 function todayUTCIndex(){const d=new Date();return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000)}
 function themeIndex(){const d=new Date();const val=state.cadence==='weekly'?Math.floor(todayUTCIndex()/7):state.cadence==='monthly'?d.getFullYear()*12+d.getMonth():todayUTCIndex();return ((val%THEMES.length)+THEMES.length)%THEMES.length}
-async function loadDevotional(){const request=++state.devRequest;const theme=THEMES[themeIndex()];state.theme=theme;const date=new Date();
+async function loadDevotional(){const request=++state.devRequest;const translation=state.translation;const theme=THEMES[themeIndex()];state.theme=theme;const date=new Date();
  const dateText=date.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
  $('devPeriod').textContent=state.cadence==='daily'?'DEVOCIONAL DO DIA':state.cadence==='weekly'?'TEMA DA SEMANA':'TEMA DO MÊS';
  $('devDate').textContent=dateText;
  $('devTitle').textContent=theme.title;$('devReflection').textContent=theme.thought;$('devPrayer').textContent='Para orar: '+theme.prayer;
  $('devReference').textContent=bookName(theme.book)+' '+theme.ch+':'+theme.v;
  $('devVerse').textContent='Consultando o texto bíblico...';$('devListenBtn').disabled=true;
- try{const verses=await getChapter(theme.book,theme.ch);if(request!==state.devRequest)return;const v=verses.find(v=>v.verse===theme.v);
+ try{const verses=await getChapter(theme.book,theme.ch,translation);if(request!==state.devRequest)return;const v=verses.find(v=>v.verse===theme.v);
   if(!v)throw Error('Versículo não encontrado no capítulo.');
   $('devVerse').textContent=v.text;theme.text=v.text;$('devListenBtn').disabled=false;
  }catch(e){if(request!==state.devRequest)return;theme.text=null;$('devVerse').textContent='Não foi possível consultar o versículo agora. Use “Ler passagem” para tentar novamente.';}
@@ -278,7 +278,7 @@ function renderTopicSuggestions(){
  */
 let scriptureSearchTimer=0,scriptureSearchRequest=0,scriptureAbort=null;
 const scriptureSearchCache=new Map();
-const BIBLE_SEARCH='https://search.getbible.net/v2/almeida';
+const BIBLE_SEARCH='https://search.getbible.net/v2';
 function bibleSearchTerms(raw){
  const words=searchWords(raw);
  if(!words.length)return '';
@@ -332,15 +332,15 @@ async function bibleWordSearch(raw){
  if(scriptureAbort)scriptureAbort.abort();
  scriptureAbort=typeof AbortController==='function'?new AbortController():null;
  showBibleSearchStatus('Buscando ocorrências no texto bíblico...',true);
- if(scriptureSearchCache.has(term)){if(token===scriptureSearchRequest)renderBibleSearch(scriptureSearchCache.get(term),term);return}
- const url=BIBLE_SEARCH+'?'+new URLSearchParams({q:term,words:'all',sort:'relevance',limit:'8',diacritics:'fold'}).toString();
+ const searchKey=state.translation+'/'+term;if(scriptureSearchCache.has(searchKey)){if(token===scriptureSearchRequest)renderBibleSearch(scriptureSearchCache.get(searchKey),term);return}
+ const url=BIBLE_SEARCH+'/'+state.translation+'?'+new URLSearchParams({q:term,words:'all',sort:'relevance',limit:'8',diacritics:'fold'}).toString();
  try{
   const response=await fetch(url,{headers:{Accept:'application/json'},signal:scriptureAbort?.signal});
   if(!response.ok)throw Error('Código '+response.status);
   const body=await response.json();
   if(!body||!Array.isArray(body.matches))throw Error('Resposta inesperada da fonte bíblica.');
   if(token!==scriptureSearchRequest)return;
-  scriptureSearchCache.set(term,body);renderBibleSearch(body,term);
+  scriptureSearchCache.set(searchKey,body);renderBibleSearch(body,term);
  }catch(e){if(token!==scriptureSearchRequest||e.name==='AbortError')return;showBibleSearchStatus('A pesquisa por palavras está temporariamente indisponível. As sugestões por assunto continuam funcionando.')}
 }
 function planScriptureSearch(){
@@ -404,7 +404,26 @@ async function importArchive(e){const file=e.target.files?.[0];if(!file)return;t
  const existing=new Set(state.lessons.map(x=>x.id));const added=input.items.filter(x=>!existing.has(x.id));const previous=state.lessons;state.lessons=[...added,...previous].slice(0,500);
  if(!saveLessons()){state.lessons=previous;return}renderArchive();toast(added.length+' aula(s) importada(s), sem substituir as existentes.');
  }catch(err){toast('Falha na importação: '+err.message)}finally{e.target.value=''}}
+
+function refreshTranslationLabel(){
+ const tr=TRANSLATIONS[state.translation];
+ $('translationSelect').value=state.translation;
+ $('translationHeading').textContent=tr.heading;
+ $('translationAttribution').textContent=tr.attribution;
+ $('translationAttribution').title='Informações sobre direitos autorais: '+tr.url;
+}
+function changeTranslation(translation){
+ if(!Object.prototype.hasOwnProperty.call(TRANSLATIONS,translation)||state.translation===translation)return;
+ stopAudio();state.translation=translation;state.readerRequest++;state.devRequest++;
+ try{localStorage.setItem(TRANSLATION_KEY,translation)}catch(_){}
+ clearBibleSearch();refreshTranslationLabel();
+ loadDevotional();
+ if(state.view==='biblia')loadReader();
+ toast('Versão selecionada: '+TRANSLATIONS[translation].label+'.');
+}
 function init(){
+ try{const savedTranslation=localStorage.getItem(TRANSLATION_KEY);if(TRANSLATIONS[savedTranslation])state.translation=savedTranslation}catch(_){}
+ refreshTranslationLabel();
  const now=new Date();$('todayLabel').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});state.lessons=loadLessons();
  try{const saved=JSON.parse(localStorage.getItem(LAST_READER)||'{}');if(B[Number(saved.book)-1]&&Number(saved.ch)>0&&Number(saved.ch)<=B[saved.book-1].chapters){state.reader.book=Number(saved.book);state.reader.ch=Number(saved.ch);state.reader.selected=0}}catch(_){}
  renderBookControl();loadBookCatalogue();loadDevotional();putLessonForm(null);
@@ -421,7 +440,8 @@ function init(){
  $('prevChapter').addEventListener('click',()=>adjChapter(-1));$('nextChapter').addEventListener('click',()=>adjChapter(1));
  $('refForm').addEventListener('submit',e=>{e.preventDefault();const r=parseReference($('refInput').value);if(!r){toast('Referência não reconhecida. Ex.: João 3:16 ou Salmos 23.');return}switchChapter(r.book,r.ch,r.verse)});
  $('readerListen').addEventListener('click',()=>{if(!state.reader.verses.length)return toast('Carregue a passagem primeiro.');speakSeries(readerAudioParts())});
- $('readerStop').addEventListener('click',stopAudio);refreshVoices();if('speechSynthesis'in window){window.speechSynthesis.addEventListener?.('voiceschanged',refreshVoices)}$('voiceSelect').addEventListener('change',e=>{try{localStorage.setItem(VOICE_KEY,e.target.value)}catch(_){}stopAudio()});
+ $('readerStop').addEventListener('click',stopAudio);refreshVoices();if('speechSynthesis'in window)window.speechSynthesis.addEventListener?.('voiceschanged',refreshVoices);
+ $('translationSelect').addEventListener('change',e=>changeTranslation(e.target.value));
  $('copySelectedVerse').addEventListener('click',()=>{const t=chapterSelectedText();if(t)copy(t);else toast('A passagem ainda não está carregada.')});
  $('useSelectedVerse').addEventListener('click',useReaderInLesson);$('readFromLesson').addEventListener('click',useReaderInLesson);
  $('lessonTitle').addEventListener('input',()=>{clearTimeout(topicTimer);topicTimer=setTimeout(renderTopicSuggestions,230);planScriptureSearch()});
