@@ -7,9 +7,9 @@
   <meta name="description" content="Ambiente experimental de estudos bíblicos, leitura, devocionais e preparação de aulas para o Ministério Infantil da 4ª IEQ Curitiba.">
   <title>Estudos • Ministério Infantil – 4ª IEQ</title>
   <link rel="icon" type="image/svg+xml" href="./logo-ministerio.svg">
-  <link rel="stylesheet" href="./estudos.css?v=3">
+  <link rel="stylesheet" href="./estudos.css?v=4">
   <script src="./temas.js?v=2" defer></script>
-  <script src="./estudos.js?v=3" defer></script>
+  <script src="./estudos.js?v=4" defer></script>
 </head>
 <body>
   <div class="workspace">
@@ -80,7 +80,12 @@
           <div class="page-title"><div><div class="eyebrow">66 LIVROS PARA EXPLORAR</div><h1>Bíblia On-line</h1><p>Escolha o livro, o capítulo e o versículo que deseja estudar.</p></div><button type="button" class="outline-btn" id="readFromLesson">Usar na Preparação de Aula →</button></div>
           <div class="reader-layout">
             <div class="card reader-controls">
-              <div class="reader-control-title"><div class="eyebrow">LOCALIZE UMA PASSAGEM</div><strong>Encontre o Texto Bíblico</strong></div>
+              <div class="reader-control-title">
+                <div><div class="eyebrow">LOCALIZE UMA PASSAGEM</div><strong>Encontre o Texto Bíblico</strong></div>
+                <div class="translation-picker"><label for="translationSelect">Tradução Bíblica</label><select id="translationSelect">
+                  <option value="almeida">Almeida — 1911 (Histórica)</option><option value="livre">Bíblia Livre — Linguagem Mais Atual</option>
+                </select></div>
+              </div>
               <div class="reader-top-row">
                 <div class="control-field book-field"><label for="bookSelect">Livro da Bíblia</label><select id="bookSelect"></select></div>
                 <div class="control-field chapter-field"><label for="chapterSelect">Capítulo</label><select id="chapterSelect"></select></div>
@@ -90,15 +95,15 @@
               <div class="reader-toolbar">
                 <div class="reader-navigate"><button type="button" id="prevChapter" class="soft-btn">← Anterior</button><button type="button" id="nextChapter" class="soft-btn">Próximo →</button></div>
                 <div class="reader-audio"><button type="button" id="readerListen" class="primary-btn">♫ Ouvir Capítulo</button><button type="button" id="readerStop" class="soft-btn">■ Parar Áudio</button></div>
-                <div class="reader-voice"><label for="voiceSelect">Voz da Leitura</label><select id="voiceSelect"><option value="">Voz Padrão do Aparelho</option></select></div>
-                <span class="tiny reader-hint">Toque em um versículo para selecioná-lo e começar a ouvir a partir dele. A qualidade do áudio depende das vozes instaladas no dispositivo.</span>
+                <span class="reader-voice-note" id="voiceNotice">♫ Narração: voz Daniel, se disponível neste aparelho.</span>
+                <span class="tiny reader-hint">Selecione um versículo para iniciar a leitura a partir dele. A narração utiliza exclusivamente a voz Daniel quando disponível neste navegador.</span>
               </div>
             </div>
             <article class="card scripture">
-              <div class="scripture-top"><div><div class="eyebrow">ALMEIDA • EDIÇÃO DE 1911</div><h2 id="chapterHeading">João 3</h2></div><div class="scripture-actions"><button type="button" class="small-btn" id="copySelectedVerse">Copiar Versículo</button><button type="button" class="small-btn" id="useSelectedVerse">Usar na Aula</button></div></div>
+              <div class="scripture-top"><div><div class="eyebrow"><span id="translationHeading">ALMEIDA • EDIÇÃO DE 1911</span></div><h2 id="chapterHeading">João 3</h2></div><div class="scripture-actions"><button type="button" class="small-btn" id="copySelectedVerse">Copiar Versículo</button><button type="button" class="small-btn" id="useSelectedVerse">Usar na Aula</button></div></div>
               <div id="readerStatus" class="reader-status" role="status">Preparando leitura...</div>
               <div id="versesContainer" class="verses" aria-label="Versículos do capítulo"></div>
-              <div class="scripture-footer"><span>Como usar: toque em um versículo e clique em <strong>Usar na Aula</strong>; sem selecionar, será usado o capítulo inteiro.</span><span>Fonte: <a href="https://getbible.net/api/bible/" target="_blank" rel="noopener noreferrer">GetBible • Almeida 1911</a> · Consulte a fonte para verificar o texto.</span></div>
+              <div class="scripture-footer"><span>Como usar: toque em um versículo e clique em <strong>Usar na Aula</strong>; sem selecionar, será usado o capítulo inteiro.</span><span>Fonte: <a href="https://getbible.net/api/bible/" target="_blank" rel="noopener noreferrer">GetBible</a> · <span id="translationAttribution">Almeida 1911 • texto histórico (módulo digital com metadados GPL).</span> <span>Consulte a tradução e seus termos antes de republicar.</span></span></div>
             </article>
           </div>
         </section>
