@@ -1,57 +1,40 @@
 # Estudos • Ministério Infantil – 4ª IEQ Curitiba
 
-## Objetivo
-Módulo **experimental e independente**, publicado em \`/estudos/\`. Não altera \`index.html\` ou qualquer funcionalidade aprovada do aplicativo principal. Integração ao menu principal **somente após aprovação expressa** do responsável pelo projeto.
+## Situação
+Módulo **integrado ao aplicativo oficial** pela aba **Estudos**, dentro do menu de usuários autenticados, sem substituir os módulos já aprovados. O mesmo módulo também está disponível em `/estudos/` para leitura em tela cheia. O acesso direto à página de Estudos não exige login; nela **não há dados de crianças ou de equipe**.
 
-## O que já funciona
-- Bíblia online em português: **Almeida 1911** e **Bíblia Livre**, ambas servidas pela API GetBible v2, sem copiar o texto para o repositório. A Almeida é o padrão no piloto até avaliação da Bíblia Livre.
-- Leitura por livro, capítulo e versículo, seleção, referências rápidas, copiar versículos.
-- Áudio local por Web Speech API exclusivamente na **voz Daniel**, se estiver disponível em português no navegador. Quando ausente, informa indisponibilidade e não troca automaticamente para outra voz.
-- Devocional diário, semanal ou mensal (rodízio determinístico de temas e referências previamente curados; **o texto do versículo vem da fonte bíblica**, não é inventado).
-- Criação de planos de aula: idade, texto, objetivo, contexto, narrativa, aplicação, perguntas, atividades e oração.
-- **V2:** busca assistida por assunto com catálogo editorial de **78 temas**, incluindo histórias bíblicas e assuntos gerais. Ao reconhecer exatamente um tema, preenche a primeira referência sugerida; o professor pode escolher outra referência ou escrever a sua. Sem correspondência, **não inventa versículos** e orienta a consultar a Bíblia.
-- **V2:** painel de navegação da Bíblia em uma faixa horizontal superior, sem diminuir o tamanho do texto bíblico. Símbolo reutilizado diretamente da imagem original do aplicativo principal, sem alterá-lo.
-- Botão "Copiar Pedido de Sugestões" copia um pedido estruturado para o ChatGPT; **não executa IA diretamente no aplicativo**.
-- Salvar e editar aulas no **localStorage do navegador**, listar, duplicar, apagar, fazer backup JSON/importação e imprimir.
+## Funcionalidades
+- Bíblia **Livre (BLIVRE)** em português: tradução única da tela, carregada pela API GetBible v2 no módulo `livre`. Referência, livros, capítulos, versículos, copiar e utilizar na preparação de aula.
+- Leitura em voz alta, iniciando no versículo selecionado, exclusivamente com a voz portuguesa **Daniel**, caso exista no navegador/dispositivo; sem substituição automática por outra voz.
+- Devocionais diário, semanal e mensal, a partir de referências editoriais, com texto bíblico consultado da fonte licenciada.
+- Busca por assunto e expressão equivalente em catálogo editorial de 78 temas, mais pesquisa por palavras no texto da Bíblia via serviço GetBible.
+- Preparação de aulas com título, referência, faixa etária, objetivo, contexto, história, aplicação, perguntas, atividade e oração.
+- **Sugerir Aula:** busca o texto da referência bíblica e apresenta **duas alternativas para cada um dos sete campos**. O professor pode aplicar individualmente, confirmar substituições ou preencher apenas campos vazios. O texto inclui versículos reais como apoio, sem fabricar personagens ou acontecimentos.
+- As sugestões automáticas são **editoriais e baseadas em regras e no texto bíblico**: **não há IA generativa integrada**. O botão opcional **Copiar Pedido para IA** prepara um pedido para ChatGPT, mas não faz chamadas externas automaticamente.
+- Minhas Aulas: salvar, editar, duplicar, excluir, imprimir e exportar/importar backups JSON.
 
-## V3 — busca por assunto e palavras da Bíblia
-- O campo “Tema / Título da Aula” pesquisa o catálogo editorial de 78 temas, interpretando variações comuns em português: acentos, palavras fora de ordem, sinônimos e frases equivalentes (por exemplo “Jesus transformou água em vinho”).
-- Em paralelo, faz uma pesquisa textual na [API GetBible Search v2](https://search.getbible.net/v2/), usando a tradução selecionada (`almeida` ou `livre`). Esta busca devolve somente ocorrências reais do texto bíblico, não sugestões inventadas.
-- **A interpretação de intenção é heurística**, não uma integração de inteligência artificial generativa. Não é garantido encontrar qualquer paráfrase possível nem toda passagem relevante; exibir alternativas e permitir pesquisa manual é obrigatório.
-- As sugestões por assunto são identificadas separadamente dos resultados por palavra, e precisam ser conferidas no contexto do capítulo.
-- O catálogo pode crescer conforme testes e revisão humana. Não usar paráfrases como se fossem citações da Bíblia.
-- A leitura em voz alta começa no **versículo selecionado** e segue até o fim do capítulo. A única voz admitida agora é **Daniel**, disponível em português no navegador/sistema. Se ausente, o app explica que a narração não pode ser reproduzida. A naturalidade **não é garantida** e depende do dispositivo.
-- O nome privado do comando de preparação do ChatGPT não é exibido na interface. A versão de testes ainda apenas copia um pedido estruturado; um futuro botão "Sugerir Aula" exigirá integração segura com backend e geração de alternativas revisáveis.
+## Dados e privacidade
+- Os rascunhos de aula permanecem em **localStorage deste navegador**; não são sincronizados com Supabase. Em outro dispositivo, é necessário importar o arquivo de backup. Isso é informado diretamente na tela.
+- O módulo não consulta nem transmite dados pessoais de crianças ou professores.
+- A página de Estudos, acessada diretamente em `/estudos/`, é pública; a aba dentro do aplicativo é visível depois do login de usuários autorizados. Para restringir a URL direta, será necessário introduzir autenticação neste módulo.
+- A API de tradução e a busca bíblica exigem internet; o acesso externo depende da disponibilidade do GetBible.
+- Não colocar chaves privadas de IA em JavaScript público.
 
-## V4 — narração Daniel e Bíblia Livre (ainda em testes)
-- **Daniel exclusivamente:** removido o seletor com outras vozes; se o sistema não disponibilizar Daniel em português, o áudio informa que está indisponível, em vez de mudar silenciosamente para outra voz.
-- Leitura inicia no versículo selecionado e prossegue, agrupando pequenos trechos para reduzir pausas artificiais.
-- **Tradução Bíblica:** alternar entre Almeida 1911 e Bíblia Livre; atualizar o texto da Bíblia e do devocional; cache diferenciado por tradução e fonte citada na própria tela.
-- **Bíblia Livre:** GetBible informa licença CC BY 3.0 Brasil. Não está em domínio público; créditos, fonte e link de licença devem ser preservados; [repositório](https://github.com/blivre/BibliaLivre) e [licença](https://creativecommons.org/licenses/by/3.0/br/).
-- Antes da integração definitiva, confirmar exibição da Bíblia Livre em celular e desktop e conferir os termos da tradução escolhida. Não usar traduções protegidas como NAA sem licença expressa.
+## Direitos e créditos
+**Texto bíblico:** Bíblia Livre (BLIVRE), edição disponibilizada pelo GetBible (módulo `livre`, versão 1.0.1, 17/08/2017).
 
-## Restrições intencionais do piloto
-- Link isolado não exige login e **não contém dados pessoais** de crianças ou equipe.
-- Preparações e backups são **locais**, não são compartilhados nem sincronizados com o banco Supabase. Abrir em outro computador não mostra os mesmos rascunhos.
-- A API depende de conexão externa e de limites do provedor. Se ficar indisponível, a leitura é suspensa com mensagem de erro, sem mostrar texto bíblico inventado.
-- Áudio é sintetizado pelo dispositivo, sem arquivos MP3 ou narração profissional gravada.
-- Nada agenda automaticamente notificações ou novas aulas: os temas mudam quando o usuário abre o site.
-- Antes de incluir traduções comerciais, áudios gravados ou copiar o texto para distribuição/offline, rever os respectivos direitos.
+Autores identificados pelo projeto: Diego Renato dos Santos, Mario Sérgio de Souza Figueira e Marco Antonio Teles da Costa. A tradução tem licença **Creative Commons Atribuição 3.0 Brasil (CC BY 3.0 BR)**. Respeitar atribuição, link da licença, indicação da versão e eventuais alterações, conforme condições da licença.
 
-## Fonte, direitos e créditos
-Texto bíblico proveniente do módulo \`almeida\` da API [GetBible](https://getbible.net/api/bible/v2/), descrito pelo catálogo como **Almeida 1911**, com licença de distribuição informada como **GPL**. O texto histórico de 1911 é considerado de domínio público, mas revisões modernas podem ter restrições distintas. Consulte o campo \`distribution_license\` do catálogo ao distribuir cópias do conteúdo. O protótipo não redistribui o conteúdo da API dentro do seu código.
+- [Fonte dos textos](https://github.com/blivre/BibliaLivre)
+- [Licença CC BY 3.0 Brasil](https://creativecommons.org/licenses/by/3.0/br/)
+- [Catálogo da tradução no GetBible](https://api.getbible.net/v2/translations.json)
 
-## Planejamento posterior à aprovação
-1. Configurar acesso com os perfis já existentes (professor, coordenador, escritório, administrador).
-2. Persistir rascunhos em tabelas próprias do Supabase com RLS e controle de acesso por usuário/equipe.
-3. Integrar ao menu oficial de forma isolada, sem interferir nas abas aprovadas.
-4. Opcional: aprovação/publicação de aulas para a equipe, calendário EBD, controle de temas por sala/faixa etária.
-5. Opcional: geração automática via serviço seguro no backend, **nunca** com chave de IA inserida no navegador.
-6. Acessibilidade, leitura offline licenciada e funcionalidades adicionais após testes.
+As passagens bíblicas nunca devem ser editadas automaticamente para “corrigir” grafia, letras maiúsculas ou conteúdo. Regras editoriais de títulos e sugestões não se aplicam ao texto sagrado originalmente publicado.
 
-## Testes essenciais
-- Abrir \`/estudos/\` no celular e computador.
-- Consultar João 3:16, Marcos 10:14, Salmos 23 e 1 João 4:19.
-- Ler um versículo e um capítulo inteiro em voz alta (verificar voz pt-BR instalada).
-- Salvar aula, editar e salvar novamente; fechar/abrir mesma aba; exportar e importar o backup.
-- Confirmar que nenhum item do aplicativo principal foi alterado.
+## Desenvolvimento
+- `index.html` (raiz): apenas atalho para Estudos, cartão de navegação, seção com iframe e autorização de acesso à aba. Funcionalidades aprovadas da EBD, Rede de Crianças, cadastros, financeiro, relatórios e sessão não devem ser alteradas pelo módulo.
+- `estudos/index.html`: interface.
+- `estudos/estudos.js`: leitor, pesquisa, devocionais, planos de aula, sugestões e backup.
+- `estudos/sugestoes-aula.js`: banco editorial e motor de duas opções por campo.
+- `estudos/temas.js`: catálogo editorial de assuntos.
+- `estudos/estudos.css`: estilos responsivos.
