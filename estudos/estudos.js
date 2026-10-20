@@ -491,9 +491,9 @@ function init(){
  $('readerStop').addEventListener('click',stopAudio);refreshVoices();if('speechSynthesis'in window)window.speechSynthesis.addEventListener?.('voiceschanged',refreshVoices);
  $('copySelectedVerse').addEventListener('click',()=>{const t=chapterSelectedText();if(t)copy(t);else toast('A passagem ainda não está carregada.')});
  $('useSelectedVerse').addEventListener('click',useReaderInLesson);$('readFromLesson').addEventListener('click',useReaderInLesson);
- $('lessonTitle').addEventListener('input',()=>{clearTimeout(topicTimer);topicTimer=setTimeout(renderTopicSuggestions,230);planScriptureSearch()});
+ $('lessonTitle').addEventListener('input',()=>{clearLessonSuggestions();clearTimeout(topicTimer);topicTimer=setTimeout(renderTopicSuggestions,230);planScriptureSearch()});
  $('lessonTitle').addEventListener('blur',()=>{clearTimeout(topicTimer);renderTopicSuggestions()});
- $('lessonReference').addEventListener('input',()=>{topicAutoRef=null;renderTopicSuggestions()});
+ $('lessonReference').addEventListener('input',()=>{clearLessonSuggestions();topicAutoRef=null;renderTopicSuggestions()});
  $('generateLessonSuggestions').addEventListener('click',createLessonSuggestions);
  $('fillEmptyLessonFields').addEventListener('click',fillEmptyLessonFields);
  $('lessonForm').addEventListener('submit',saveLesson);$('newLesson').addEventListener('click',()=>{if(confirm('Iniciar uma preparação em branco? As alterações ainda não salvas serão descartadas.'))putLessonForm(null)});
