@@ -82,3 +82,12 @@
 @media(max-width:1150px){.reader-top-row{grid-template-columns:minmax(190px,1fr) minmax(110px,.6fr) minmax(140px,.75fr)}.reader-top-row .quick-ref{grid-column:span 3}.reader-top-row .quick-ref .ref-search{max-width:380px}.reader-toolbar .reader-hint{max-width:none;width:100%}.reader-voice{flex:1;max-width:360px}}
 @media(max-width:900px){.reader-top-row{grid-template-columns:1fr 1fr}.reader-top-row .quick-ref{grid-column:span 2}.reader-top-row .book-field{grid-column:span 2}.reader-voice{min-width:180px;max-width:none}.reader-toolbar .reader-hint{max-width:none}}
 @media(max-width:620px){.reader-top-row{grid-template-columns:1fr 1fr}.reader-top-row .quick-ref{grid-column:span 2}.reader-top-row .book-field{grid-column:span 2}.reader-voice{min-width:100%;max-width:none}.reader-toolbar .reader-hint{text-align:left}#scriptureSearchResults{padding:14px}.scripture-search-hit{padding:11px 0}}
+
+/* V4 — versão bíblica e leitura exclusiva na voz Daniel. */
+.reader-control-title{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px}
+.translation-picker{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.translation-picker label{font-size:11px;font-weight:800;color:#566e7b}
+.translation-picker select{font-size:12px;font-weight:700;border-color:#cbdce3;border-radius:9px;min-height:39px;padding:8px 11px;max-width:300px}
+.reader-voice-note{font-size:11px;font-weight:700;color:#286680;line-height:1.4;max-width:180px}
+.reader-layout .scripture-footer a{color:#277c9e}
+@media(max-width:620px){.reader-control-title{align-items:stretch}.translation-picker{width:100%}.translation-picker label{width:100%}.translation-picker select{max-width:none;width:100%}.reader-voice-note{max-width:100%;width:100%}}
