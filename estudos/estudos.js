@@ -186,25 +186,37 @@ async function loadDevotional(){const request=++state.devRequest;const theme=THE
 /* Referências por assunto: catálogo editorial fixo, nunca seleção aleatória. */
 let topicTimer=0,topicAutoRef=null;
 const TOPICS=Array.isArray(window.MI_ESTUDOS_TOPICS)?window.MI_ESTUDOS_TOPICS:[];
+const TOPIC_STOP=new Set('a as o os e em de da do dos das na no nas nos um uma uns umas para por com que quem onde quando qual quais quero queria ver falar sobre historia passagem jesus biblia biblico biblica texto estudo aula versiculo'.split(' '));
+function searchWords(raw){
+ return norm(raw).replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean).filter(w=>!TOPIC_STOP.has(w)&&w.length>=3);
+}
+function wordSimilar(a,b){
+ if(a===b)return true;
+ if(a.length>=7&&b.length>=7&&a.slice(0,7)===b.slice(0,7))return true;
+ if(a.length>=5&&b.length>=5&&((a.endsWith('s')&&a.slice(0,-1)===b)||(b.endsWith('s')&&b.slice(0,-1)===a)))return true;
+ return false;
+}
 function topicMatches(raw){
  const q=norm(raw);if(q.length<3)return [];
- const queryWords=q.split(' ').filter(w=>w.length>2);
+ const queryWords=searchWords(q);
  return TOPICS.map(topic=>{
-  const aliases=[topic.title,...topic.aliases].map(norm);
-  let score=0;
+  const aliases=[topic.title,...topic.aliases].map(norm);let score=0;
   for(const alias of aliases){
-   if(q===alias){score=Math.max(score,120);continue}
-   if(alias.startsWith(q)&&q.length>=4){score=Math.max(score,72);continue}
-   if(q.startsWith(alias)&&alias.length>=5){score=Math.max(score,88);continue}
-   if(alias.includes(q)&&q.length>=5){score=Math.max(score,60);continue}
-   if(queryWords.length>=2){
-    const words=alias.split(' ').filter(w=>w.length>2);
-    const shared=queryWords.filter(w=>words.includes(w)).length;
-    if(shared>=2&&shared/queryWords.length>=.66)score=Math.max(score,40+shared*4);
+   if(q===alias){score=Math.max(score,160);continue}
+   if(alias.startsWith(q)&&q.length>=4){score=Math.max(score,105);continue}
+   if(q.startsWith(alias)&&alias.length>=5){score=Math.max(score,113);continue}
+   if(alias.includes(q)&&q.length>=5){score=Math.max(score,94);continue}
+   const words=searchWords(alias);if(!words.length||!queryWords.length)continue;
+   let overlap=0;for(const qw of queryWords)if(words.some(aw=>wordSimilar(qw,aw)))overlap++;
+   const shareQuery=overlap/queryWords.length;
+   const shareAlias=overlap/words.length;
+   if(overlap>=1&&((overlap===1&&queryWords.length===1)||shareQuery>=.6&&shareAlias>=.4)){
+    const weight=(overlap===1?44:57)+Math.round(36*shareQuery+13*shareAlias)+Math.min(overlap,4);
+    score=Math.max(score,weight);
    }
   }
   return {topic,score,exact:aliases.includes(q)};
- }).filter(x=>x.score>=40).sort((a,b)=>b.score-a.score||a.topic.title.localeCompare(b.topic.title,'pt-BR')).slice(0,5);
+ }).filter(x=>x.score>=45).sort((a,b)=>b.score-a.score||a.topic.title.localeCompare(b.topic.title,'pt-BR')).slice(0,7);
 }
 function fillTopicReference(ref){
  const parsed=parseReference(ref);if(!parsed){toast('Referência não reconhecida.');return}
@@ -246,6 +258,85 @@ function renderTopicSuggestions(){
  const p=document.createElement('p');p.className='topic-help';p.textContent='As referências são sugestões de estudo. Leia o contexto antes de montar a aula; você pode alterar a passagem escolhida.';container.append(p);
 }
 
+
+/* Resultados diretos do texto bíblico: API GetBible Search v2, Almeida 1911.
+ * A busca por sentido funciona via catálogo local, sem usar IA externa.
+ * A busca textual devolve somente versículos efetivamente publicados na Bíblia.
+ */
+let scriptureSearchTimer=0,scriptureSearchRequest=0,scriptureAbort=null;
+const scriptureSearchCache=new Map();
+const BIBLE_SEARCH='https://search.getbible.net/v2/almeida';
+function bibleSearchTerms(raw){
+ const words=searchWords(raw);
+ if(!words.length)return '';
+ // Em frases completas, termos distintivos são mais úteis que verbos e conectivos.
+ // A API por palavras não interpreta intenção; isso é função do catálogo de temas.
+ const general=new Set(['transformando','transforma','transformou','fazendo','falando','querendo','milagre','historia','contando','ensinou','acontece']);
+ const useful=words.filter(w=>!general.has(w));
+ if(useful.length===1)return useful[0];
+ if(useful.length<=3)return useful.join(' ');
+ return useful.slice(-3).join(' ');
+}
+function clearBibleSearch(){clearTimeout(scriptureSearchTimer);scriptureSearchRequest++;if(scriptureAbort){scriptureAbort.abort();scriptureAbort=null}const el=$('scriptureSearchResults');if(el)el.replaceChildren()}
+function showBibleSearchStatus(msg,busy=false){
+ const el=$('scriptureSearchResults');if(!el)return;el.replaceChildren();if(!msg)return;
+ const box=document.createElement('p');box.className='scripture-search-status'+(busy?' waiting':'');box.textContent=msg;el.append(box);
+}
+function renderBibleSearch(data,term){
+ const el=$('scriptureSearchResults');if(!el)return;el.replaceChildren();
+ const matches=Array.isArray(data?.matches)?data.matches:[];
+ const heading=document.createElement('div');heading.className='topic-head';
+ const title=document.createElement('strong');title.textContent='Versículos Encontrados na Bíblia';
+ const pill=document.createElement('span');pill.className='topic-badge';pill.textContent='PESQUISA NO TEXTO BÍBLICO';heading.append(title,pill);el.append(heading);
+ if(!matches.length){const p=document.createElement('p');p.className='topic-help';p.textContent='Não foram encontrados versículos contendo “'+term+'” nesta tradução. Isso não significa que a história não exista; confira os assuntos relacionados acima.';el.append(p);return}
+ const description=document.createElement('p');description.className='topic-help';description.textContent='Ocorrências reais da palavra ou expressão “'+term+'”. O sentido deve ser conferido no capítulo completo.';el.append(description);
+ let added=0;
+ for(const m of matches){
+  if(!Number.isInteger(m.book_nr)||!B[m.book_nr-1]||!Number.isInteger(m.chapter)||!Number.isInteger(m.verse))continue;
+  const reference=bookName(m.book_nr)+' '+m.chapter+':'+m.verse;
+  let verseText='';
+  const results=data.results&&typeof data.results==='object'?Object.values(data.results):[];
+  for(const chapter of results){
+   if(Number(chapter.book_nr)===m.book_nr&&Number(chapter.chapter)===m.chapter){
+    verseText=String((chapter.verses||[]).find(v=>Number(v.verse)===m.verse)?.text||'').trim();break
+   }
+  }
+  const box=document.createElement('div');box.className='scripture-search-hit';
+  const ref=document.createElement('strong');ref.textContent=reference;
+  const content=document.createElement('p');content.textContent=verseText.length>270?verseText.slice(0,267)+'…':verseText;
+  const actions=document.createElement('div');actions.className='scripture-hit-actions';
+  const use=document.createElement('button');use.type='button';use.textContent='Usar na Aula';use.className='topic-ref-btn';use.addEventListener('click',()=>fillTopicReference(reference));
+  const read=document.createElement('button');read.type='button';read.textContent='Ler no Contexto ↗';read.className='soft-btn';read.addEventListener('click',()=>switchChapter(m.book_nr,m.chapter,m.verse));
+  actions.append(use,read);box.append(ref,content,actions);el.append(box);
+  if(++added>=8)break;
+ }
+ if(!added)showBibleSearchStatus('A fonte retornou resultados sem referências reconhecíveis. Tente outra busca.');
+}
+async function bibleWordSearch(raw){
+ const token=++scriptureSearchRequest;const term=bibleSearchTerms(raw);
+ if(term.length<3){showBibleSearchStatus('Digite ao menos três letras de uma palavra bíblica para pesquisar.');return}
+ if(scriptureAbort)scriptureAbort.abort();
+ scriptureAbort=typeof AbortController==='function'?new AbortController():null;
+ showBibleSearchStatus('Buscando ocorrências no texto bíblico...',true);
+ if(scriptureSearchCache.has(term)){if(token===scriptureSearchRequest)renderBibleSearch(scriptureSearchCache.get(term),term);return}
+ const url=BIBLE_SEARCH+'?'+new URLSearchParams({q:term,words:'all',sort:'relevance',limit:'8',diacritics:'fold'}).toString();
+ try{
+  const response=await fetch(url,{headers:{Accept:'application/json'},signal:scriptureAbort?.signal});
+  if(!response.ok)throw Error('Código '+response.status);
+  const body=await response.json();
+  if(!body||!Array.isArray(body.matches))throw Error('Resposta inesperada da fonte bíblica.');
+  if(token!==scriptureSearchRequest)return;
+  scriptureSearchCache.set(term,body);renderBibleSearch(body,term);
+ }catch(e){if(token!==scriptureSearchRequest||e.name==='AbortError')return;showBibleSearchStatus('A pesquisa por palavras está temporariamente indisponível. As sugestões por assunto continuam funcionando.')}
+}
+function planScriptureSearch(){
+ clearTimeout(scriptureSearchTimer);
+ if(scriptureAbort){scriptureAbort.abort();scriptureAbort=null}
+ scriptureSearchRequest++;
+ const q=$('lessonTitle').value.trim();
+ if(norm(q).length<3){showBibleSearchStatus('');return}
+ scriptureSearchTimer=setTimeout(()=>bibleWordSearch(q),700);
+}
 function getLessonForm(){const read=id=>$(id).value.trim();return {
  id:state.editingId,title:read('lessonTitle'),date:read('lessonDate'),age:read('lessonAge'),reference:read('lessonReference'),
  goal:read('lessonGoal'),context:read('lessonContext'),story:read('lessonStory'),application:read('lessonApplication'),
@@ -253,7 +344,7 @@ function getLessonForm(){const read=id=>$(id).value.trim();return {
 }}
 function putLessonForm(x){const ids={lessonTitle:'title',lessonDate:'date',lessonAge:'age',lessonReference:'reference',lessonGoal:'goal',lessonContext:'context',lessonStory:'story',lessonApplication:'application',lessonQuestions:'questions',lessonActivity:'activity',lessonPrayer:'prayer'};
  for(const [id,key] of Object.entries(ids))$(id).value=x?.[key]??(id==='lessonDate'?dateNow():id==='lessonAge'?'9 anos':'');
- state.editingId=x?.id||null;topicAutoRef=null;$('topicSuggestions').hidden=true;$('topicSuggestions').replaceChildren();$('lessonFeedback').textContent=state.editingId?'Editando preparação existente.':'Nova preparação — ainda não salva.'}
+ state.editingId=x?.id||null;topicAutoRef=null;$('topicSuggestions').hidden=true;$('topicSuggestions').replaceChildren();clearBibleSearch();$('lessonFeedback').textContent=state.editingId?'Editando preparação existente.':'Nova preparação — ainda não salva.'}
 function loadLessons(){try{const raw=JSON.parse(localStorage.getItem(SAVE_KEY)||'[]');if(Array.isArray(raw))return raw.filter(isLesson).slice(0,500)}catch(e){console.warn('Falha na leitura dos rascunhos',e)}return []}
 function isLesson(x){return !!(x&&typeof x==='object'&&!Array.isArray(x)&&typeof x.id==='string'&&typeof x.title==='string'&&typeof x.reference==='string'&&x.id.length<90&&x.title.length<=160&&x.reference.length<=90)}
 function saveLessons(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state.lessons));return true}catch(e){toast('Não foi possível salvar. Verifique o armazenamento do dispositivo.');return false}}
@@ -319,7 +410,7 @@ function init(){
  $('readerStop').addEventListener('click',stopAudio);refreshVoices();if('speechSynthesis'in window){window.speechSynthesis.addEventListener?.('voiceschanged',refreshVoices)}$('voiceSelect').addEventListener('change',e=>{try{localStorage.setItem(VOICE_KEY,e.target.value)}catch(_){}stopAudio()});
  $('copySelectedVerse').addEventListener('click',()=>{const t=chapterSelectedText();if(t)copy(t);else toast('A passagem ainda não está carregada.')});
  $('useSelectedVerse').addEventListener('click',useReaderInLesson);$('readFromLesson').addEventListener('click',useReaderInLesson);
- $('lessonTitle').addEventListener('input',()=>{clearTimeout(topicTimer);topicTimer=setTimeout(renderTopicSuggestions,230)});
+ $('lessonTitle').addEventListener('input',()=>{clearTimeout(topicTimer);topicTimer=setTimeout(renderTopicSuggestions,230);planScriptureSearch()});
  $('lessonTitle').addEventListener('blur',()=>{clearTimeout(topicTimer);renderTopicSuggestions()});
  $('lessonReference').addEventListener('input',()=>{topicAutoRef=null;renderTopicSuggestions()});
  $('lessonForm').addEventListener('submit',saveLesson);$('newLesson').addEventListener('click',()=>{if(confirm('Iniciar uma preparação em branco? As alterações ainda não salvas serão descartadas.'))putLessonForm(null)});
