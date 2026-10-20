@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#263343">
+  <meta name="description" content="Ambiente experimental de estudos bíblicos, leitura, devocionais e preparação de aulas para o Ministério Infantil da 4ª IEQ Curitiba.">
+  <title>Estudos • Ministério Infantil – 4ª IEQ</title>
+  <link rel="icon" type="image/png" href="../icon-192.png">
+  <link rel="stylesheet" href="./estudos.css?v=1">
+  <script src="./estudos.js?v=1" defer></script>
+</head>
+<body>
+  <div class="workspace">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <img src="../icon-192.png" width="54" height="54" alt="Ministério Infantil">
+        <span><strong>Ministério Infantil</strong><small>4ª IEQ • CURITIBA</small></span>
+      </div>
+      <div class="side-category">NOVO ESPAÇO DE ESTUDOS</div>
+      <nav class="menu" aria-label="Navegação dos estudos">
+        <button type="button" class="menu-item active" data-view="inicio" aria-current="page"><span>⌂</span> Visão geral</button>
+        <button type="button" class="menu-item" data-view="biblia"><span>▣</span> Bíblia on-line</button>
+        <button type="button" class="menu-item" data-view="aulas"><span>✎</span> Preparar aula</button>
+        <button type="button" class="menu-item" data-view="acervo"><span>▤</span> Minhas aulas</button>
+      </nav>
+      <div class="side-bottom">
+        <div class="pilot-note"><span class="pilot-dot"></span><strong>Módulo em testes</strong><p>Separado do aplicativo principal. Seus rascunhos ficam somente neste navegador.</p></div>
+        <a class="side-link" href="../">← Voltar ao aplicativo</a>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar">
+        <button type="button" class="icon-btn mobile-only" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+        <div class="breadcrumb">Ministério Infantil <span> / </span><strong>Estudos</strong></div>
+        <div class="top-actions"><span class="pill">VERSÃO DE TESTES</span><span id="todayLabel" class="today"></span></div>
+      </header>
+
+      <main class="main-content">
+        <section class="page active" id="view-inicio">
+          <div class="welcome">
+            <div class="welcome-text">
+              <div class="eyebrow light">UM NOVO ESPAÇO PARA NOSSA EQUIPE</div>
+              <h1>Estudar a Palavra.<br><em>Ensinar com propósito.</em></h1>
+              <p>Leia a Bíblia, encontre inspiração e prepare aulas para as nossas crianças em um só lugar.</p>
+              <button type="button" class="white-btn" data-open="aulas">Preparar uma aula <span>→</span></button>
+            </div>
+            <div class="welcome-art" aria-hidden="true"><div class="book-art">✦<span>📖</span></div><span class="star star-a">✦</span><span class="star star-b">✧</span></div>
+          </div>
+
+          <div class="section-head">
+            <div><div class="eyebrow">ALIMENTO PARA CADA DIA</div><h2>Devocional</h2><p>Uma passagem bíblica e uma reflexão para começar bem.</p></div>
+            <div class="seg-buttons" role="group" aria-label="Periodicidade do devocional">
+              <button type="button" data-cadence="daily" class="selected">Diário</button>
+              <button type="button" data-cadence="weekly">Semanal</button>
+              <button type="button" data-cadence="monthly">Mensal</button>
+            </div>
+          </div>
+
+          <div class="devotional card" id="devotionalCard" aria-live="polite">
+            <div class="devotional-header"><span class="chip-yellow" id="devPeriod">DEVOCIONAL DE HOJE</span><span class="small-date" id="devDate"></span></div>
+            <div class="verse-hero"><div class="quote-mark">“</div><h3 id="devVerse">Carregando passagem bíblica...</h3><p class="ref-link" id="devReference"></p></div>
+            <div class="devotional-bottom"><div><div class="eyebrow">PARA REFLETIR</div><h4 id="devTitle"></h4><p id="devReflection"></p><p id="devPrayer" class="prayer"></p></div><div class="devotional-actions">
+              <button type="button" class="primary-btn" id="devReadBtn">Ler passagem <span>→</span></button>
+              <button type="button" class="soft-btn" id="devListenBtn">♫ Ouvir versículo</button>
+            </div></div>
+          </div>
+
+          <div class="section-head under-gap"><div><div class="eyebrow">SEU ESPAÇO DE PREPARAÇÃO</div><h2>Por onde começamos?</h2></div></div>
+          <div class="action-grid">
+            <button type="button" class="action-card" data-open="biblia"><span class="action-icon blue">📖</span><strong>Explorar a Bíblia</strong><span>Livros, capítulos, versículos e leitura em voz alta.</span><b>Começar a leitura ↗</b></button>
+            <button type="button" class="action-card" data-open="aulas"><span class="action-icon gold">✏️</span><strong>Montar uma aula</strong><span>Objetivos, história bíblica, perguntas e aplicação.</span><b>Planejar aula ↗</b></button>
+            <button type="button" class="action-card" data-open="acervo"><span class="action-icon green">📚</span><strong>Minhas preparações</strong><span>Retome os rascunhos guardados neste dispositivo.</span><b>Ver aulas ↗</b></button>
+          </div>
+          <div class="footnote">Tradução Almeida 1911 consultada via <a href="https://getbible.net/api/bible/v2/" target="_blank" rel="noopener noreferrer">GetBible</a>. Texto bíblico carregado da fonte original, sem geração automática de versículos.</div>
+        </section>
+
+        <section class="page" id="view-biblia">
+          <div class="page-title"><div><div class="eyebrow">66 LIVROS PARA EXPLORAR</div><h1>Bíblia on-line</h1><p>Escolha o livro, o capítulo e o versículo que deseja estudar.</p></div><button type="button" class="outline-btn" id="readFromLesson">Usar na preparação de aula →</button></div>
+          <div class="reader-layout">
+            <div class="card reader-controls">
+              <div class="input-label">Acesso rápido</div>
+              <form id="refForm" class="ref-search"><input type="search" id="refInput" aria-label="Referência bíblica" placeholder="Ex.: João 3:16 ou Salmos 23" autocomplete="off"><button type="submit" class="primary-btn">Buscar</button></form>
+              <div class="hint">Digite um livro e capítulo; opcionalmente, um versículo.</div>
+              <div class="control-divider"></div>
+              <label for="bookSelect" class="input-label">Livro da Bíblia</label><select id="bookSelect"></select>
+              <label for="chapterSelect" class="input-label">Capítulo</label><select id="chapterSelect"></select>
+              <label for="verseSelect" class="input-label">Ir ao versículo</label><select id="verseSelect"><option value="">Capítulo completo</option></select>
+              <div class="reader-navigate"><button type="button" id="prevChapter" class="soft-btn">← Anterior</button><button type="button" id="nextChapter" class="soft-btn">Próximo →</button></div>
+              <div class="control-divider"></div>
+              <div class="input-label">Leitura em áudio</div>
+              <button type="button" id="readerListen" class="primary-btn full">♫ Ouvir capítulo</button>
+              <button type="button" id="readerStop" class="soft-btn full">■ Parar áudio</button>
+              <p class="tiny">Áudio gerado pela voz do seu celular ou computador. A qualidade depende do dispositivo.</p>
+            </div>
+            <article class="card scripture">
+              <div class="scripture-top"><div><div class="eyebrow">ALMEIDA • EDIÇÃO DE 1911</div><h2 id="chapterHeading">João 3</h2></div><div class="scripture-actions"><button type="button" class="small-btn" id="copySelectedVerse">Copiar versículo</button><button type="button" class="small-btn" id="useSelectedVerse">Usar na aula</button></div></div>
+              <div id="readerStatus" class="reader-status" role="status">Preparando leitura...</div>
+              <div id="versesContainer" class="verses" aria-label="Versículos do capítulo"></div>
+              <div class="scripture-footer">Fonte: <a href="https://getbible.net/api/bible/" target="_blank" rel="noopener noreferrer">GetBible • Almeida 1911</a> · Consulte a fonte para verificar o texto.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" id="view-aulas">
+          <div class="page-title"><div><div class="eyebrow">MESTRE BÍBLICA CRISTÃ EVANGÉLICA</div><h1>Preparar uma aula</h1><p>Organize a mensagem bíblica, a explicação e as atividades adequadas às crianças.</p></div><button type="button" class="outline-btn" id="newLesson">＋ Nova preparação</button></div>
+          <div class="planner-layout">
+            <form class="card lesson-form" id="lessonForm">
+              <div class="form-part"><h3>01. Informações da aula</h3><p>Comece definindo o assunto e a passagem que será ensinada.</p>
+                <div class="form-grid"><div class="span-2"><label for="lessonTitle">Tema / título da aula *</label><input id="lessonTitle" maxlength="160" required placeholder="Ex.: Jesus recebe as crianças"></div>
+                  <div><label for="lessonDate">Data prevista</label><input id="lessonDate" type="date"></div>
+                  <div><label for="lessonAge">Faixa etária</label><select id="lessonAge"><option>9 anos</option><option>4 a 6 anos</option><option>7 a 8 anos</option><option>10 a 12 anos</option><option>Adolescentes</option><option>Outra faixa etária</option></select></div>
+                  <div class="span-2"><label for="lessonReference">Passagem bíblica principal *</label><input id="lessonReference" required maxlength="90" placeholder="Ex.: Marcos 10:13-16"></div>
+                </div>
+              </div>
+              <div class="form-part"><h3>02. Mensagem e contexto</h3><p>A preparação deve permanecer fiel ao texto bíblico e à sua sequência.</p>
+                <label for="lessonGoal">Objetivo da aula</label><textarea id="lessonGoal" rows="2" placeholder="O que as crianças devem compreender ao final da aula?"></textarea>
+                <label for="lessonContext">Contexto bíblico e histórico</label><textarea id="lessonContext" rows="3" placeholder="Onde e quando aconteceu? Quem participa da história? O que o texto realmente informa?"></textarea>
+                <label for="lessonStory">A história bíblica explicada</label><textarea id="lessonStory" rows="6" placeholder="Narre os acontecimentos em ordem, sem adicionar fatos que não constam do texto bíblico."></textarea>
+              </div>
+              <div class="form-part"><h3>03. Aplicação e participação</h3>
+                <label for="lessonApplication">Aplicação prática para as crianças</label><textarea id="lessonApplication" rows="3" placeholder="Como essa passagem se relaciona com o dia a dia das crianças?"></textarea>
+                <label for="lessonQuestions">Perguntas para conversar</label><textarea id="lessonQuestions" rows="3" placeholder="Perguntas relacionadas aos fatos e ao ensino da passagem."></textarea>
+                <label for="lessonActivity">Atividade / dinâmica / ilustração</label><textarea id="lessonActivity" rows="3" placeholder="Sugestões para ajudar a compreender e lembrar da lição."></textarea>
+                <label for="lessonPrayer">Encerramento e oração</label><textarea id="lessonPrayer" rows="2" placeholder="Como concluir a aula e orar com as crianças?"></textarea>
+              </div>
+              <div class="lesson-buttons"><button type="submit" class="primary-btn">Salvar preparação</button><button type="button" id="copyMasterPrompt" class="outline-btn">✦ Preparar com o Mestre Bíblica</button><button type="button" id="printLesson" class="soft-btn">Imprimir aula</button></div>
+              <p class="tiny">O botão “Mestre Bíblica” copia um pedido estruturado para usar no ChatGPT. Não existe integração automática com IA nesta versão de testes.</p>
+              <div id="lessonFeedback" class="feedback" aria-live="polite"></div>
+            </form>
+            <aside class="planner-side">
+              <div class="card tips-card"><div class="tip-art">✧</div><div class="eyebrow">NOSSO PADRÃO DE ENSINO</div><h3>Fidelidade à Palavra</h3><p>Uma boa aula apresenta a história, explica o contexto e ensina uma aplicação apropriada para a idade.</p><ul><li>Base e referências bíblicas.</li><li>Personagens e acontecimentos fiéis ao texto.</li><li>Explicações claras e adequadas à idade.</li><li>Atividades relacionadas à passagem.</li><li>Não inventar detalhes em ilustrações.</li></ul></div>
+              <div class="card tip-muted"><h3>Precisa de um versículo?</h3><p>Escolha uma passagem na Bíblia on-line e clique em <strong>Usar na aula</strong>. O campo de referência será preenchido.</p><button type="button" class="soft-btn full" data-open="biblia">Abrir Bíblia →</button></div>
+              <div class="card tip-muted"><h3>Rascunhos de teste</h3><p>As preparações são guardadas somente neste dispositivo. Faça uma cópia de segurança na aba <strong>Minhas aulas</strong>.</p></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="page" id="view-acervo">
+          <div class="page-title"><div><div class="eyebrow">ORGANIZAÇÃO DAS PREPARAÇÕES</div><h1>Minhas aulas</h1><p>Continue preparando, revise e organize os materiais de ensino.</p></div><button type="button" class="primary-btn" id="acervoNew">＋ Criar aula</button></div>
+          <div class="card archive-tools"><div><strong id="archiveCount">0 preparações</strong><p class="tiny">Nesta versão, cada computador ou celular mantém seus próprios rascunhos.</p></div><div class="archive-buttons"><button type="button" class="soft-btn" id="exportArchive">↓ Exportar backup</button><label class="upload-btn" for="importArchive">↑ Importar backup<input type="file" id="importArchive" accept=".json,application/json" hidden></label></div></div>
+          <div id="archiveList" class="archive-grid"></div>
+          <div class="card" id="archiveEmpty"><h3>Ainda não há aulas salvas</h3><p>Você pode começar com um tema, uma passagem bíblica ou o devocional que chamou sua atenção.</p><button type="button" class="primary-btn" data-open="aulas">Preparar a primeira aula →</button></div>
+          <p class="tiny">A importação de backup acrescenta aulas que ainda não existem por identificador; não substitui nem apaga as atuais.</p>
+        </section>
+      </main>
+      <footer class="footer">Ministério Infantil • 4ª Igreja do Evangelho Quadrangular — Curitiba <span>Projeto experimental de Estudos • Independente do sistema principal</span></footer>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
