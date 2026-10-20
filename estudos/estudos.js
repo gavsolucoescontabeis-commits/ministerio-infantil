@@ -361,6 +361,7 @@ function clearLessonSuggestions(){
  lessonSuggestRequest++;lessonSuggestVariants=null;lessonChoiceIndices={};
  const panel=$('lessonSuggestionPanel');
  if(panel){panel.hidden=true;$('lessonSuggestionOptions').replaceChildren()}
+ if($('storyAgeNotice'))$('storyAgeNotice').textContent=''
 }
 function updateChosenLessonOptions(){
  const selected=Object.keys(lessonChoiceIndices).length;
@@ -400,7 +401,12 @@ function renderLessonSuggestionVariants(reference){
   container.append(details);
  }
  panel.hidden=false;updateChosenLessonOptions();
- $('lessonFeedback').textContent='Sugestões preparadas com base em '+reference+'. Escolha suas opções e clique em Montar Aula e Visualizar.';
+ const kind=lessonSuggestVariants?.meta?.narrativeMode;
+ const age=$('lessonAge').value;
+ $('storyAgeNotice').textContent=kind==='narrative'?
+  'História narrada e comparações do cotidiano preparadas para '+age+'. São sugestões editoriais; confira sempre os acontecimentos na Bíblia.':
+  'Leitura Bíblica Guiada preparada para '+age+'. Esta passagem ainda não tem roteiro narrativo revisado; o aplicativo não inventa acontecimentos.';
+ $('lessonFeedback').textContent='Sugestões preparadas para '+age+' com base em '+reference+'. Escolha suas opções e clique em Montar Aula e Visualizar.';
  panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function createLessonSuggestions(){
@@ -561,6 +567,7 @@ function init(){
  $('lessonTitle').addEventListener('input',()=>{clearLessonSuggestions();clearTimeout(topicTimer);topicTimer=setTimeout(renderTopicSuggestions,230);planScriptureSearch()});
  $('lessonTitle').addEventListener('blur',()=>{clearTimeout(topicTimer);renderTopicSuggestions()});
  $('lessonReference').addEventListener('input',()=>{clearLessonSuggestions();topicAutoRef=null;renderTopicSuggestions()});
+ $('lessonAge').addEventListener('change',()=>{if(lessonSuggestVariants){clearLessonSuggestions();toast('Faixa etária alterada. Clique em Sugerir Aula para gerar as versões apropriadas à nova idade.')}});
  $('generateLessonSuggestions').addEventListener('click',createLessonSuggestions);
  $('assembleLesson').addEventListener('click',assembleLesson);
  $('finishSuggestedLesson').addEventListener('click',assembleLesson);
