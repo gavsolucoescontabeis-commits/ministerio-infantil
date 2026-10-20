@@ -7,9 +7,9 @@
   <meta name="description" content="Ambiente experimental de estudos bíblicos, leitura, devocionais e preparação de aulas para o Ministério Infantil da 4ª IEQ Curitiba.">
   <title>Estudos • Ministério Infantil – 4ª IEQ</title>
   <link rel="icon" type="image/svg+xml" href="./logo-ministerio.svg">
-  <link rel="stylesheet" href="./estudos.css?v=4">
+  <link rel="stylesheet" href="./estudos.css?v=5">
   <script src="./temas.js?v=2" defer></script>
-  <script src="./estudos.js?v=4" defer></script>
+  <script src="./sugestoes-aula.js?v=1" defer></script><script src="./estudos.js?v=5" defer></script>
 </head>
 <body>
   <div class="workspace">
@@ -17,7 +17,7 @@
       <div class="brand">
         <img src="./logo-ministerio.svg" width="196" height="74" alt="Símbolo oficial do Ministério Infantil – 4ª IEQ Curitiba">
       </div>
-      <div class="side-category">NOVO ESPAÇO DE ESTUDOS</div>
+      <div class="side-category">ESTUDOS E PREPARAÇÃO DE AULAS</div>
       <nav class="menu" aria-label="Navegação dos estudos">
         <button type="button" class="menu-item active" data-view="inicio" aria-current="page"><span>⌂</span> Visão Geral</button>
         <button type="button" class="menu-item" data-view="biblia"><span>▣</span> Bíblia On-line</button>
@@ -25,7 +25,7 @@
         <button type="button" class="menu-item" data-view="acervo"><span>▤</span> Minhas Aulas</button>
       </nav>
       <div class="side-bottom">
-        <div class="pilot-note"><span class="pilot-dot"></span><strong>Módulo em Testes</strong><p>Separado do aplicativo principal. Seus rascunhos ficam somente neste navegador.</p></div>
+        <div class="side-storage-note"><strong>Suas Preparações</strong><p>Os materiais são salvos neste navegador. Utilize a opção de backup em Minhas Aulas.</p></div>
         <a class="side-link" href="../">← Voltar ao Aplicativo</a>
       </div>
     </aside>
@@ -34,7 +34,7 @@
       <header class="topbar">
         <button type="button" class="icon-btn mobile-only" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
         <div class="breadcrumb">Ministério Infantil <span> / </span><strong>Estudos</strong></div>
-        <div class="top-actions"><span class="pill">VERSÃO DE TESTES</span><span id="todayLabel" class="today"></span></div>
+        <div class="top-actions"><span id="todayLabel" class="today"></span></div>
       </header>
 
       <main class="main-content">
@@ -73,19 +73,14 @@
             <button type="button" class="action-card" data-open="aulas"><span class="action-icon gold">✏️</span><strong>Montar Uma Aula</strong><span>Objetivos, história bíblica, perguntas e aplicação.</span><b>Planejar Aula ↗</b></button>
             <button type="button" class="action-card" data-open="acervo"><span class="action-icon green">📚</span><strong>Minhas Preparações</strong><span>Retome os rascunhos guardados neste dispositivo.</span><b>Ver Aulas ↗</b></button>
           </div>
-          <div class="footnote">Tradução Almeida 1911 consultada via <a href="https://getbible.net/api/bible/v2/" target="_blank" rel="noopener noreferrer">GetBible</a>. Texto bíblico carregado da fonte original, sem geração automática de versículos.</div>
+          <div class="footnote">Texto da Bíblia Livre (BLIVRE), disponibilizado por <a href="https://getbible.net/api/bible/v2/" target="_blank" rel="noopener noreferrer">GetBible</a>. Licença <a href="https://creativecommons.org/licenses/by/3.0/br/" target="_blank" rel="noopener noreferrer">CC BY 3.0 Brasil</a>. As citações são carregadas da tradução licenciada, sem gerar versículos.</div>
         </section>
 
         <section class="page" id="view-biblia">
           <div class="page-title"><div><div class="eyebrow">66 LIVROS PARA EXPLORAR</div><h1>Bíblia On-line</h1><p>Escolha o livro, o capítulo e o versículo que deseja estudar.</p></div><button type="button" class="outline-btn" id="readFromLesson">Usar na Preparação de Aula →</button></div>
           <div class="reader-layout">
             <div class="card reader-controls">
-              <div class="reader-control-title">
-                <div><div class="eyebrow">LOCALIZE UMA PASSAGEM</div><strong>Encontre o Texto Bíblico</strong></div>
-                <div class="translation-picker"><label for="translationSelect">Tradução Bíblica</label><select id="translationSelect">
-                  <option value="almeida">Almeida — 1911 (Histórica)</option><option value="livre">Bíblia Livre — Linguagem Mais Atual</option>
-                </select></div>
-              </div>
+              <div class="reader-control-title"><div><div class="eyebrow">LOCALIZE UMA PASSAGEM</div><strong>Encontre o Texto Bíblico</strong></div></div>
               <div class="reader-top-row">
                 <div class="control-field book-field"><label for="bookSelect">Livro da Bíblia</label><select id="bookSelect"></select></div>
                 <div class="control-field chapter-field"><label for="chapterSelect">Capítulo</label><select id="chapterSelect"></select></div>
@@ -95,15 +90,13 @@
               <div class="reader-toolbar">
                 <div class="reader-navigate"><button type="button" id="prevChapter" class="soft-btn">← Anterior</button><button type="button" id="nextChapter" class="soft-btn">Próximo →</button></div>
                 <div class="reader-audio"><button type="button" id="readerListen" class="primary-btn">♫ Ouvir Capítulo</button><button type="button" id="readerStop" class="soft-btn">■ Parar Áudio</button></div>
-                <span class="reader-voice-note" id="voiceNotice">♫ Narração: voz Daniel, se disponível neste aparelho.</span>
-                <span class="tiny reader-hint">Selecione um versículo para iniciar a leitura a partir dele. A narração utiliza exclusivamente a voz Daniel quando disponível neste navegador.</span>
               </div>
             </div>
             <article class="card scripture">
-              <div class="scripture-top"><div><div class="eyebrow"><span id="translationHeading">ALMEIDA • EDIÇÃO DE 1911</span></div><h2 id="chapterHeading">João 3</h2></div><div class="scripture-actions"><button type="button" class="small-btn" id="copySelectedVerse">Copiar Versículo</button><button type="button" class="small-btn" id="useSelectedVerse">Usar na Aula</button></div></div>
+              <div class="scripture-top"><div><div class="eyebrow"><span id="translationHeading">BÍBLIA LIVRE • BLIVRE</span></div><h2 id="chapterHeading">João 3</h2></div><div class="scripture-actions"><button type="button" class="small-btn" id="copySelectedVerse">Copiar Versículo</button><button type="button" class="small-btn" id="useSelectedVerse">Usar na Aula</button></div></div>
               <div id="readerStatus" class="reader-status" role="status">Preparando leitura...</div>
               <div id="versesContainer" class="verses" aria-label="Versículos do capítulo"></div>
-              <div class="scripture-footer"><span>Como usar: toque em um versículo e clique em <strong>Usar na Aula</strong>; sem selecionar, será usado o capítulo inteiro.</span><span>Fonte: <a href="https://getbible.net/api/bible/" target="_blank" rel="noopener noreferrer">GetBible</a> · <span id="translationAttribution">Almeida 1911 • texto histórico (módulo digital com metadados GPL).</span> <a id="translationLicenseLink" href="https://api.getbible.net/v2/translations.json" target="_blank" rel="noopener noreferrer">Origem e Condições da Tradução ↗</a></span></div>
+              <div class="scripture-footer"><span>Como usar: toque em um versículo e clique em <strong>Usar na Aula</strong>; sem selecionar, será usado o capítulo inteiro.</span><span>Fonte: <a href="https://getbible.net/api/bible/" target="_blank" rel="noopener noreferrer">GetBible</a> · <span id="translationAttribution">Bíblia Livre (BLIVRE) • Diego Santos, Mario Sérgio e Marco Teles • 2017.</span> <a id="translationLicenseLink" href="https://api.getbible.net/v2/translations.json" target="_blank" rel="noopener noreferrer">Origem e Condições da Tradução ↗</a></span></div>
             </article>
           </div>
         </section>
@@ -112,7 +105,7 @@
           <div class="page-title"><div><div class="eyebrow">PLANEJAMENTO DE AULAS</div><h1>Preparar Uma Aula</h1><p>Organize a mensagem bíblica, a explicação e as atividades adequadas às crianças.</p></div><button type="button" class="outline-btn" id="newLesson">＋ Nova Preparação</button></div>
           <div class="planner-layout">
             <form class="card lesson-form" id="lessonForm">
-              <div class="form-part"><h3>01. Informações da aula</h3><p>Comece definindo o assunto e a passagem que será ensinada.</p>
+              <div class="form-part"><h3>01. Informações da Aula</h3><p>Comece definindo o assunto e a passagem que será ensinada.</p>
                 <div class="form-grid"><div class="span-2"><label for="lessonTitle">Tema / Título da Aula *</label><input id="lessonTitle" maxlength="160" required placeholder="Ex.: Parábola do semeador, Amor de Deus, Esaú e Jacó" autocomplete="off"></div>
                   <div class="span-2" id="topicSuggestions" hidden aria-live="polite"></div>
                   <div class="span-2" id="scriptureSearchResults" aria-live="polite"></div>
@@ -121,25 +114,26 @@
                   <div class="span-2"><label for="lessonReference">Passagem Bíblica Principal *</label><input id="lessonReference" required maxlength="90" placeholder="Ex.: Marcos 10:13-16"><p class="topic-reference-help">Ao reconhecer um tema, sugerimos referências conferíveis. Você pode escolher outra passagem ou digitar manualmente.</p></div>
                 </div>
               </div>
-              <div class="form-part"><h3>02. Mensagem e contexto</h3><p>A preparação deve permanecer fiel ao texto bíblico e à sua sequência.</p>
-                <label for="lessonGoal">Objetivo da aula</label><textarea id="lessonGoal" rows="2" placeholder="O que as crianças devem compreender ao final da aula?"></textarea>
-                <label for="lessonContext">Contexto bíblico e histórico</label><textarea id="lessonContext" rows="3" placeholder="Onde e quando aconteceu? Quem participa da história? O que o texto realmente informa?"></textarea>
-                <label for="lessonStory">A história bíblica explicada</label><textarea id="lessonStory" rows="6" placeholder="Narre os acontecimentos em ordem, sem adicionar fatos que não constam do texto bíblico."></textarea>
+              <div class="form-part"><h3>02. Mensagem e Contexto</h3><p>A preparação deve permanecer fiel ao texto bíblico e à sua sequência.</p>
+                <label for="lessonGoal">Objetivo da Aula</label><textarea id="lessonGoal" rows="2" placeholder="O que as crianças devem compreender ao final da aula?"></textarea>
+                <label for="lessonContext">Contexto Bíblico e Histórico</label><textarea id="lessonContext" rows="3" placeholder="Onde e quando aconteceu? Quem participa da história? O que o texto realmente informa?"></textarea>
+                <label for="lessonStory">A História Bíblica Explicada</label><textarea id="lessonStory" rows="6" placeholder="Narre os acontecimentos em ordem, sem adicionar fatos que não constam do texto bíblico."></textarea>
               </div>
-              <div class="form-part"><h3>03. Aplicação e participação</h3>
-                <label for="lessonApplication">Aplicação prática para as crianças</label><textarea id="lessonApplication" rows="3" placeholder="Como essa passagem se relaciona com o dia a dia das crianças?"></textarea>
-                <label for="lessonQuestions">Perguntas para conversar</label><textarea id="lessonQuestions" rows="3" placeholder="Perguntas relacionadas aos fatos e ao ensino da passagem."></textarea>
-                <label for="lessonActivity">Atividade / dinâmica / ilustração</label><textarea id="lessonActivity" rows="3" placeholder="Sugestões para ajudar a compreender e lembrar da lição."></textarea>
-                <label for="lessonPrayer">Encerramento e oração</label><textarea id="lessonPrayer" rows="2" placeholder="Como concluir a aula e orar com as crianças?"></textarea>
+              <div class="form-part"><h3>03. Aplicação e Participação</h3>
+                <label for="lessonApplication">Aplicação Prática para as Crianças</label><textarea id="lessonApplication" rows="3" placeholder="Como essa passagem se relaciona com o dia a dia das crianças?"></textarea>
+                <label for="lessonQuestions">Perguntas para Conversar</label><textarea id="lessonQuestions" rows="3" placeholder="Perguntas relacionadas aos fatos e ao ensino da passagem."></textarea>
+                <label for="lessonActivity">Atividade / Dinâmica / Ilustração</label><textarea id="lessonActivity" rows="3" placeholder="Sugestões para ajudar a compreender e lembrar da lição."></textarea>
+                <label for="lessonPrayer">Encerramento e Oração</label><textarea id="lessonPrayer" rows="2" placeholder="Como concluir a aula e orar com as crianças?"></textarea>
               </div>
-              <div class="lesson-buttons"><button type="submit" class="primary-btn">Salvar Preparação</button><button type="button" id="copyMasterPrompt" class="outline-btn">✦ Copiar Pedido de Sugestões</button><button type="button" id="printLesson" class="soft-btn">Imprimir Aula</button></div>
-              <p class="tiny">“Copiar Pedido de Sugestões” permite solicitar uma proposta aqui no ChatGPT. O futuro botão “Sugerir Aula” apresentará alternativas para preencher cada campo, após integração segura de IA.</p>
+              <div class="lesson-buttons"><button type="button" id="generateLessonSuggestions" class="primary-btn">✦ Sugerir Aula</button><button type="submit" class="primary-btn">Salvar Preparação</button><button type="button" id="printLesson" class="soft-btn">Imprimir Aula</button><button type="button" id="copyMasterPrompt" class="outline-btn">Copiar Pedido para IA ↗</button></div>
+              <p class="tiny">“Sugerir Aula” oferece alternativas editoriais baseadas no texto bíblico, para você conferir e escolher. “Copiar Pedido para IA” permite solicitar uma preparação mais detalhada no ChatGPT.</p>
+              <section id="lessonSuggestionPanel" class="lesson-suggestion-panel" hidden aria-live="polite"><div class="lesson-suggestion-heading"><div><strong>Sugestões para a Aula</strong><p>Escolha o conteúdo que desejar. Nada substitui seus textos sem confirmação.</p></div><button type="button" id="fillEmptyLessonFields" class="soft-btn">Preencher Campos Vazios</button></div><div id="lessonSuggestionOptions"></div></section>
               <div id="lessonFeedback" class="feedback" aria-live="polite"></div>
             </form>
             <aside class="planner-side">
               <div class="card tips-card"><div class="tip-art">✧</div><div class="eyebrow">NOSSO PADRÃO DE ENSINO</div><h3>Fidelidade à Palavra</h3><p>Uma boa aula apresenta a história, explica o contexto e ensina uma aplicação apropriada para a idade.</p><ul><li>Base e referências bíblicas.</li><li>Personagens e acontecimentos fiéis ao texto.</li><li>Explicações claras e adequadas à idade.</li><li>Atividades relacionadas à passagem.</li><li>Não inventar detalhes em ilustrações.</li></ul></div>
-              <div class="card tip-muted"><h3>Precisa de um versículo?</h3><p>Escolha uma passagem na Bíblia On-line e clique em <strong>Usar na Aula</strong>. O campo de referência será preenchido.</p><button type="button" class="soft-btn full" data-open="biblia">Abrir Bíblia →</button></div>
-              <div class="card tip-muted"><h3>Rascunhos de teste</h3><p>As preparações são guardadas somente neste dispositivo. Faça uma cópia de segurança na aba <strong>Minhas Aulas</strong>.</p></div>
+              <div class="card tip-muted"><h3>Precisa de um Versículo?</h3><p>Escolha uma passagem na Bíblia On-line e clique em <strong>Usar na Aula</strong>. O campo de referência será preenchido.</p><button type="button" class="soft-btn full" data-open="biblia">Abrir Bíblia →</button></div>
+              <div class="card tip-muted"><h3>Backup das Preparações</h3><p>As preparações são guardadas neste navegador. Para usá-las em outro aparelho, exporte o backup na aba <strong>Minhas Aulas</strong>.</p></div>
             </aside>
           </div>
         </section>
