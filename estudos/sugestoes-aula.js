@@ -32,46 +32,130 @@ function scriptureSamples(verses,start,end,max=5){
  return [...new Set(indices)].map(i=>candidates[i]);
 }
 function limitText(str,max=340){const t=String(str||'').trim();return t.length>max?t.slice(0,max).replace(/\s+\S*$/,'')+'…':t}
+
+function ageGroup(age){
+ return window.MI_LESSON_STORYTELLING?.ageGroup(age)||'middle';
+}
+function presentLifeAnalogy(topic,group){
+ const q=norm(topic);
+ const profile= [
+  {words:['amor','carinho','acolh','proximo','bondade'],little:'Quando uma criança fica sem colega para brincar, podemos convidá-la a participar com carinho.',early:'Se alguém está sozinho na escola, convidá-lo para a atividade é uma forma prática de demonstrar amor.',middle:'Imagine um aluno novo na turma. Aproximar-se, ouvi-lo e ajudá-lo a conhecer os colegas mostra amor em atitudes.',older:'Quando uma pessoa é deixada de fora de um grupo, amor ao próximo inclui acolher, escutar e não espalhar comentários injustos.',teen:'Numa conversa de grupo ou rede social, defender alguém tratado injustamente é uma oportunidade de demonstrar amor com responsabilidade.'},
+  {words:['perdao','arrepend','reconcili'],little:'Se brigamos com alguém, podemos reconhecer o erro, pedir desculpas e procurar fazer as pazes.',early:'Quando você magoa um colega, pedir perdão inclui reconhecer o que aconteceu e procurar reparar o dano.',middle:'Depois de uma discussão, perdoar não significa dizer que a ofensa foi correta; significa escolher não alimentar a vingança e procurar ajuda quando necessário.',older:'Uma amizade pode ser ferida por mentiras e atitudes impensadas. Reconhecer responsabilidades e estabelecer limites é parte de uma reconciliação saudável.',teen:'Uma ofensa em mensagens ou redes sociais pede atitudes concretas: reconhecer o erro, não reproduzir ataques e buscar mediação responsável.'},
+  {words:['obedien','ouvir','ensino','mandamento'],little:'Quando um responsável ensina a atravessar a rua com cuidado, prestar atenção pode nos proteger.',early:'Ouvir a orientação de um adulto responsável antes de uma atividade perigosa é uma forma prática de agir com cuidado.',middle:'Seguir regras de segurança num passeio exige escutar e agir, não apenas dizer que entendeu.',older:'Receber uma orientação importante e colocá-la em prática pode exigir disciplina mesmo quando outros agem de forma diferente.',teen:'Distinguir autoridade responsável de pressão para fazer algo errado ajuda a conversar sobre obediência com discernimento.'},
+  {words:['honest','verdade','mentir','justic'],little:'Se quebramos algo sem querer, podemos contar a verdade em vez de esconder.',early:'Quando alguém encontra um objeto que não é seu, entregá-lo ao responsável é uma escolha honesta.',middle:'Numa atividade escolar, copiar a resposta do colega pode parecer mais fácil, mas a honestidade exige reconhecer o próprio trabalho.',older:'Compartilhar uma informação sem conferir se é verdadeira pode prejudicar pessoas; verificar e corrigir o erro também é honestidade.',teen:'Antes de repassar um boato ou uma imagem em redes sociais, vale perguntar se é verdadeiro e se respeita a dignidade dos envolvidos.'},
+  {words:['coragem','medo','confianca','fe'],little:'Se você fica com medo de falar na frente da turma, pode pedir ajuda e dar um passo de cada vez.',early:'Falar a verdade mesmo com vergonha pode ser uma atitude de coragem.',middle:'A coragem pode aparecer quando escolhemos proteger um colega que sofre zombarias, pedindo auxílio a um adulto.',older:'Tomar uma decisão correta mesmo sob pressão dos colegas é uma forma de coragem no cotidiano.',teen:'Num grupo em que todos incentivam uma atitude injusta, é preciso coragem para dizer não e buscar apoio.'},
+  {words:['gratidao','grato','agradecer'],little:'Podemos agradecer pelo alimento e pela ajuda de quem cuida de nós.',early:'Dizer obrigado e ajudar alguém que nos ajudou também demonstra gratidão.',middle:'Escrever uma mensagem sincera a alguém que nos ensinou ou ajudou pode ser uma forma prática de gratidão.',older:'A gratidão nos ajuda a reconhecer o esforço de outras pessoas, evitando tratar seus cuidados como obrigação.',teen:'Além de mensagens nas redes sociais, gratidão pode aparecer em reconhecimento concreto, serviço e reciprocidade.'},
+  {words:['oracao','orar','pai nosso'],little:'Você pode falar com Deus usando palavras simples para agradecer e pedir ajuda.',early:'Separar um momento de silêncio para orar por alguém que precisa de apoio pode ser uma atitude importante.',middle:'Quando ficamos preocupados com uma prova ou com alguém da família, podemos conversar com Deus em oração e buscar ajuda prática.',older:'Orar não significa ignorar responsabilidades; podemos entregar preocupações a Deus e agir com sabedoria.',teen:'Diante de ansiedade e decisões difíceis, a oração pode caminhar junto com conversa, orientação e atitudes responsáveis.'}
+ ];
+ const hit=profile.find(p=>p.words.some(w=>q.includes(w)));
+ if(hit)return hit[group]||hit.middle;
+ const examples={
+  little:'Depois de ouvir a passagem, pense numa atitude de carinho ou cuidado que você pode praticar hoje em casa.',
+  early:'Pense em uma situação da escola em que você pode colocar em prática o ensinamento estudado.',
+  middle:'Escolha uma situação real da escola, família ou igreja e explique como o ensinamento bíblico pode orientar sua decisão.',
+  older:'Observe um problema de convivência que crianças dessa idade realmente enfrentam e proponha uma atitude responsável à luz da passagem.',
+  teen:'Reflita sobre escolhas em amizades, estudos e redes sociais; identifique uma atitude concreta que respeite o ensinamento da passagem.'
+ };
+ return examples[group]||examples.middle;
+}
+function fallbackStoryScript({reference,age,verses,firstVerse,lastVerse,interactive=false}){
+ const list=verses.filter(v=>v.verse>=firstVerse&&v.verse<=lastVerse&&v.text);
+ const group=ageGroup(age),reading=group==='little'||group==='early';
+ const start=reading?'Vamos ouvir o que a Bíblia realmente diz nesta passagem.':
+  group==='middle'?'Vamos acompanhar a passagem na ordem dos versículos e observar seus acontecimentos.':
+  'Vamos ler a passagem em seu contexto, distinguindo os fatos registrados das explicações que fazemos.';
+ const intro='LEITURA BÍBLICA GUIADA — '+reference+'\n'+start;
+ const max=group==='little'?12:group==='early'?18:30;
+ const chapters=list.length<=max?list:[
+  ...list.slice(0,Math.ceil(max/3)),
+  ...list.slice(Math.floor((list.length-max/3)/2),Math.floor((list.length-max/3)/2)+Math.ceil(max/3)),
+  ...list.slice(-Math.ceil(max/3))
+ ];
+ const readingParts=[];
+ let segment=[];
+ const push=()=>{if(segment.length){readingParts.push(segment.map(v=>'Versículo '+v.verse+': '+v.text).join('\n'));segment=[]}};
+ for(const v of chapters){
+  if(segment.length&&v.verse!==segment[segment.length-1].verse+1){push();readingParts.push('[Existem versículos intermediários. Leia a passagem completa na Bíblia Livre antes de ensinar.]')}
+  segment.push(v);
+  if(segment.length>= (group==='little'?3:5))push();
+ }
+ push();
+ const guidance=interactive?
+   'CONVERSA COM A TURMA:\n1. Quem aparece neste trecho?\n2. O que a passagem realmente conta?\n3. O que Deus ou Jesus ensina aqui?':
+   'EXPLICAÇÃO PARA O PROFESSOR:\nDepois da leitura, conte com suas palavras somente os acontecimentos encontrados no texto. Quando for um ensino, explique a ideia principal sem transformá-lo numa história que a Bíblia não narra.';
+ const note='\n\n'+guidance+'\n\nEsta passagem ainda não possui um roteiro narrativo editorial revisado. O texto bíblico foi preservado para evitar detalhes inventados.';
+ return intro+'\n\n'+readingParts.join('\n\n')+note;
+}
 function generate({title,reference,age,verses,firstVerse=1,lastVerse=999}){
- const profile=editorialProfile(title,reference),topic=title.trim(),ref=reference.trim(),target=age||'as crianças';
+ const profile=editorialProfile(title,reference),topic=String(title||'').trim(),ref=String(reference||'').trim();
  const list=verses.filter(v=>v.verse>=firstVerse&&v.verse<=lastVerse&&v.text);
  if(!list.length)throw Error('Nenhum versículo válido na passagem informada.');
- const examples=scriptureSamples(list,list[0].verse,list[list.length-1].verse);
- const quote=(v)=>ref.split(':')[0]+':'+v.verse+' — '+limitText(v.text,270);
- const content=examples.map(v=>quote(v)).join('\n');
- const starting=examples.slice(0,2).map(v=>quote(v)).join('\n');
- const whole=ref+' (Bíblia Livre — BLIVRE)';
- const idea=profile?.lesson||'A Palavra de Deus pode ser estudada com atenção ao seu contexto e aplicada com responsabilidade.';
+ const group=ageGroup(age);
+ const storyTool=window.MI_LESSON_STORYTELLING;
+ const narrated=storyTool?.narration({title,reference:ref,age,firstVerse,lastVerse,interactive:false});
+ const interactive=storyTool?.narration({title,reference:ref,age,firstVerse,lastVerse,interactive:true});
+ const analogy=narrated?.comparison||presentLifeAnalogy(topic,group);
+ const samples=scriptureSamples(list,list[0].verse,list[list.length-1].verse,4);
+ const verse=(v)=>ref.split(':')[0]+':'+v.verse+' — '+String(v.text||'').trim();
+ const excerpt=samples.map(verse).join('\n');
+ const isLittle=group==='little',isEarly=group==='early',isTeen=group==='teen';
+ const goal1=isLittle?'Ouvir e contar com palavras simples os acontecimentos principais de '+ref+'.':
+   isEarly?'Conhecer os principais acontecimentos de '+ref+' e compreender seu ensinamento com exemplos próximos à realidade das crianças.':
+   isTeen?'Analisar a passagem '+ref+', seus acontecimentos e ensinamentos, identificando aplicações responsáveis para o cotidiano.':
+    'Compreender '+ref+', identificar o ensino central e relacioná-lo a uma situação real vivida pelas crianças.';
+ const goal2=isLittle?'Reconhecer o cuidado de Deus e lembrar uma atitude boa que podemos praticar depois da aula.':
+   isEarly?'Aprender o tema “'+topic+'” e explicá-lo com uma frase e um exemplo concreto.':
+   'Ao final da aula, a turma deverá recontar os fatos de '+ref+' em ordem e explicar sua aplicação sem confundir a Bíblia com exemplos atuais.';
+ const context1=(profile?.lesson||'A passagem será estudada segundo o seu contexto bíblico.')+
+  '\nTexto-base: '+ref+' — Bíblia Livre (BLIVRE). Identifique quem participa, onde a passagem situa os fatos e o que é explicitamente informado; não invente lugar, época, idade ou diálogos.';
+ const context2='Comece lendo '+ref+' e mostrando o que o texto realmente registra. Para conferir a sequência e o vocabulário:\n'+excerpt+
+  '\nDiferencie a explicação do professor das palavras originais da Bíblia.';
+ const story1=narrated?.script||fallbackStoryScript({reference:ref,age,verses:list,firstVerse,lastVerse});
+ const story2=interactive?.script||fallbackStoryScript({reference:ref,age,verses:list,firstVerse,lastVerse,interactive:true});
+ const ageQuestion=isLittle?'O que aconteceu? Quem aparece na história?':
+   isEarly?'Que parte da história chamou sua atenção? Como você contaria essa parte a um amigo?':
+   isTeen?'Que evidências do texto apoiam a mensagem central? Que interpretações não são autorizadas pela passagem?':
+    'O que aconteceu primeiro e depois? Que decisões os personagens tomaram? O que aprendemos sobre Deus?';
+ const activity1=isLittle?
+   'Desenhe um acontecimento da história ou organize três figuras simples em ordem. O professor confere cada cena com o texto bíblico.':
+   isEarly?'Em grupo, organize cartões com os acontecimentos principais. Cada cartão precisa corresponder à passagem estudada.':
+   isTeen?'Prepare uma apresentação curta com três partes: o que a Bíblia diz, o que ela ensina e uma aplicação atual. Evite confundir opinião com texto bíblico.':
+    (profile?.activity||'Faça com a turma uma linha do tempo com os acontecimentos reais da passagem e confira a sequência na Bíblia.');
+ const activity2=isLittle?'Brinquem de completar frases simples sobre a passagem. Depois, conversem sobre uma atitude boa para praticar.':
+   isEarly?'Prepare um cartaz com duas colunas: “Na Bíblia” e “Na Minha Vida”. Desenhe um fato em uma coluna e uma comparação atual na outra.':
+   isTeen?'Promova uma conversa orientada: o que a passagem afirma, como é interpretada e que decisões práticas ela pode inspirar hoje?':
+    'Em duplas, preparem um quadro com “Acontecimentos Bíblicos” e “Comparação Atual”. Cada dupla apresenta uma ligação fiel ao ensinamento.';
+ const agePractice=isLittle?'Converse com as crianças e escolha uma atitude simples para praticar com a família.':
+   isEarly?'Convide cada criança a citar uma atitude de cuidado, respeito ou responsabilidade que pode praticar esta semana.':
+   'Peça que as crianças expliquem a diferença entre o acontecimento bíblico e o exemplo atual, e escolham uma ação concreta para a semana.';
+ const prayer1=isLittle?'Senhor Jesus, obrigado por Tua Palavra. Ajuda-nos a aprender e a fazer o que é bom. Amém.':
+   isTeen?'Senhor Deus, concede-nos sabedoria para compreender Tua Palavra, discernimento para tomar boas decisões e amor para servir ao próximo. Em nome de Jesus, amém.':
+   'Senhor Deus, obrigado pela Tua Palavra. Ajuda-nos a compreender '+ref+' e a praticar Seus ensinamentos com amor. Em nome de Jesus, amém.';
  return {
-  goal:[
-   'Compreender o tema “'+topic+'” à luz de '+ref+' e identificar o ensinamento central da passagem.',
-   'Ao final da aula, as crianças deverão reconhecer o que o texto de '+ref+' apresenta e explicar o que aprenderam sobre a Palavra de Deus.'
-  ],
-  context:[
-   'Texto-base: '+whole+'.\nLeia também os versículos imediatamente anteriores e posteriores. Identifique, diretamente na Bíblia, quem fala, quem participa e a situação narrada. Não atribua época, lugar ou idade sem confirmação do texto.',
-   'Para iniciar, apresente a referência '+ref+' e explique que a turma observará primeiro os acontecimentos do texto. Trechos para conferir:\n'+starting
-  ],
-  story:[
-   'Acompanhe a sequência do texto bíblico, sem acrescentar falas ou fatos:\n\n'+content+'\n\nReconte os acontecimentos na ordem dos versículos e explique com suas palavras, sempre conferindo o capítulo completo.',
-   'Conte a história por etapas: início, desenvolvimento e conclusão, sempre seguindo '+ref+'. Utilize estes versículos como pontos de apoio:\n'+content+'\n\nPergunte às crianças o que elas realmente encontram no relato bíblico.'
-  ],
+  goal:[goal1,goal2],
+  context:[context1,context2],
+  story:[story1,story2],
   application:[
-   (profile?.lesson||'Explique o ensinamento observado na leitura de '+ref+'.')+'\nConverse com as crianças sobre como esse ensinamento pode orientar escolhas e atitudes nesta semana.',
-   'Pergunte: “O que podemos aprender com '+ref+'?” Peça que cada criança pense em uma atitude concreta para praticar, respeitando o significado original da passagem.'
+   (profile?.lesson||'O ensinamento da passagem merece ser colocado em prática.')+
+   '\n\nCOMPARAÇÃO ATUAL — NÃO FAZ PARTE DA HISTÓRIA BÍBLICA:\n'+analogy+
+   '\n\n'+agePractice,
+   'Vamos pensar no nosso dia a dia: '+analogy+
+   '\n\nPergunte: “O que a Bíblia ensina? Como nossa escolha de hoje pode demonstrar que compreendemos?”'
   ],
   questions:[
-   '1. Quem aparece ou é mencionado em '+ref+'?\n2. O que aconteceu primeiro?\n3. Qual foi o acontecimento principal?\n4. O que aprendemos sobre Deus ou sobre Jesus nesta passagem?'+(profile?'\n5. '+profile.question:''),
-   '1. O que chamou sua atenção no texto?\n2. O que os personagens fizeram ou disseram? Confira a Bíblia antes de responder.\n3. Qual é o ensinamento central?\n4. Como podemos praticá-lo em casa, na escola ou na igreja?'
+   '1. '+ageQuestion+'\n2. Qual ensinamento da passagem devemos guardar?'+(profile?'\n3. '+profile.question:'')+
+   '\n4. Como podemos praticá-lo hoje?',
+   isLittle?'1. Quem você conheceu nessa história?\n2. Do que você gostou mais?\n3. O que podemos fazer de bom hoje?':
+   '1. Qual é o contexto de '+ref+'?\n2. O que está claramente escrito no texto?\n3. Que parte é apenas uma comparação moderna?\n4. Qual ensinamento você colocará em prática?'
   ],
-  activity:[
-   profile?.activity||'Peça que a turma desenhe ou organize uma sequência de três acontecimentos do texto. Depois, confiram juntos se cada ilustração aparece realmente na Bíblia.',
-   'Faça uma leitura participativa de '+ref+'. Em seguida, monte com a turma um cartaz com três partes: “O que o texto diz”, “O que aprendemos” e “Como vamos praticar”.'
-  ],
+  activity:[activity1,activity2],
   prayer:[
-   'Senhor Deus, obrigado pela Tua Palavra. Ajuda-nos a compreender '+ref+' e a colocar em prática aquilo que aprendemos. Em nome de Jesus, amém.',
-   'Senhor Jesus, ensina-nos a ouvir a Tua Palavra com atenção e a viver com amor, obediência e sabedoria. Guarda nossas crianças e nossa equipe. Amém.'
-  ]
+   prayer1,
+   'Senhor Jesus, ensina-nos a ouvir a Tua Palavra e a viver com amor, obediência e sabedoria. Guarda nossas crianças e nossa equipe. Amém.'
+  ],
+  meta:{narrativeMode:narrated?'narrative':'guided',ageGroup:group,reference:ref}
  };
 }
+
 window.MI_LESSON_SUGGESTIONS=Object.freeze({generate,editorialProfile,profilesCount:profiles.length});
 })();
