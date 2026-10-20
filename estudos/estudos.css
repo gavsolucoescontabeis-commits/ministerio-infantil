@@ -119,3 +119,54 @@
  .lesson-license{display:block!important;font-size:8pt!important;color:#333!important;border-top:1px solid #bbb;padding-top:7px!important}
  .lesson-license a{color:#333!important;text-decoration:underline}
 }
+
+/* Aula pronta — fluxo completo de escolha, montagem, pré-visualização e impressão. */
+.lesson-suggestion-option.chosen{background:#effaf5;border-left:4px solid #23a36c;padding-left:10px}
+.lesson-suggestion-option.chosen>strong{color:#18744d}
+.lesson-suggestion-option.chosen button{background:#d4f4e2;color:#13623d;box-shadow:inset 0 0 0 1px #76c9a0}
+.lesson-suggestion-option button[aria-pressed="true"]{font-weight:800}
+.suggestion-finish{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:14px 13px;background:#f0faf6;border-top:1px solid #bce2d1;border-radius:0 0 12px 12px;box-shadow:0 -6px 18px rgba(25,102,75,.09);z-index:1}
+.suggestion-finish strong{color:#2c6954;font-size:12px}
+.suggestion-finish .primary-btn{background:#1d875a;color:#fff}
+.lesson-ready-page{max-width:950px;margin:0 auto}
+.ready-screen-heading{margin-bottom:17px}
+.ready-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end;margin:12px 0 18px}
+.ready-actions .primary-btn{background:#188b61}
+.ready-sheet{padding:44px 48px!important;background:white;border:1px solid #dde8e9!important;box-shadow:0 5px 30px rgba(0,0,0,.07)!important;border-radius:12px!important;color:#253c4c}
+.ready-logo img{width:160px;max-height:70px;object-fit:contain}
+.ready-head{text-align:center;padding:4px 0 23px;border-bottom:2px solid #d6e6ed;margin-bottom:20px}
+.ready-head .eyebrow{color:#277693}
+.ready-head h2{font-size:28px;line-height:1.25;color:#15364c;margin:10px 0 16px}
+.ready-meta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.ready-meta span{font-size:12px;color:#3e687e;border:1px solid #cde0eb;padding:7px 12px;border-radius:20px;background:#f4fbfe}
+.ready-section{padding:17px 0 12px;border-bottom:1px solid #e4ebee;break-inside:avoid}
+.ready-section h3{font-size:16px;color:#195c7a;margin:0 0 10px}
+.ready-section-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.75;font-size:14px;color:#304858}
+.ready-credits{margin-top:25px;padding-top:13px;border-top:1px solid #cbdbe2;font-size:10px;line-height:1.6;color:#647783}
+.ready-credits a{color:#22749a}
+.ready-empty{color:#9a6515;background:#fff6db;padding:12px}
+.ready-bottom-actions{margin-top:14px}
+@media(max-width:650px){
+ .suggestion-finish{align-items:stretch}.suggestion-finish strong{width:100%}.suggestion-finish button{width:100%}
+ .ready-sheet{padding:21px 19px!important}.ready-head h2{font-size:22px}.ready-section-text{font-size:13px}
+ .ready-actions>*{flex:1 1 auto}.ready-actions .primary-btn{width:100%}
+}
+@page{size:A4 portrait;margin:15mm}
+@media print{
+ html,body{background:white!important;color:#202d34!important;width:auto!important;margin:0!important;padding:0!important}
+ .workspace{display:block!important;min-height:0!important;width:100%!important}
+ .sidebar,.topbar,.ready-actions,.ready-screen-heading,.lesson-suggestion-panel,.footer{display:none!important}
+ .main-area,.main-content{display:block!important;max-width:none!important;width:100%!important;padding:0!important;margin:0!important;overflow:visible!important}
+ .page,#view-aulas{display:none!important}
+ #view-aula-pronta{display:block!important;max-width:none!important;margin:0!important;padding:0!important}
+ .ready-sheet{display:block!important;border:0!important;box-shadow:none!important;border-radius:0!important;max-width:none!important;margin:0!important;padding:0!important}
+ .ready-logo img{max-height:55px;width:138px}
+ .ready-head{padding:0 0 12px;margin-bottom:10px}
+ .ready-head h2{font-size:21pt!important;color:#111!important}
+ .ready-meta span{border:0!important;background:none!important;color:#444!important;padding:0 6px!important}
+ .ready-section{padding:10px 0 8px;break-inside:avoid-page;page-break-inside:avoid;border-color:#ccc}
+ .ready-section h3{font-size:13pt!important;color:#172d3a!important}
+ .ready-section-text{font-size:11pt!important;line-height:1.55!important;color:#222!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important}
+ .ready-credits{color:#444!important;font-size:8pt!important}
+ a{color:#222!important}
+}
