@@ -9,7 +9,10 @@ Módulo **integrado ao aplicativo oficial** pela aba **Estudos**, dentro do menu
 - Devocionais diário, semanal e mensal, a partir de referências editoriais, com texto bíblico consultado da fonte licenciada.
 - Busca por assunto e expressão equivalente em catálogo editorial de 78 temas, mais pesquisa por palavras no texto da Bíblia via serviço GetBible.
 - Preparação de aulas com título, referência, faixa etária, objetivo, contexto, história, aplicação, perguntas, atividade e oração.
-- **Sugerir Aula:** busca o texto da referência bíblica e apresenta **duas alternativas para cada um dos sete campos**. O professor pode aplicar individualmente, confirmar substituições ou preencher apenas campos vazios. O texto inclui versículos reais como apoio, sem fabricar personagens ou acontecimentos.
+- **Sugerir Aula:** busca o texto da referência bíblica e apresenta **duas alternativas para cada um dos sete campos**. O professor pode escolher individualmente, confirmar substituições ou preencher apenas campos vazios. O texto inclui versículos reais como apoio, sem fabricar personagens ou acontecimentos.
+- **Montar Aula e Visualizar (nova etapa final):** aparece após as sugestões e também junto aos botões de preparação; reúne as opções escolhidas e os textos escritos manualmente, salva no armazenamento local e abre a página **Aula Preparada**, organizada e sem campos de edição.
+- **Imprimir / Salvar em PDF:** disponível somente depois de montar/visualizar a aula, com estilo A4 que imprime a página formatada — não o formulário. Depois de salva, a aula pode ser aberta em **Minhas Aulas > Visualizar Aula**; os botões de continuar, duplicar e excluir foram mantidos.
+- **Voltar e Editar:** reabre o conteúdo salvo sem duplicar a aula, permitindo continuar a preparação. Salvar Rascunho permanece disponível sem obrigar a finalização.
 - As sugestões automáticas são **editoriais e baseadas em regras e no texto bíblico**: **não há IA generativa integrada**. O botão opcional **Copiar Pedido para IA** prepara um pedido para ChatGPT, mas não faz chamadas externas automaticamente.
 - Minhas Aulas: salvar, editar, duplicar, excluir, imprimir e exportar/importar backups JSON.
 
