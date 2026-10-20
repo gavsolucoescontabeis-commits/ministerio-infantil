@@ -9,10 +9,19 @@ Módulo **experimental e independente**, publicado em \`/estudos/\`. Não altera
 - Áudio local por Web Speech API (text-to-speech pt-BR, dependendo das vozes e permissões do aparelho).
 - Devocional diário, semanal ou mensal (rodízio determinístico de temas e referências previamente curados; **o texto do versículo vem da fonte bíblica**, não é inventado).
 - Criação de planos de aula: idade, texto, objetivo, contexto, narrativa, aplicação, perguntas, atividades e oração.
-- **V2:** busca assistida por assunto com catálogo editorial de **70 temas**, incluindo histórias bíblicas e assuntos gerais. Ao reconhecer exatamente um tema, preenche a primeira referência sugerida; o professor pode escolher outra referência ou escrever a sua. Sem correspondência, **não inventa versículos** e orienta a consultar a Bíblia.
+- **V2:** busca assistida por assunto com catálogo editorial de **78 temas**, incluindo histórias bíblicas e assuntos gerais. Ao reconhecer exatamente um tema, preenche a primeira referência sugerida; o professor pode escolher outra referência ou escrever a sua. Sem correspondência, **não inventa versículos** e orienta a consultar a Bíblia.
 - **V2:** painel de navegação da Bíblia em uma faixa horizontal superior, sem diminuir o tamanho do texto bíblico. Símbolo reutilizado diretamente da imagem original do aplicativo principal, sem alterá-lo.
 - Botão "Mestre Bíblica" copia um pedido estruturado para colar no ChatGPT; **não executa IA diretamente no aplicativo**.
 - Salvar e editar aulas no **localStorage do navegador**, listar, duplicar, apagar, fazer backup JSON/importação e imprimir.
+
+## V3 — busca por assunto e palavras da Bíblia
+- O campo “Tema / Título da Aula” pesquisa o catálogo editorial de 78 temas, interpretando variações comuns em português: acentos, palavras fora de ordem, sinônimos e frases equivalentes (por exemplo “Jesus transformou água em vinho”).
+- Em paralelo, faz uma pesquisa textual na [API GetBible Search v2](https://search.getbible.net/v2/), usando a tradução `almeida`. Esta busca devolve somente ocorrências reais do texto bíblico, não sugestões inventadas.
+- **A interpretação de intenção é heurística**, não uma integração de inteligência artificial generativa. Não é garantido encontrar qualquer paráfrase possível nem toda passagem relevante; exibir alternativas e permitir pesquisa manual é obrigatório.
+- As sugestões por assunto são identificadas separadamente dos resultados por palavra, e precisam ser conferidas no contexto do capítulo.
+- O catálogo pode crescer conforme testes e revisão humana. Não usar paráfrases como se fossem citações da Bíblia.
+- A leitura em voz alta começa no **versículo selecionado** e segue até o fim do capítulo. O usuário pode escolher entre as vozes portuguesas disponibilizadas pelo navegador/sistema. A naturalidade **não é garantida** e depende do dispositivo.
+- O nome privado do comando de preparação do ChatGPT não é exibido na interface. A versão de testes ainda apenas copia um pedido estruturado; um futuro botão "Sugerir Aula" exigirá integração segura com backend e geração de alternativas revisáveis.
 
 ## Restrições intencionais do piloto
 - Link isolado não exige login e **não contém dados pessoais** de crianças ou equipe.
