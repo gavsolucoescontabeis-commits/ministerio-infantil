@@ -187,8 +187,16 @@ async function loadDevotional(){const request=++state.devRequest;const theme=THE
 let topicTimer=0,topicAutoRef=null;
 const TOPICS=Array.isArray(window.MI_ESTUDOS_TOPICS)?window.MI_ESTUDOS_TOPICS:[];
 const TOPIC_STOP=new Set('a as o os e em de da do dos das na no nas nos um uma uns umas para por com que quem onde quando qual quais quero queria ver falar sobre historia passagem jesus biblia biblico biblica texto estudo aula versiculo'.split(' '));
+const TOPIC_SYNONYMS={
+ virar:'transforma',virou:'transforma',vira:'transforma',transformando:'transforma',
+ transformou:'transforma',transformar:'transforma',transformada:'transforma',converter:'transforma',
+ converteu:'transforma',casamento:'bodas',casamentos:'bodas',casorio:'bodas',
+ bodas:'bodas',andava:'andar',caminhava:'andar',caminhar:'andar',
+ curar:'cura',curando:'cura',curou:'cura',curada:'cura',curado:'cura'
+};
 function searchWords(raw){
- return norm(raw).replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean).filter(w=>!TOPIC_STOP.has(w)&&w.length>=3);
+ return norm(raw).replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean)
+   .filter(w=>!TOPIC_STOP.has(w)&&w.length>=3).map(w=>TOPIC_SYNONYMS[w]||w);
 }
 function wordSimilar(a,b){
  if(a===b)return true;
@@ -214,6 +222,11 @@ function topicMatches(raw){
     const weight=(overlap===1?44:57)+Math.round(36*shareQuery+13*shareAlias)+Math.min(overlap,4);
     score=Math.max(score,weight);
    }
+  }
+  const combined=[...new Set(aliases.flatMap(searchWords))];
+  if(queryWords.length>=2&&combined.length){
+   const found=queryWords.filter(qw=>combined.some(aw=>wordSimilar(qw,aw))).length;
+   if(found>=2&&found/queryWords.length>=.60)score=Math.max(score,55+Math.round(35*found/queryWords.length));
   }
   return {topic,score,exact:aliases.includes(q)};
  }).filter(x=>x.score>=45).sort((a,b)=>b.score-a.score||a.topic.title.localeCompare(b.topic.title,'pt-BR')).slice(0,7);
@@ -271,8 +284,9 @@ function bibleSearchTerms(raw){
  if(!words.length)return '';
  // Em frases completas, termos distintivos são mais úteis que verbos e conectivos.
  // A API por palavras não interpreta intenção; isso é função do catálogo de temas.
- const general=new Set(['transformando','transforma','transformou','fazendo','falando','querendo','milagre','historia','contando','ensinou','acontece']);
+ const general=new Set(['transforma','fazendo','falando','querendo','milagre','historia','contando','ensinou','acontece','fez','fazer','tinha','estava','queria','andou','andar','cura']);
  const useful=words.filter(w=>!general.has(w));
+ if(topicMatches(raw).length>0&&useful.length>2)return useful.slice(-2).join(' ');
  if(useful.length===1)return useful[0];
  if(useful.length<=3)return useful.join(' ');
  return useful.slice(-3).join(' ');
