@@ -6,11 +6,7 @@
  * Rascunhos locais: localStorage do navegador, com exportação de backup.
  */
 const API_ROOT='https://api.getbible.net/v2';
-const TRANSLATION_KEY='mi_estudos_biblia_traducao_v1';
-const TRANSLATIONS=Object.freeze({
- almeida:{label:'Almeida 1911',heading:'ALMEIDA • EDIÇÃO DE 1911',attribution:'Almeida 1911 • texto histórico de domínio público; arquivo digital GetBible marcado GPL.',url:'https://api.getbible.net/v2/translations.json'},
- livre:{label:'Bíblia Livre',heading:'BÍBLIA LIVRE • CC BY 3.0 BRASIL',attribution:'Bíblia Livre • CC BY 3.0 Brasil • Fonte: projeto Bíblia Livre, GetBible.',url:'https://github.com/blivre/BibliaLivre/blob/master/LICENCA.md'}
-});
+const TRANSLATIONS=Object.freeze({livre:{label:'Bíblia Livre (BLIVRE)',heading:'BÍBLIA LIVRE • BLIVRE',attribution:'Bíblia Livre (BLIVRE) • Diego Santos, Mario Sérgio e Marco Teles • 2017 • CC BY 3.0 Brasil.'}});
 const SAVE_KEY='mi_estudos_piloto_aulas_v1';
 const LAST_READER='mi_estudos_piloto_leitura_v1';
 const B=[
@@ -59,7 +55,7 @@ const norm=t=>String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLo
 const bookName=n=>B.find(b=>b.id===Number(n))?.name||('Livro '+n);
 const dateNow=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const showDate=s=>{if(!s)return 'Sem data';const [y,m,d]=s.split('-');return [d,m,y].join('/')};
-const state={view:'inicio',translation:'almeida',reader:{book:43,ch:3,selected:16,verses:[]},cadence:'daily',theme:null,lessons:[],editingId:null,readerRequest:0,devRequest:0,booksLoaded:false};
+const state={view:'inicio',translation:'livre',reader:{book:43,ch:3,selected:16,verses:[]},cadence:'daily',theme:null,lessons:[],editingId:null,readerRequest:0,devRequest:0,booksLoaded:false};
 const chapterCache=new Map();
 let toastTimer=0;
 function toast(msg){const e=$('toast');e.textContent=String(msg);e.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove('show'),3500)}
@@ -351,6 +347,75 @@ function planScriptureSearch(){
  if(norm(q).length<3){showBibleSearchStatus('');return}
  scriptureSearchTimer=setTimeout(()=>bibleWordSearch(q),700);
 }
+
+/* Assistente editorial: sugestões explícitas e revisáveis; sem integração de IA externa. */
+let lessonSuggestRequest=0,lessonSuggestVariants=null;
+const LESSON_FIELDS=Object.freeze({
+ goal:['lessonGoal','Objetivo da Aula'],
+ context:['lessonContext','Contexto Bíblico e Histórico'],
+ story:['lessonStory','História Bíblica Explicada'],
+ application:['lessonApplication','Aplicação Prática'],
+ questions:['lessonQuestions','Perguntas para Conversar'],
+ activity:['lessonActivity','Atividade, Dinâmica e Ilustração'],
+ prayer:['lessonPrayer','Encerramento e Oração']
+});
+function clearLessonSuggestions(){
+ lessonSuggestRequest++;lessonSuggestVariants=null;
+ const panel=$('lessonSuggestionPanel');
+ if(panel){panel.hidden=true;$('lessonSuggestionOptions').replaceChildren()}
+}
+function applyLessonSuggestion(field,index){
+ const values=lessonSuggestVariants?.[field];if(!Array.isArray(values)||!values[index])return;
+ const [id]=LESSON_FIELDS[field]||[];const input=$(id);if(!input)return;
+ if(input.value.trim()&&input.value.trim()!==values[index]&&!confirm('Substituir o conteúdo atual de "'+LESSON_FIELDS[field][1]+'"?'))return;
+ input.value=values[index];input.dispatchEvent(new Event('input',{bubbles:true}));
+ toast('Sugestão aplicada em '+LESSON_FIELDS[field][1]+'.');
+}
+function renderLessonSuggestionVariants(reference){
+ const panel=$('lessonSuggestionPanel'),container=$('lessonSuggestionOptions');container.replaceChildren();
+ for(const [field,[id,label]] of Object.entries(LESSON_FIELDS)){
+  const values=lessonSuggestVariants[field]||[];
+  const details=document.createElement('details');details.className='lesson-suggestion-group';details.open=field==='goal';
+  const summary=document.createElement('summary');summary.textContent=label+' · '+values.length+' Opções';details.append(summary);
+  for(const [index,value] of values.entries()){
+   const item=document.createElement('div');item.className='lesson-suggestion-option';
+   const marker=document.createElement('strong');marker.textContent='Opção '+(index+1);
+   const text=document.createElement('p');text.textContent=value;
+   const button=document.createElement('button');button.type='button';button.className='soft-btn';button.textContent='Usar Esta Sugestão';button.addEventListener('click',()=>applyLessonSuggestion(field,index));
+   item.append(marker,text,button);details.append(item);
+  }
+  container.append(details);
+ }
+ panel.hidden=false;
+ $('lessonFeedback').textContent='Sugestões preparadas com base em '+reference+'. Confira cada opção e selecione o que desejar.';
+ panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function createLessonSuggestions(){
+ const title=$('lessonTitle').value.trim(),reference=$('lessonReference').value.trim(),age=$('lessonAge').value;
+ if(!title||!reference){toast('Informe o Tema da Aula e a Passagem Bíblica Principal antes de pedir sugestões.');return}
+ const found=parseReference(reference);if(!found){toast('A referência bíblica informada não foi reconhecida. Ex.: João 2:1-11.');return}
+ const match=reference.match(/:\s*(\d{1,3})\s*[-–]\s*(\d{1,3})\s*$/u);
+ const first=found.verse||1;const last=match?Number(match[2]):found.verse||999;
+ if(last<first){toast('Confira o intervalo de versículos.');return}
+ const current=++lessonSuggestRequest;const button=$('generateLessonSuggestions');button.disabled=true;button.textContent='Consultando a Bíblia...';
+ try{
+  const passage=await getChapter(found.book,found.ch,'livre');
+  if(current!==lessonSuggestRequest)return;
+  const engine=window.MI_LESSON_SUGGESTIONS;
+  if(!engine||typeof engine.generate!=='function')throw Error('Serviço de sugestões indisponível.');
+  lessonSuggestVariants=engine.generate({title,reference,age,verses:passage,firstVerse:first,lastVerse:last});
+  renderLessonSuggestionVariants(reference);
+ }catch(error){if(current!==lessonSuggestRequest)return;toast('Não foi possível sugerir aula: '+error.message)}
+ finally{button.disabled=false;button.textContent='✦ Sugerir Aula'}
+}
+function fillEmptyLessonFields(){
+ if(!lessonSuggestVariants)return;
+ let applied=0;
+ for(const [field,[id]] of Object.entries(LESSON_FIELDS)){
+  if(!$(id).value.trim()&&lessonSuggestVariants[field]?.[0]){$(id).value=lessonSuggestVariants[field][0];applied++}
+ }
+ toast(applied?applied+' campo(s) vazio(s) preenchido(s). Revise antes de salvar.':'Nenhum campo vazio. Escolha uma opção específica para substituir o texto.');
+}
 function getLessonForm(){const read=id=>$(id).value.trim();return {
  id:state.editingId,title:read('lessonTitle'),date:read('lessonDate'),age:read('lessonAge'),reference:read('lessonReference'),
  goal:read('lessonGoal'),context:read('lessonContext'),story:read('lessonStory'),application:read('lessonApplication'),
@@ -358,7 +423,7 @@ function getLessonForm(){const read=id=>$(id).value.trim();return {
 }}
 function putLessonForm(x){const ids={lessonTitle:'title',lessonDate:'date',lessonAge:'age',lessonReference:'reference',lessonGoal:'goal',lessonContext:'context',lessonStory:'story',lessonApplication:'application',lessonQuestions:'questions',lessonActivity:'activity',lessonPrayer:'prayer'};
  for(const [id,key] of Object.entries(ids))$(id).value=x?.[key]??(id==='lessonDate'?dateNow():id==='lessonAge'?'9 anos':'');
- state.editingId=x?.id||null;topicAutoRef=null;$('topicSuggestions').hidden=true;$('topicSuggestions').replaceChildren();clearBibleSearch();$('lessonFeedback').textContent=state.editingId?'Editando preparação existente.':'Nova preparação — ainda não salva.'}
+ state.editingId=x?.id||null;clearLessonSuggestions();topicAutoRef=null;$('topicSuggestions').hidden=true;$('topicSuggestions').replaceChildren();clearBibleSearch();$('lessonFeedback').textContent=state.editingId?'Editando preparação existente.':'Nova preparação — ainda não salva.'}
 function loadLessons(){try{const raw=JSON.parse(localStorage.getItem(SAVE_KEY)||'[]');if(Array.isArray(raw))return raw.filter(isLesson).slice(0,500)}catch(e){console.warn('Falha na leitura dos rascunhos',e)}return []}
 function isLesson(x){return !!(x&&typeof x==='object'&&!Array.isArray(x)&&typeof x.id==='string'&&typeof x.title==='string'&&typeof x.reference==='string'&&x.id.length<90&&x.title.length<=160&&x.reference.length<=90)}
 function saveLessons(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state.lessons));return true}catch(e){toast('Não foi possível salvar. Verifique o armazenamento do dispositivo.');return false}}
@@ -405,27 +470,8 @@ async function importArchive(e){const file=e.target.files?.[0];if(!file)return;t
  if(!saveLessons()){state.lessons=previous;return}renderArchive();toast(added.length+' aula(s) importada(s), sem substituir as existentes.');
  }catch(err){toast('Falha na importação: '+err.message)}finally{e.target.value=''}}
 
-function refreshTranslationLabel(){
- const tr=TRANSLATIONS[state.translation];
- $('translationSelect').value=state.translation;
- $('translationHeading').textContent=tr.heading;
- $('translationAttribution').textContent=tr.attribution;
- $('translationAttribution').title='Informações sobre direitos autorais: '+tr.url;
- $('translationLicenseLink').href=state.translation==='livre'?'https://creativecommons.org/licenses/by/3.0/br/':tr.url;
- $('translationLicenseLink').textContent=state.translation==='livre'?'Licença Creative Commons CC BY 3.0 Brasil ↗':'Origem e Condições da Tradução ↗';
-}
-function changeTranslation(translation){
- if(!Object.prototype.hasOwnProperty.call(TRANSLATIONS,translation)||state.translation===translation)return;
- stopAudio();state.translation=translation;state.readerRequest++;state.devRequest++;
- try{localStorage.setItem(TRANSLATION_KEY,translation)}catch(_){}
- clearBibleSearch();refreshTranslationLabel();
- loadDevotional();
- if(state.view==='biblia')loadReader();
- toast('Versão selecionada: '+TRANSLATIONS[translation].label+'.');
-}
 function init(){
- try{const savedTranslation=localStorage.getItem(TRANSLATION_KEY);if(TRANSLATIONS[savedTranslation])state.translation=savedTranslation}catch(_){}
- refreshTranslationLabel();
+ if(window.self!==window.top){const backLink=document.querySelector('.side-link');if(backLink)backLink.hidden=true}
  const now=new Date();$('todayLabel').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});state.lessons=loadLessons();
  try{const saved=JSON.parse(localStorage.getItem(LAST_READER)||'{}');if(B[Number(saved.book)-1]&&Number(saved.ch)>0&&Number(saved.ch)<=B[saved.book-1].chapters){state.reader.book=Number(saved.book);state.reader.ch=Number(saved.ch);state.reader.selected=0}}catch(_){}
  renderBookControl();loadBookCatalogue();loadDevotional();putLessonForm(null);
@@ -443,12 +489,13 @@ function init(){
  $('refForm').addEventListener('submit',e=>{e.preventDefault();const r=parseReference($('refInput').value);if(!r){toast('Referência não reconhecida. Ex.: João 3:16 ou Salmos 23.');return}switchChapter(r.book,r.ch,r.verse)});
  $('readerListen').addEventListener('click',()=>{if(!state.reader.verses.length)return toast('Carregue a passagem primeiro.');speakSeries(readerAudioParts())});
  $('readerStop').addEventListener('click',stopAudio);refreshVoices();if('speechSynthesis'in window)window.speechSynthesis.addEventListener?.('voiceschanged',refreshVoices);
- $('translationSelect').addEventListener('change',e=>changeTranslation(e.target.value));
  $('copySelectedVerse').addEventListener('click',()=>{const t=chapterSelectedText();if(t)copy(t);else toast('A passagem ainda não está carregada.')});
  $('useSelectedVerse').addEventListener('click',useReaderInLesson);$('readFromLesson').addEventListener('click',useReaderInLesson);
  $('lessonTitle').addEventListener('input',()=>{clearTimeout(topicTimer);topicTimer=setTimeout(renderTopicSuggestions,230);planScriptureSearch()});
  $('lessonTitle').addEventListener('blur',()=>{clearTimeout(topicTimer);renderTopicSuggestions()});
  $('lessonReference').addEventListener('input',()=>{topicAutoRef=null;renderTopicSuggestions()});
+ $('generateLessonSuggestions').addEventListener('click',createLessonSuggestions);
+ $('fillEmptyLessonFields').addEventListener('click',fillEmptyLessonFields);
  $('lessonForm').addEventListener('submit',saveLesson);$('newLesson').addEventListener('click',()=>{if(confirm('Iniciar uma preparação em branco? As alterações ainda não salvas serão descartadas.'))putLessonForm(null)});
  $('copyMasterPrompt').addEventListener('click',()=>{const prompt=lessonPrompt();if(prompt)copy(prompt)});
  $('printLesson').addEventListener('click',()=>window.print());$('acervoNew').addEventListener('click',()=>{putLessonForm(null);navigate('aulas')});
