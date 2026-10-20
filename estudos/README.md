@@ -9,6 +9,8 @@ Módulo **experimental e independente**, publicado em \`/estudos/\`. Não altera
 - Áudio local por Web Speech API (text-to-speech pt-BR, dependendo das vozes e permissões do aparelho).
 - Devocional diário, semanal ou mensal (rodízio determinístico de temas e referências previamente curados; **o texto do versículo vem da fonte bíblica**, não é inventado).
 - Criação de planos de aula: idade, texto, objetivo, contexto, narrativa, aplicação, perguntas, atividades e oração.
+- **V2:** busca assistida por assunto com catálogo editorial de **70 temas**, incluindo histórias bíblicas e assuntos gerais. Ao reconhecer exatamente um tema, preenche a primeira referência sugerida; o professor pode escolher outra referência ou escrever a sua. Sem correspondência, **não inventa versículos** e orienta a consultar a Bíblia.
+- **V2:** painel de navegação da Bíblia em uma faixa horizontal superior, sem diminuir o tamanho do texto bíblico. Símbolo reutilizado diretamente da imagem original do aplicativo principal, sem alterá-lo.
 - Botão "Mestre Bíblica" copia um pedido estruturado para colar no ChatGPT; **não executa IA diretamente no aplicativo**.
 - Salvar e editar aulas no **localStorage do navegador**, listar, duplicar, apagar, fazer backup JSON/importação e imprimir.
 
