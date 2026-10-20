@@ -23,7 +23,7 @@ function editorialProfile(topic,reference){
  const title=norm(topic),ref=norm(reference);
  // A referência bíblica deve confirmar o perfil; o título sozinho não basta.
  const candidates=profiles.filter(p=>p.references.some(r=>ref.startsWith(norm(r))));
- return candidates.find(p=>p.keys.some(k=>title.includes(norm(k))))||candidates[0]||null;
+ return candidates.find(p=>p.keys.some(k=>title.includes(norm(k))))||null;
 }
 function scriptureSamples(verses,start,end,max=5){
  const candidates=verses.filter(v=>v.verse>=start&&v.verse<=end);
