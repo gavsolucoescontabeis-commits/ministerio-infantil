@@ -4,24 +4,31 @@
 Módulo **experimental e independente**, publicado em \`/estudos/\`. Não altera \`index.html\` ou qualquer funcionalidade aprovada do aplicativo principal. Integração ao menu principal **somente após aprovação expressa** do responsável pelo projeto.
 
 ## O que já funciona
-- Bíblia online em português: **Almeida 1911**, servida pela API GetBible v2 (v2/almeida/{livro}/{capitulo}.json), sem copiar o texto para o repositório.
+- Bíblia online em português: **Almeida 1911** e **Bíblia Livre**, ambas servidas pela API GetBible v2, sem copiar o texto para o repositório. A Almeida é o padrão no piloto até avaliação da Bíblia Livre.
 - Leitura por livro, capítulo e versículo, seleção, referências rápidas, copiar versículos.
-- Áudio local por Web Speech API (text-to-speech pt-BR, dependendo das vozes e permissões do aparelho).
+- Áudio local por Web Speech API exclusivamente na **voz Daniel**, se estiver disponível em português no navegador. Quando ausente, informa indisponibilidade e não troca automaticamente para outra voz.
 - Devocional diário, semanal ou mensal (rodízio determinístico de temas e referências previamente curados; **o texto do versículo vem da fonte bíblica**, não é inventado).
 - Criação de planos de aula: idade, texto, objetivo, contexto, narrativa, aplicação, perguntas, atividades e oração.
 - **V2:** busca assistida por assunto com catálogo editorial de **78 temas**, incluindo histórias bíblicas e assuntos gerais. Ao reconhecer exatamente um tema, preenche a primeira referência sugerida; o professor pode escolher outra referência ou escrever a sua. Sem correspondência, **não inventa versículos** e orienta a consultar a Bíblia.
 - **V2:** painel de navegação da Bíblia em uma faixa horizontal superior, sem diminuir o tamanho do texto bíblico. Símbolo reutilizado diretamente da imagem original do aplicativo principal, sem alterá-lo.
-- Botão "Mestre Bíblica" copia um pedido estruturado para colar no ChatGPT; **não executa IA diretamente no aplicativo**.
+- Botão "Copiar Pedido de Sugestões" copia um pedido estruturado para o ChatGPT; **não executa IA diretamente no aplicativo**.
 - Salvar e editar aulas no **localStorage do navegador**, listar, duplicar, apagar, fazer backup JSON/importação e imprimir.
 
 ## V3 — busca por assunto e palavras da Bíblia
 - O campo “Tema / Título da Aula” pesquisa o catálogo editorial de 78 temas, interpretando variações comuns em português: acentos, palavras fora de ordem, sinônimos e frases equivalentes (por exemplo “Jesus transformou água em vinho”).
-- Em paralelo, faz uma pesquisa textual na [API GetBible Search v2](https://search.getbible.net/v2/), usando a tradução `almeida`. Esta busca devolve somente ocorrências reais do texto bíblico, não sugestões inventadas.
+- Em paralelo, faz uma pesquisa textual na [API GetBible Search v2](https://search.getbible.net/v2/), usando a tradução selecionada (`almeida` ou `livre`). Esta busca devolve somente ocorrências reais do texto bíblico, não sugestões inventadas.
 - **A interpretação de intenção é heurística**, não uma integração de inteligência artificial generativa. Não é garantido encontrar qualquer paráfrase possível nem toda passagem relevante; exibir alternativas e permitir pesquisa manual é obrigatório.
 - As sugestões por assunto são identificadas separadamente dos resultados por palavra, e precisam ser conferidas no contexto do capítulo.
 - O catálogo pode crescer conforme testes e revisão humana. Não usar paráfrases como se fossem citações da Bíblia.
-- A leitura em voz alta começa no **versículo selecionado** e segue até o fim do capítulo. O usuário pode escolher entre as vozes portuguesas disponibilizadas pelo navegador/sistema. A naturalidade **não é garantida** e depende do dispositivo.
+- A leitura em voz alta começa no **versículo selecionado** e segue até o fim do capítulo. A única voz admitida agora é **Daniel**, disponível em português no navegador/sistema. Se ausente, o app explica que a narração não pode ser reproduzida. A naturalidade **não é garantida** e depende do dispositivo.
 - O nome privado do comando de preparação do ChatGPT não é exibido na interface. A versão de testes ainda apenas copia um pedido estruturado; um futuro botão "Sugerir Aula" exigirá integração segura com backend e geração de alternativas revisáveis.
+
+## V4 — narração Daniel e Bíblia Livre (ainda em testes)
+- **Daniel exclusivamente:** removido o seletor com outras vozes; se o sistema não disponibilizar Daniel em português, o áudio informa que está indisponível, em vez de mudar silenciosamente para outra voz.
+- Leitura inicia no versículo selecionado e prossegue, agrupando pequenos trechos para reduzir pausas artificiais.
+- **Tradução Bíblica:** alternar entre Almeida 1911 e Bíblia Livre; atualizar o texto da Bíblia e do devocional; cache diferenciado por tradução e fonte citada na própria tela.
+- **Bíblia Livre:** GetBible informa licença CC BY 3.0 Brasil. Não está em domínio público; créditos, fonte e link de licença devem ser preservados; [repositório](https://github.com/blivre/BibliaLivre) e [licença](https://creativecommons.org/licenses/by/3.0/br/).
+- Antes da integração definitiva, confirmar exibição da Bíblia Livre em celular e desktop e conferir os termos da tradução escolhida. Não usar traduções protegidas como NAA sem licença expressa.
 
 ## Restrições intencionais do piloto
 - Link isolado não exige login e **não contém dados pessoais** de crianças ou equipe.
