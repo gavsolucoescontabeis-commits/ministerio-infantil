@@ -9,7 +9,8 @@
   <link rel="icon" type="image/svg+xml" href="./logo-ministerio.svg">
   <link rel="stylesheet" href="./estudos.css?v=8">
   <script src="./temas.js?v=2" defer></script>
-  <script src="./sugestoes-aula.js?v=2" defer></script><script src="./estudos.js?v=8" defer></script>
+  <script src="./historia-roteiros.js?v=1" defer></script>
+  <script src="./sugestoes-aula.js?v=3" defer></script><script src="./estudos.js?v=9" defer></script>
 </head>
 <body>
   <div class="workspace">
@@ -127,7 +128,7 @@
               </div>
               <div class="lesson-buttons"><button type="button" id="generateLessonSuggestions" class="primary-btn">✦ Sugerir Aula</button><button type="button" id="assembleLesson" class="primary-btn">✓ Montar Aula e Visualizar</button><button type="submit" class="soft-btn">Salvar Rascunho</button><button type="button" id="printLesson" class="soft-btn">Visualizar Aula</button><button type="button" id="copyMasterPrompt" class="outline-btn">Copiar Pedido para IA ↗</button></div>
               <p class="tiny">“Sugerir Aula” oferece alternativas editoriais baseadas no texto bíblico, para você conferir e escolher. “Copiar Pedido para IA” permite solicitar uma preparação mais detalhada no ChatGPT.</p>
-              <section id="lessonSuggestionPanel" class="lesson-suggestion-panel" hidden aria-live="polite"><div class="lesson-suggestion-heading"><div><strong>Escolha as Sugestões da Aula</strong><p>Selecione uma opção em cada parte. Ao terminar, clique em <strong>Montar Aula e Visualizar</strong>.</p></div><button type="button" id="fillEmptyLessonFields" class="soft-btn">Preencher Campos Vazios</button></div><div id="lessonSuggestionOptions"></div><div class="suggestion-finish"><strong id="lessonChoicesStatus">Nenhuma opção selecionada.</strong><button type="button" class="primary-btn" id="finishSuggestedLesson">✓ Montar Aula e Visualizar</button></div></section>
+              <section id="lessonSuggestionPanel" class="lesson-suggestion-panel" hidden aria-live="polite"><div class="lesson-suggestion-heading"><div><strong>Escolha as Sugestões da Aula</strong><p>Selecione uma opção em cada parte. Ao terminar, clique em <strong>Montar Aula e Visualizar</strong>.</p><p id="storyAgeNotice" class="story-age-notice"></p></div><button type="button" id="fillEmptyLessonFields" class="soft-btn">Preencher Campos Vazios</button></div><div id="lessonSuggestionOptions"></div><div class="suggestion-finish"><strong id="lessonChoicesStatus">Nenhuma opção selecionada.</strong><button type="button" class="primary-btn" id="finishSuggestedLesson">✓ Montar Aula e Visualizar</button></div></section>
               <div id="lessonFeedback" class="feedback" aria-live="polite"></div>
               <p class="lesson-license">Citações Bíblicas: Bíblia Livre (BLIVRE), edição 2017. Diego Santos, Mario Sérgio e Marco Teles. Licença Creative Commons CC BY 3.0 Brasil • <a href="https://creativecommons.org/licenses/by/3.0/br/" target="_blank" rel="noopener noreferrer">Ver Licença</a>.</p>
             </form>
