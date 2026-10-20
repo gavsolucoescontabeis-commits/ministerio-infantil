@@ -19,8 +19,12 @@ const profiles=[
  {keys:['noé','arca de noé'],references:['Gênesis 6','Gênesis 7','Gênesis 8','Gênesis 9'],lesson:'Noé obedeceu às instruções de Deus, conforme a narrativa de Gênesis.',activity:'Monte com a turma uma sequência de acontecimentos da passagem sem alterar as quantidades nem a ordem bíblica.',question:'Quais instruções Deus deu a Noé nesta parte da história?'}
 ];
 function norm(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim()}
-function editorialProfile(topic,reference){const combined=norm(topic)+' '+norm(reference);
- return profiles.find(p=>p.keys.some(k=>norm(topic).includes(norm(k)))||p.references.some(r=>norm(reference).startsWith(norm(r))))||null}
+function editorialProfile(topic,reference){
+ const title=norm(topic),ref=norm(reference);
+ // A referência bíblica deve confirmar o perfil; o título sozinho não basta.
+ const candidates=profiles.filter(p=>p.references.some(r=>ref.startsWith(norm(r))));
+ return candidates.find(p=>p.keys.some(k=>title.includes(norm(k))))||candidates[0]||null;
+}
 function scriptureSamples(verses,start,end,max=5){
  const candidates=verses.filter(v=>v.verse>=start&&v.verse<=end);
  if(candidates.length<=max)return candidates;
