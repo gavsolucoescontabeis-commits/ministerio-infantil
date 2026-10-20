@@ -74,7 +74,7 @@ function refreshVoices(){
  const note=$('voiceNotice');
  if(!('speechSynthesis'in window)){danielVoice=null;if(note)note.textContent='Áudio não disponível neste navegador.';return}
  const voices=window.speechSynthesis.getVoices();
- danielVoice=voices.find(v=>/\\bdaniel\\b/i.test(v.name)&&/^pt(?:-|$)/i.test(v.lang))||null;
+ danielVoice=voices.find(v=>/\bdaniel\b/i.test(v.name)&&/^pt(?:-|$)/i.test(v.lang))||null;
  if(note)note.textContent=danielVoice?'♫ Voz da Leitura: Daniel':'♫ Voz Daniel não disponível neste aparelho.';
 }
 function speakSeries(parts){
@@ -411,6 +411,8 @@ function refreshTranslationLabel(){
  $('translationHeading').textContent=tr.heading;
  $('translationAttribution').textContent=tr.attribution;
  $('translationAttribution').title='Informações sobre direitos autorais: '+tr.url;
+ $('translationLicenseLink').href=state.translation==='livre'?'https://creativecommons.org/licenses/by/3.0/br/':tr.url;
+ $('translationLicenseLink').textContent=state.translation==='livre'?'Licença Creative Commons CC BY 3.0 Brasil ↗':'Origem e Condições da Tradução ↗';
 }
 function changeTranslation(translation){
  if(!Object.prototype.hasOwnProperty.call(TRANSLATIONS,translation)||state.translation===translation)return;
