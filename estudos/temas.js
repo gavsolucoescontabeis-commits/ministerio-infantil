@@ -132,7 +132,11 @@ window.MI_ESTUDOS_TOPICS = Object.freeze([
       "adao e eva",
       "jardim do eden",
       "queda do homem",
-      "primeiro pecado"
+      "primeiro pecado",
+      "eva",
+      "adao",
+      "eva e adao",
+      "primeira mulher"
     ],
     "references": [
       "Gênesis 2:4-25",
@@ -942,5 +946,128 @@ window.MI_ESTUDOS_TOPICS = Object.freeze([
       "Salmos 127:3"
     ],
     "note": "A importância das crianças diante de Deus"
+  },
+  {
+    "title": "Caim e Abel",
+    "aliases": [
+      "caim",
+      "abel",
+      "caim e abel",
+      "abel e caim",
+      "oferta de caim e abel",
+      "primeiros irmaos"
+    ],
+    "references": [
+      "Gênesis 4:1-16"
+    ],
+    "note": "Caim, Abel, suas ofertas e as consequências do pecado"
+  },
+  {
+    "title": "A Videira Verdadeira",
+    "aliases": [
+      "videira",
+      "a videira",
+      "videira verdadeira",
+      "frutos na videira",
+      "ramos da videira",
+      "permanecer em jesus"
+    ],
+    "references": [
+      "João 15:1-17"
+    ],
+    "note": "Jesus ensina sobre permanecer nele e produzir fruto"
+  },
+  {
+    "title": "O Vinho e as Bodas de Caná",
+    "aliases": [
+      "vinho",
+      "agua em vinho",
+      "jesus transforma agua em vinho",
+      "bodas de cana",
+      "milagre do vinho",
+      "casamento em cana"
+    ],
+    "references": [
+      "João 2:1-11",
+      "Lucas 5:37-39",
+      "Efésios 5:18"
+    ],
+    "note": "Passagens que mencionam vinho em contextos diferentes; estudar individualmente"
+  },
+  {
+    "title": "Jesus Cura o Paralítico",
+    "aliases": [
+      "paralitico",
+      "cura do paralitico",
+      "jesus cura um paralitico",
+      "paralitico descido pelo telhado",
+      "homem paralisado",
+      "paralisado",
+      "cura do paralitico em cafarnaum"
+    ],
+    "references": [
+      "Marcos 2:1-12",
+      "Mateus 9:1-8",
+      "Lucas 5:17-26"
+    ],
+    "note": "A cura e o perdão do paralítico levado por amigos"
+  },
+  {
+    "title": "O Paralítico de Betesda",
+    "aliases": [
+      "tanque de betesda",
+      "betesda",
+      "paralitico de betesda",
+      "cura em betesda",
+      "paralitico do tanque"
+    ],
+    "references": [
+      "João 5:1-18"
+    ],
+    "note": "Jesus cura um enfermo junto ao tanque de Betesda"
+  },
+  {
+    "title": "Pedro e o Homem Coxo",
+    "aliases": [
+      "coxo de nascenca",
+      "coxo na porta formosa",
+      "porta formosa",
+      "pedro e joao curam o coxo"
+    ],
+    "references": [
+      "Atos 3:1-16"
+    ],
+    "note": "Pedro e João anunciam Jesus ao curar um homem coxo"
+  },
+  {
+    "title": "Vinho Novo e Odres",
+    "aliases": [
+      "vinho novo",
+      "odres novos",
+      "odres velhos",
+      "parabola dos odres"
+    ],
+    "references": [
+      "Mateus 9:14-17",
+      "Marcos 2:18-22",
+      "Lucas 5:33-39"
+    ],
+    "note": "Ensino de Jesus sobre o jejum e a figura dos odres"
+  },
+  {
+    "title": "Os Lavradores da Vinha",
+    "aliases": [
+      "vinha",
+      "vinha dos lavradores",
+      "parabola dos lavradores maus",
+      "lavradores maus",
+      "vinhedo"
+    ],
+    "references": [
+      "Mateus 21:33-46",
+      "Marcos 12:1-12",
+      "Lucas 20:9-19"
+    ],
+    "note": "Parábola de Jesus sobre os lavradores da vinha"
   }
 ]);
