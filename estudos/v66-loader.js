@@ -3,12 +3,12 @@
 (()=>{'use strict';
 const base='./assets/estudos/';
 const flag='aprovado_para_publicacao';
-const state={version:'67.2',status:'verificando',missing:[],details:''};
+const state={version:'68.0',status:'verificando',missing:[],details:''};
 window.MI_ESTUDOS_V66_STATE=state;
 function mark(status,details){state.status=status;state.details=details||'';}
 async function load(){
   try{
-    const req=await fetch('./assets-v66-manifest.json?ver=67.2',{cache:'no-store'});
+    const req=await fetch('./assets-v66-manifest.json?ver=68.0',{cache:'no-store'});
     if(!req.ok)throw new Error('Manifesto V66 indisponível ('+req.status+')');
     const manifest=await req.json();
     if(manifest.status!==flag){mark('aguardando_arte','Nova versão ainda não aprovada para uso');return}
@@ -19,7 +19,7 @@ async function load(){
       try{
         const img=new Image();
         img.decoding='async';
-        img.src=base+file+'?ver=67.2';
+        img.src=base+file+'?ver=68.0';
         await img.decode();
         if(img.naturalWidth<Math.max(200,Number(minWidth)||300)||img.naturalHeight<200)return file;
         return null;
@@ -31,11 +31,11 @@ async function load(){
     mark('carregando','Artes completas, iniciando novo editor');
     const style=document.createElement('link');
     style.rel='stylesheet';
-    style.href='./editorial-v66.css?ver=67.2';
+    style.href='./editorial-v66.css?ver=68.0';
     document.head.append(style);
     const script=document.createElement('script');
-    script.src='./editorial-v66.js?ver=67.2';
-    script.onload=()=>{if(window.MI_ESTUDOS_EDITORIAL?.version?.startsWith('67.')) mark('ativo','Biblioteca validada e compositor V66 carregado'); else mark('erro','Arquivo V66 carregou sem substituir o editor');};
+    script.src='./editorial-v66.js?ver=68.0';
+    script.onload=()=>{if(window.MI_ESTUDOS_EDITORIAL?.version?.startsWith('68.')) mark('ativo','Biblioteca validada e compositor V66 carregado'); else mark('erro','Arquivo V66 carregou sem substituir o editor');};
     script.onerror=()=>{style.remove();mark('erro','Falha ao carregar o compositor V66; editor anterior preservado')};
     document.head.append(script);
   }catch(error){mark('aguardando_arte',String(error?.message||error))}
