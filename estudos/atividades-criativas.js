@@ -95,6 +95,50 @@ const collections=[
   talk:'Que atitude de carinho, respeito ou cuidado você poderia praticar esta semana?'
  }
 ];
+
+collections.push(
+ {id:'ester4',test:/ESTER|MORDECAI/,references:[/^ESTER 4/],theme:'Ester: Coragem e Oração',
+  words:['ESTER','JEJUM','POVO','CORAGEM','DEUS'],
+  choice:{q:'O que Ester pediu que seu povo fizesse antes de ela se apresentar ao rei?',options:['Jejuasse por ela','Organizasse uma corrida','Construísse uma arca'],answer:0,ref:'Ester 4:15-17'},
+  fill:{text:'Ester pediu um ______ de três dias.',answers:['JEJUM'],ref:'Ester 4:16'},
+  match:{q:'Ligue os personagens ou grupos às atitudes do relato.',pairs:[['Mordecai','Comunicou a situação a Ester'],['Ester','Decidiu procurar o rei'],['Judeus de Susã','Foram convocados a jejuar']],ref:'Ester 4:4-17'},
+  order:{q:'Numere os acontecimentos de Ester 4.',items:['Mordecai comunicou o perigo a Ester.','Ester pediu que seu povo jejuasse.','Ester decidiu procurar o rei.'],ref:'Ester 4:1-17'},
+  talk:'O que significa ter coragem para fazer o bem, mesmo quando a situação é difícil?'
+ },
+ {id:'festa14',test:/GRANDE FESTA|BANQUETE|GRANDE CEIA|CONVITE/,references:[/^LUCAS 14/],theme:'O Convite da Grande Festa',
+  words:['JESUS','CONVITE','FESTA','SERVO','PESSOAS'],
+  choice:{q:'Na parábola, como os primeiros convidados responderam ao convite?',options:['Deram desculpas','Foram imediatamente','Mandaram construir uma arca'],answer:0,ref:'Lucas 14:16-20'},
+  fill:{text:'O homem da parábola preparou uma grande ______.',answers:['FESTA','CEIA'],ref:'Lucas 14:16'},
+  match:{q:'Ligue cada personagem da parábola ao que fez.',pairs:[['Primeiros Convidados','Apresentaram desculpas'],['Servo','Levou o convite'],['Dono da Casa','Mandou chamar outras pessoas']],ref:'Lucas 14:16-23'},
+  order:{q:'Coloque em ordem os acontecimentos da parábola.',items:['Um homem preparou uma grande ceia.','Os primeiros convidados deram desculpas.','O servo chamou outras pessoas.'],ref:'Lucas 14:16-23'},
+  talk:'Como podemos acolher pessoas que muitas vezes ficam de fora das atividades?'
+ },
+ {id:'samaritana4',test:/SAMARITANA|MULHER DO POCO|POCO DE JACO|PRECONCEITO/,references:[/^JOAO 4/],theme:'Jesus Conversa com a Samaritana',
+  words:['JESUS','MULHER','POCO','AGUA','VIDA'],
+  choice:{q:'Com quem Jesus conversou junto ao poço?',options:['Uma mulher samaritana','Uma rainha da Pérsia','Uma serva de Faraó'],answer:0,ref:'João 4:7-26'},
+  fill:{text:'Jesus falou sobre a água ______.',answers:['VIVA'],ref:'João 4:10-14'},
+  match:{q:'Ligue os participantes ao que aparece no relato.',pairs:[['Jesus','Falou sobre a água viva'],['Mulher Samaritana','Conversou com Jesus junto ao poço'],['Moradores','Foram ouvir Jesus']],ref:'João 4:1-42'},
+  order:{q:'Relembre a sequência dos acontecimentos.',items:['Jesus conversou com uma mulher samaritana.','Ele falou sobre água viva.','A mulher contou às pessoas da cidade.','Muitos creram em Jesus.'],ref:'João 4:7-42'},
+  talk:'Por que precisamos tratar as pessoas com respeito, inclusive quem é diferente de nós?'
+ },
+ {id:'cornelio',test:/CORNELIO|PEDRO E CORNELIO|PEDRO VIS[ÃA]O/,references:[/^ATOS 10/],theme:'A Boa Notícia para Todos',
+  words:['PEDRO','CORNELIO','JESUS','FAMILIA','EVANGELHO'],
+  choice:{q:'Quem foi chamado para falar a Cornélio e às pessoas reunidas?',options:['Pedro','Jonas','Samuel'],answer:0,ref:'Atos 10:19-24,33'},
+  fill:{text:'Cornélio mandou chamar ______.',answers:['PEDRO'],ref:'Atos 10:22-33'},
+  match:{q:'Quem fez o quê no relato?',pairs:[['Cornélio','Mandou chamar Pedro'],['Pedro','Anunciou Jesus Cristo'],['Pessoas Reunidas','Ouviram a mensagem']],ref:'Atos 10:24-48'},
+  order:{q:'Organize os fatos narrados em Atos 10.',items:['Cornélio recebeu uma orientação.','Pedro teve uma visão.','Pedro foi à casa de Cornélio.','Pedro anunciou Jesus aos presentes.'],ref:'Atos 10:1-48'},
+  talk:'Como podemos demonstrar respeito e amizade por pessoas de origens diferentes?'
+ },
+ {id:'filipe-etiope',test:/FILIPE|ETIOPE|ETIOPIA|OFICIAL DA RAINHA/,references:[/^ATOS 8/],theme:'Filipe Compartilha a Palavra',
+  words:['FILIPE','JESUS','CAMINHO','BATISMO','ISAIAS'],
+  choice:{q:'Quem explicou as Escrituras ao oficial etíope?',options:['Filipe','Pedro','Daniel'],answer:0,ref:'Atos 8:29-35'},
+  fill:{text:'O oficial estava lendo o livro do profeta ______.',answers:['ISAÍAS'],ref:'Atos 8:28-35'},
+  match:{q:'Ligue a pessoa ao fato relatado.',pairs:[['Filipe','Explicou a mensagem das Escrituras'],['Oficial Etíope','Lia o profeta Isaías'],['Ambos','Entraram na água para o batismo']],ref:'Atos 8:26-40'},
+  order:{q:'Ordene os acontecimentos de Atos 8.',items:['Filipe recebeu uma orientação e foi ao caminho.','Ele encontrou o oficial que lia Isaías.','Filipe anunciou Jesus ao oficial.','O oficial foi batizado.'],ref:'Atos 8:26-40'},
+  talk:'Como podemos conversar sobre Jesus de modo respeitoso com alguém que tem dúvidas?'
+ }
+);
+
 const choose=(data)=>{
  const title=norm(data.title),ref=norm(data.reference);
  return collections.find(x=>x.test.test(title)&&x.references.some(p=>p.test(ref)))||null;
