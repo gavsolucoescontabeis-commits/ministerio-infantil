@@ -30,6 +30,7 @@ function matchesTheme(p,title,reference){
 function allApproved(){return entries.filter(p=>p.status==='approved')}
 function find(title,reference,age){
  const selectedAge=ageNumber(age);
+ if(String(age||'').trim()&&!selectedAge)return [];
  return allApproved().filter(p=>matchesTheme(p,title,reference)&&(!selectedAge||p.age===selectedAge));
 }
 function pick(title,reference,age){return find(title,reference,age).find(p=>p.age===ageNumber(age))||null}
