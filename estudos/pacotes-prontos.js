@@ -3,16 +3,8 @@
  * A seleção é voluntária e jamais modifica a aula salva ou o roteiro do professor.
  */
 (()=>{'use strict';
-const entries=Object.freeze([
- Object.freeze({
-  id:'criacao-9',title:'A Criação',age:9,ageLabel:'9 anos',status:'review',
-  aliases:['a criação','criação','criação do mundo','o começo do mundo','começo do mundo','início do mundo','deus criou todas as coisas','deus criou tudo','gênesis 1','dias da criação','deus criou o mundo'],
-  books:['genesis 1'],references:['Gênesis 1:1–2:3'],
-  summary:'Caderno ilustrado de A Criação; a revisão visual ainda não foi aprovada.',
-  student:'./pacotes/criacao-9-anos.html',teacher:'./pacotes/criacao-9-professor.html',
-  cover:'./assets/estudos/criacao_capa.webp',pages:4
- })
-]);
+const entries=[];
+let catalogError='';
 const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
 const ageNumber=raw=>{
  const value=String(raw||'').trim();
@@ -26,6 +18,27 @@ function matchesTheme(p,title,reference){
  const byName=p.aliases.some(alias=>name===norm(alias));
  const byRef=p.books.some(b=>r===b||r.startsWith(b+' '));
  return byName||(!name&&byRef);
+}
+async function loadCatalog(){
+ try{
+  const response=await fetch('./banco-atividades.json?v=70',{cache:'no-store'});
+  if(!response.ok)throw Error('Código '+response.status);
+  const data=await response.json();
+  if(data?.schemaVersion!==1||!Array.isArray(data.items))throw Error('Formato de banco não reconhecido');
+  const clean=data.items.filter(p=>
+   p&&typeof p.title==='string'&&typeof p.id==='string'&&/^[a-z0-9-]+$/.test(p.id)&&
+   ['approved','review','draft'].includes(p.status)&&
+   Number.isInteger(p.age)&&p.age>=2&&p.age<=17&&
+   Array.isArray(p.aliases)&&Array.isArray(p.books)&&
+   /^\.\/pacotes\/[a-z0-9_-]+\.html$/.test(p.student||'')&&
+   /^\.\/pacotes\/[a-z0-9_-]+\.html$/.test(p.teacher||'')&&
+   /^\.\/assets\/estudos\/[a-z0-9_-]+\.webp$/.test(p.cover||'')
+  );
+  entries.splice(0,entries.length,...clean);
+  catalogError='';
+ }catch(e){entries.splice(0);catalogError='O catálogo de atividades está temporariamente indisponível. Os roteiros do professor continuam funcionando normalmente.'}
+ renderBank();renderSuggest();
+ loadCatalog();
 }
 function allApproved(){return entries.filter(p=>p.status==='approved')}
 function find(title,reference,age){
@@ -78,7 +91,7 @@ function renderBank(){
  if(!approved.length){
   box.append(el('div','mi-bank-empty',search?
    'Nenhuma atividade aprovada corresponde à pesquisa. Você pode continuar usando o roteiro do professor.' :
-   'Os cadernos ilustrados estão sendo revisados e serão incluídos aqui somente após aprovação. Nenhuma atividade será inserida automaticamente.'));
+   catalogError||'Os cadernos ilustrados estão sendo revisados e serão incluídos aqui somente após aprovação. Nenhuma atividade será inserida automaticamente.'));
   return;
  }
  for(const p of approved)box.append(card(p));
@@ -92,7 +105,7 @@ function init(){
  for(const id of ['topicSuggestions','newLesson','acervoNew'])document.getElementById(id)?.addEventListener('click',()=>{Promise.resolve().then(renderSuggest)});
  renderBank();renderSuggest();
 }
-window.MI_ACTIVITY_BANK=Object.freeze({entries,find,pick,renderReady,refresh:renderSuggest,renderBank,approvedCount:allApproved().length});
-window.MI_PREPARED_LESSONS=Object.freeze({find:pick,refresh:renderSuggest,count:allApproved().length});
+window.MI_ACTIVITY_BANK=Object.freeze({entries,find,pick,renderReady,refresh:renderSuggest,renderBank,get approvedCount(){return allApproved().length}});
+window.MI_PREPARED_LESSONS=Object.freeze({find:pick,refresh:renderSuggest,get count(){return allApproved().length}});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
