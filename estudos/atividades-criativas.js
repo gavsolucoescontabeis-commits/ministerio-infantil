@@ -162,7 +162,10 @@ function activitySheet(data){
        'Correta: '+item.choice.options[item.choice.answer]+'. Referência: '+item.choice.ref+'.');
   }
   if((little||early)&&item.fill){
-   add({type:'fill',title:'Complete a Descoberta',prompt:item.fill.text,words:item.fill.answers.slice(0,1)},
+   const correct=item.fill.answers[0];
+   const distractors=item.words.filter(w=>norm(w).replace(/\s/g,'')!==norm(correct).replace(/\s/g,'')).slice(0,2);
+   const bank=seededShuffle([correct,...distractors],seed^0x45619abc);
+   add({type:'fill',title:'Complete a Descoberta',prompt:item.fill.text,words:bank},
        'Complete com: '+item.fill.answers.join(' ou ')+'. '+item.fill.ref+'.');
   }
   if(!little&&item.match){
