@@ -122,6 +122,23 @@ const cellWords=(words,seed)=>{
  const letters='AEIOUBCDFGLMNPRSTV';for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(!grid[r][c])grid[r][c]=letters[roll(letters.length)];
  return {grid,words:placed,answer:'Solução do Caça-Palavras: '+locations.join(' ')};
 };
+function makeMaze(seed,size=7){
+ const n=size,cells=Array.from({length:n*n},()=>({n:true,e:true,s:true,w:true})),used=new Set([0]),stack=[0];
+ let r=(seed>>>0)||0x5a5a3141;
+ const rand=max=>{r^=r<<13;r^=r>>>17;r^=r<<5;return (r>>>0)%max};
+ const delta=[[-1,0,'n','s'],[0,1,'e','w'],[1,0,'s','n'],[0,-1,'w','e']];
+ while(stack.length){
+  const cur=stack[stack.length-1],row=Math.floor(cur/n),col=cur%n;
+  const possible=delta.map(([dr,dc,a,b])=>({rr:row+dr,cc:col+dc,a,b})).filter(z=>z.rr>=0&&z.rr<n&&z.cc>=0&&z.cc<n&&!used.has(z.rr*n+z.cc));
+  if(!possible.length){stack.pop();continue}
+  const next=possible[rand(possible.length)],pos=next.rr*n+next.cc;
+  cells[cur][next.a]=false;cells[pos][next.b]=false;used.add(pos);stack.push(pos);
+ }
+ // Certificar que há um caminho único da entrada até a saída.
+ const walk=(cur,prev,path)=>{if(cur===n*n-1)return [...path,cur];for(const [dr,dc,a] of delta){const row=Math.floor(cur/n)+dr,col=cur%n+dc;if(row<0||col<0||row>=n||col>=n||cells[cur][a])continue;const pos=row*n+col;if(pos===prev)continue;const found=walk(pos,cur,[...path,cur]);if(found)return found}return null};
+ const path=walk(0,-1,[]);
+ return {size:n,cells,path,answer:'Caminho do Labirinto: '+path.map((p,i)=>(i+1)+'. linha '+(Math.floor(p/n)+1)+', coluna '+(p%n+1)).join(' → ')+'.'};
+}
 function activitySheet(data){
  const item=choose(data);
  const age=window.MI_LESSON_STORYTELLING?.ageGroup(data.age)||'middle';
@@ -154,17 +171,19 @@ function activitySheet(data){
    const puzzle=cellWords(item.words,seed);
    if(puzzle.words.length>=3)add({type:'wordsearch',title:'Caça-Palavras Bíblico',prompt:'Encontre as palavras ligadas ao tema.',grid:puzzle.grid,words:puzzle.words},puzzle.answer);
   }
+  if(little||early){const maze=makeMaze(seed,little?6:7);add({type:'maze',title:'Labirinto da Descoberta',prompt:'Encontre o caminho da estrela até a Bíblia. Passe o lápis pelo percurso.',maze},maze.answer)}
   add({type:'reflect',title:older?'Missão da Semana':'Minha Escolha de Hoje',prompt:item.talk},'Resposta pessoal. A aplicação deve respeitar o ensinamento da passagem.');
  }else{
   // Fallback honesto: sem criar respostas sobre uma passagem não revisada.
   add({type:'reflect',title:'Detetive da Bíblia',prompt:'Leia a referência '+data.reference+' e anote duas palavras ou acontecimentos que realmente aparecem no texto.'},'Resposta aberta; conferir na Bíblia Livre, '+data.reference+'.');
   const puzzle=cellWords(['BIBLIA','JESUS','AMOR','DEUS','PAZ'],seed);
   if(!little)add({type:'wordsearch',title:'Palavras de Fé',prompt:'Encontre as palavras. Elas são um passatempo geral, não representam fatos adicionais da passagem.',grid:puzzle.grid,words:puzzle.words},puzzle.answer);
+  if(little||early){const maze=makeMaze(seed,little?6:7);add({type:'maze',title:'Labirinto da Descoberta',prompt:'Siga o caminho da estrela até a Bíblia. O jogo é uma ilustração, não um fato bíblico.',maze},maze.answer)}
   add({type:'reflect',title:'Minha Missão',prompt:'Escreva ou desenhe uma atitude de cuidado que combina com o que você aprendeu.'},'Resposta pessoal. O professor verifica a relação com o texto estudado.');
  }
  // Para pequenos, priorizar tarefas curtas e desenho, sem sobrecarregar.
- const kinds=little?['choice','fill','reflect']:
-  early?['choice','fill','match','reflect']:
+ const kinds=little?['choice','fill','maze','reflect']:
+  early?['choice','fill','match','maze','reflect']:
   ['match','sequence','wordsearch','reflect'];
  const selected=kinds.map(kind=>exercises.find(x=>x.type===kind)).filter(Boolean);
  // Assuntos sem um bloco temático ainda recebem reflexão e um passatempo seguro.
@@ -172,5 +191,5 @@ function activitySheet(data){
  const selectedTitles=new Set(selected.map(x=>x.title));
  return {theme:item?.theme||'Exploradores da Palavra',ageGroup:age,exercises:selected,answerKey:answers.filter(x=>selectedTitles.has(x.title)),curated:!!item,reference:data.reference};
 }
-window.MI_CREATIVE_WORKSHEETS=Object.freeze({activitySheet,cellWords,choose,collectionsCount:collections.length});
+window.MI_CREATIVE_WORKSHEETS=Object.freeze({activitySheet,cellWords,makeMaze,choose,collectionsCount:collections.length});
 })();
