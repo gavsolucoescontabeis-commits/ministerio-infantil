@@ -133,7 +133,27 @@ function renderEducationalExercise(x,age){
    else body+=lines(2);
    break;
   case 'anagram':body+='<div class="v67-anagrams">'+(x.words||[]).map(w=>'<p>'+esc(w.mixed)+': ____________________</p>').join('')+'</div>';break;
-  case 'maze':body+='<div class="v67-draw-space"><b>Desenhe um caminho até a Bíblia:</b><div>✦ <span>→ → →</span> 📖</div></div>';break;
+  case 'maze':{
+   const m=x.maze;
+   if(m?.size&&Array.isArray(m.cells)){
+    body+='<div class="v67-maze-instruction">Encontre o caminho da estrela até a Bíblia.</div><table class="v67-maze" aria-label="Labirinto com entrada e saída"><tbody>';
+    for(let r=0;r<m.size;r++){
+     body+='<tr>';
+     for(let c=0;c<m.size;c++){
+      const cell=m.cells[r*m.size+c]||{},style=[
+       'border-top:'+(cell.n?'2px solid #2d6871':'2px solid transparent'),
+       'border-right:'+(cell.e?'2px solid #2d6871':'2px solid transparent'),
+       'border-bottom:'+(cell.s?'2px solid #2d6871':'2px solid transparent'),
+       'border-left:'+(cell.w?'2px solid #2d6871':'2px solid transparent')
+      ].join(';');
+      body+='<td style="'+style+'">'+(r===0&&c===0?'★':r===m.size-1&&c===m.size-1?'📖':'')+'</td>';
+     }
+     body+='</tr>';
+    }
+    body+='</tbody></table>';
+   }else body+=lines(2);
+   break;
+  }
   case 'reflect':case 'analysis':body+=lines(age<8?2:4);break;
   default:body+=lines(age<8?1:3);
  }
@@ -243,5 +263,5 @@ function beforePrint(kind){
  if(kind==='teacher'&&keys.length){const target=$('miEditorial .v66-stage')||document.querySelector('#miEditorial .v66-stage');if(target)target.insertAdjacentHTML('beforeend',keys.map((p,i)=>wrap(p,i,keys.length,current)).join(''))}
 }
 function afterPrint(){if(usingPrevious)return previousEditor?.afterPrint?.();if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'67.1',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'67.2',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
 })();
