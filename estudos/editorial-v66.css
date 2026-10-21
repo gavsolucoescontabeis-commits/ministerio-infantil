@@ -1,0 +1,146 @@
+/* Estudos V66 — paginação editorial de verdade. Arquivo isolado, sem alterar sistema principal. */
+#miEditorial .v66-frame{background:#fff;border:1px solid #dfe7e7;border-radius:17px;overflow:hidden;color:#233c50;font-family:Arial,'Segoe UI',sans-serif}
+#miEditorial .v66-top{background:#21415d;color:white;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+#miEditorial .v66-top small{font-size:10px;color:#c9e6ed;font-weight:900;letter-spacing:.06em}
+#miEditorial .v66-top h2{font-size:21px;margin:4px 0 0;color:white}
+#miEditorial .v66-top>span{font-size:12px;font-weight:800;border:1px solid #adcbd3;padding:9px 12px;border-radius:10px}
+#miEditorial .v66-tabs{display:flex;gap:6px;flex-wrap:wrap;background:white;padding:11px 15px}
+#miEditorial .v66-tabs button,#miEditorial .v66-pager button{border-radius:9px;border:1px solid #b8ccd2;background:white;padding:10px 12px;font-size:12px;font-weight:800;color:#28566a;cursor:pointer}
+#miEditorial .v66-tabs button.active{background:#d9f0e6;border-color:#58a889;color:#16654c}
+#miEditorial .v66-tabs button:focus-visible,#miEditorial .v66-pager button:focus-visible{outline:3px solid #71afe4;outline-offset:2px}
+#miEditorial .v66-stage{background:#e5eefa;padding:22px;display:block}
+#miEditorial .v66-sheet{width:100%;max-width:710px;margin:0 auto;min-height:865px;background:#fffaf0;color:#263d52;border:1px solid #e7d8ba;border-radius:12px;box-shadow:0 10px 26px #204b6a1d;overflow:hidden;display:flex;flex-direction:column;box-sizing:border-box}
+#miEditorial .v66-pagehead{background:linear-gradient(115deg,#126a64,#2aa080);color:white;padding:17px 23px}
+#miEditorial .v66-theme-sun .v66-pagehead{background:linear-gradient(115deg,#a75f24,#d99134)}
+#miEditorial .v66-theme-orange .v66-pagehead{background:linear-gradient(115deg,#a64f23,#d47e36)}
+#miEditorial .v66-theme-sky .v66-pagehead{background:linear-gradient(115deg,#164a8f,#287cb9)}
+#miEditorial .v66-theme-pink .v66-pagehead{background:linear-gradient(115deg,#96426c,#d66a91)}
+#miEditorial .v66-pagehead small{display:block;font-size:10px;letter-spacing:.06em;color:#e5f6f2;font-weight:800}
+#miEditorial .v66-pagehead h2{font-size:25px;color:white;font-weight:900;margin:4px 0;line-height:1.2}
+#miEditorial .v66-pagehead p{font-size:12px;margin:0;color:#fff9;line-height:1.5}
+#miEditorial .v66-pagebody{padding:21px 24px;flex:1;min-width:0}
+#miEditorial .v66-foot{border-top:1px solid #e1d7cb;padding:10px 21px;color:#6e8e8e;font-size:10px;font-weight:800;display:flex;justify-content:space-between;gap:10px}
+#miEditorial .v66-cover{background:linear-gradient(140deg,#fff0c8 0%,#f9f8e9 40%,#e6f0db 100%)}
+#miEditorial .v66-cover .v66-pagehead{background:linear-gradient(115deg,#a15b21,#cf832f)}
+#miEditorial .v66-cover .v66-pagebody{padding:13px}
+#miEditorial .v66-cover-inner{height:100%;min-height:700px;display:flex;flex-direction:column;gap:12px}
+#miEditorial .v66-cover-hero{width:100%;min-height:490px;flex:1;border-radius:15px;overflow:hidden;background:#f5ead4;display:grid;place-items:center}
+#miEditorial .v66-cover-image{width:100%;height:100%;max-height:575px;object-fit:cover;object-position:center}
+#miEditorial .v66-cover-intro{background:#fff9df;border:2px solid #f2d59f;border-radius:14px;padding:14px 17px;text-align:center}
+#miEditorial .v66-kicker{font-size:11px;font-weight:850;text-transform:uppercase;color:#a36422}
+#miEditorial .v66-cover-intro h3{font-size:23px;margin:6px;color:#224d47}
+#miEditorial .v66-cover-intro p{font-size:16px;margin:8px 0;font-weight:800}
+#miEditorial .v66-cover-intro strong{font-size:12px;color:#a46824}
+#miEditorial .v66-name{margin-top:12px;font-size:12px;text-align:left;line-height:1.8}
+#miEditorial .v66-card{background:white;border:1px solid #e5dbce;border-radius:11px;padding:12px 14px;margin-bottom:12px}
+#miEditorial .v66-card h3{font-size:14px;color:#256d64;font-weight:900;margin:0 0 8px;line-height:1.35}
+#miEditorial .v66-card p{font-size:13px;color:#314f57;margin:6px 0;line-height:1.55}
+#miEditorial .v66-lead{font-size:13px;font-weight:700;color:#4f6976;margin:2px 0 14px}
+#miEditorial .v66-days{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#miEditorial .v66-day{display:flex;gap:10px;background:white;border:1px solid #d9e8e6;border-radius:9px;padding:13px 9px;min-height:87px}
+#miEditorial .v66-day b{background:#c5ecdf;border-radius:8px;padding:10px;color:#185a56;white-space:nowrap;height:max-content;font-size:11px}
+#miEditorial .v66-day strong{font-size:14px;color:#315467}
+#miEditorial .v66-day p{font-size:12px;line-height:1.35;margin:5px 0}
+#miEditorial .v66-day small{font-size:10px;color:#408782}
+#miEditorial .v66-day7{padding:13px;margin:12px 0;background:#faefd0;border:1px solid #ebd390;border-radius:9px;font-size:13px;line-height:1.6}
+#miEditorial .v66-side-image{height:140px;overflow:hidden;border-radius:10px}
+#miEditorial .v66-side-image .v66-art{width:100%;height:100%;object-fit:cover}
+#miEditorial .v66-split{display:grid;grid-template-columns:1fr 1fr;gap:15px;align-items:start}
+#miEditorial .v66-split-large{grid-template-columns:1.45fr .8fr}
+#miEditorial .v66-mascot-rail{background:linear-gradient(#fff6de,#e6f4ec);padding:10px;border-radius:11px;text-align:center}
+#miEditorial .v66-mascot-rail img{max-width:100%;max-height:480px;object-fit:contain;border-radius:9px}
+#miEditorial .v66-mascot-rail p{font-size:12px;color:#316c68;font-weight:800}
+#miEditorial .v66-order{display:grid;gap:7px}
+#miEditorial .v66-order>div{display:flex;gap:11px;align-items:center;border:1px solid #e1e6dc;border-radius:8px;background:#fffef9;padding:8px;font-size:12px}
+#miEditorial .v66-order i{display:inline-block;min-width:23px;height:23px;border:2px solid #83aba6;border-radius:5px}
+#miEditorial .v66-bullets{display:grid;gap:7px}
+#miEditorial .v66-check{display:flex;gap:8px;align-items:start;font-size:12px;line-height:1.35}
+#miEditorial .v66-check i{display:block;min-width:16px;height:16px;border:1.5px solid #4d8c87;border-radius:3px}
+#miEditorial .v66-lines{margin:8px 0}
+#miEditorial .v66-lines div{height:24px;border-bottom:1px solid #a5babb}
+#miEditorial .v66-riddles{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+#miEditorial .v66-riddle{background:white;padding:14px;border-radius:12px;border:1px solid #d5e2e6;min-height:158px}
+#miEditorial .v66-riddle p{font-size:13px;line-height:1.55;min-height:78px}
+#miEditorial .v66-riddle-n{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#317faf;color:white;font-weight:900}
+#miEditorial .v66-two-images{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:15px}
+#miEditorial .v66-two-images img{width:100%;height:175px;object-fit:cover;border-radius:12px;border:2px solid white}
+#miEditorial .v66-challenges{display:grid;gap:13px}
+#miEditorial .v66-challenge{display:grid;grid-template-columns:160px 1fr;gap:12px;background:#fff;border:1px solid #e4d8c8;padding:10px 14px;border-radius:12px;min-height:280px}
+#miEditorial .v66-challenge-faith{background:#fff0f6}
+#miEditorial .v66-character-img{width:100%;max-height:300px;object-fit:contain;align-self:center;border-radius:10px}
+#miEditorial .v66-challenge h3{font-size:15px;font-weight:900;margin:3px 0 7px;color:#277e68}
+#miEditorial .v66-challenge p{font-size:12px;line-height:1.5}
+#miEditorial .v66-options{display:grid;gap:5px}
+#miEditorial .v66-options label{display:flex;align-items:center;gap:7px;font-size:12px;background:#f2f8fa;padding:7px;border-radius:6px}
+#miEditorial .v66-options i{display:block;width:17px;height:17px;border:1.5px solid #6f9a99;border-radius:50%;flex:none}
+#miEditorial .v66-reflect{margin-bottom:8px}
+#miEditorial .v66-reflect b{font-size:12px}
+#miEditorial .v66-reflect .v66-lines div{height:16px}
+#miEditorial .v66-wordlist{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0}
+#miEditorial .v66-tag{display:inline-flex;border-radius:5px;padding:4px 7px;background:#d9ebf5;color:#245a73;font-weight:800;font-size:10px}
+#miEditorial .v66-wordgrid{border-collapse:collapse;margin:8px auto}
+#miEditorial .v66-wordgrid td{font-family:monospace;width:24px;height:24px;border:1px solid #aecacf;background:white;color:#274f6c;text-align:center;font-weight:800;font-size:13px}
+#miEditorial .v66-mission-photo{width:100%;max-height:170px;object-fit:cover;border-radius:8px;margin:6px 0}
+#miEditorial .v66-general-cover{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;margin:30px 0}
+#miEditorial .v66-general-hero{max-height:480px;max-width:100%;object-fit:contain}
+#miEditorial .v66-general-cover h3{font-size:24px;color:#2c765f}
+#miEditorial .v66-general-work{display:grid;grid-template-columns:1.4fr .6fr;gap:15px}
+#miEditorial .v66-general-rail{max-width:100%;max-height:430px;object-fit:contain}
+#miEditorial .v66-closing-mascot{max-height:250px;max-width:100%;object-fit:contain;display:block;margin:auto}
+#miEditorial .v66-teacher .v66-card,#miEditorial .v66-key .v66-card{padding:10px 13px;margin-bottom:9px}
+#miEditorial .v66-teacher .v66-card p,#miEditorial .v66-key .v66-card p{white-space:normal;line-height:1.55}
+#miEditorial .v66-pager{display:flex;align-items:center;justify-content:space-between;padding:13px;background:white;gap:10px}
+#miEditorial .v66-pager strong{font-size:12px;color:#57748a}
+#miEditorial .v66-pager button:disabled{opacity:.38;cursor:default}
+@media(max-width:650px){
+ #miEditorial .v66-stage{padding:10px 5px}
+ #miEditorial .v66-pagebody{padding:13px}
+ #miEditorial .v66-sheet{min-height:750px}
+ #miEditorial .v66-days{grid-template-columns:1fr}
+ #miEditorial .v66-split{grid-template-columns:1fr}
+ #miEditorial .v66-split-large{grid-template-columns:1fr 1fr}
+ #miEditorial .v66-riddles{grid-template-columns:1fr 1fr}
+ #miEditorial .v66-riddle{min-height:142px;padding:9px}
+ #miEditorial .v66-riddle p{min-height:90px}
+ #miEditorial .v66-challenge{grid-template-columns:105px 1fr;padding:8px;min-height:260px}
+ #miEditorial .v66-wordgrid td{width:19px;height:19px;font-size:10px}
+ #miEditorial .v66-general-work{grid-template-columns:1fr}
+ #miEditorial .v66-pagehead{padding:12px}
+ #miEditorial .v66-pagehead h2{font-size:21px}
+ #miEditorial .v66-cover-hero{min-height:420px}
+}
+@page{size:A4 portrait;margin:10mm}
+@media print{
+ html,body{width:100%!important;overflow:visible!important}
+ body.v66-ready .workspace,body.v66-ready .main-area,body.v66-ready .main-content{height:auto!important;min-height:0!important;overflow:visible!important;display:block!important;max-width:none!important}
+ body.v66-ready .sidebar,body.v66-ready .topbar,body.v66-ready .footer,body.v66-ready .ready-actions,body.v66-ready .ready-screen-heading{display:none!important}
+ body.v66-ready .page,body.v66-ready #view-aulas{display:none!important}
+ body.v66-ready #view-aula-pronta{display:block!important;overflow:visible!important;max-width:none!important;padding:0!important}
+ body.v66-ready #readyLessonSheet,body.v66-ready #readyWorksheetSheet,body.v66-ready #readyWeeklySheet,body.v66-ready .worksheet-preview-heading{display:none!important}
+ body.v66-ready #miEditorial,body.v66-ready #miEditorial .v66-frame,body.v66-ready #miEditorial .v66-stage{display:block!important;overflow:visible!important;max-width:none!important;width:100%!important;margin:0!important;padding:0!important;background:white!important;border:0!important;box-shadow:none!important}
+ body.v66-ready #miEditorial .v66-screen-ui{display:none!important}
+ body.v66-ready #miEditorial .v66-sheet{display:block!important;box-sizing:border-box!important;width:100%!important;max-width:none!important;min-height:0!important;height:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important;margin:0!important;page-break-after:always!important;break-after:page!important;background:#fff!important}
+ body.v66-ready #miEditorial .v66-sheet:last-child{page-break-after:auto!important;break-after:auto!important}
+ body.v66-ready #miEditorial .v66-pagehead{print-color-adjust:exact;-webkit-print-color-adjust:exact;padding:8px 12px!important}
+ body.v66-ready #miEditorial .v66-pagehead h2{font-size:19pt!important}
+ body.v66-ready #miEditorial .v66-pagehead p{font-size:9pt!important}
+ body.v66-ready #miEditorial .v66-pagebody{display:block!important;padding:10px 10px!important}
+ body.v66-ready #miEditorial .v66-card{break-inside:avoid-page!important;page-break-inside:avoid!important;margin-bottom:8px!important}
+ body.v66-ready #miEditorial .v66-foot{display:flex!important;font-size:8pt!important}
+ body.v66-ready #miEditorial .v66-cover-inner{min-height:0!important}
+ body.v66-ready #miEditorial .v66-cover-hero{min-height:0!important;max-height:170mm!important}
+ body.v66-ready #miEditorial .v66-cover-image{max-height:165mm!important;object-fit:contain!important}
+ body.v66-ready #miEditorial .v66-art{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ body.v66-ready #miEditorial .v66-day{min-height:20mm!important;padding:8px!important}
+ body.v66-ready #miEditorial .v66-side-image{height:32mm!important}
+ body.v66-ready #miEditorial .v66-wordgrid td{width:5mm!important;height:5mm!important;font-size:9pt!important}
+ body.v66-ready #miEditorial .v66-mascot-rail img{max-height:125mm!important}
+ body.v66-ready #miEditorial .v66-riddle{min-height:36mm!important}
+ body.v66-ready #miEditorial .v66-riddle p{min-height:18mm!important}
+ body.v66-ready #miEditorial .v66-two-images img{height:40mm!important}
+ body.v66-ready #miEditorial .v66-challenge{min-height:69mm!important}
+ body.v66-ready #miEditorial .v66-challenge .v66-character-img{max-height:68mm!important}
+ body.v66-ready #miEditorial .v66-lines div{height:6mm!important}
+ body.v66-ready #miEditorial .v66-teacher .v66-card p{font-size:10.2pt!important}
+ body.v66-ready #miEditorial .v66-cover-intro{padding:11px!important}
+}
