@@ -473,3 +473,22 @@
  body[data-mi-print="student"][data-mi-worksheet-style="economy"] .weekly-banner *{color:#222!important}
  body[data-mi-print="student"][data-mi-worksheet-style="color"] .weekly-sheet{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
 }
+
+/* Jogos novos: cartas de palavras e investigação bíblica. */
+.worksheet-anagram-board{display:grid;gap:8px}
+.worksheet-anagram-row{display:flex;flex-direction:column;gap:5px;padding:7px;background:#f2f8fc;border-radius:9px;border:1px solid #d8e7ec}
+.worksheet-anagram-letters{display:flex;flex-wrap:wrap;gap:3px}
+.worksheet-anagram-letter{display:grid;place-items:center;width:22px;height:24px;border-radius:5px;background:#fff;border:1px solid #c3dce8;font-weight:900;color:#286582;font-size:11px}
+.worksheet-anagram-answer{font-size:10px;color:#627d8a}
+.worksheet-analysis{font-size:11px;line-height:1.4;color:#415868}
+.worksheet-analysis strong{display:block;color:#526d89;margin:5px 0 1px}
+.worksheet-analysis p{margin:2px 0 6px}
+.worksheet-analysis .worksheet-answer-line{height:22px}
+@media print{
+ body[data-mi-print="student"] .worksheet-anagram-board{gap:4px!important}
+ body[data-mi-print="student"] .worksheet-anagram-row{padding:4px!important;background:#fff!important}
+ body[data-mi-print="student"] .worksheet-anagram-letter{width:18px!important;height:20px!important;font-size:9pt!important}
+ body[data-mi-print="student"] .worksheet-anagram-answer{font-size:8pt!important}
+ body[data-mi-print="student"] .worksheet-analysis{font-size:9pt!important}
+ body[data-mi-print="student"] .worksheet-analysis .worksheet-answer-line{height:18px!important}
+}
