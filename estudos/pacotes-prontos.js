@@ -38,7 +38,6 @@ async function loadCatalog(){
   catalogError='';
  }catch(e){entries.splice(0);catalogError='O catálogo de atividades está temporariamente indisponível. Os roteiros do professor continuam funcionando normalmente.'}
  renderBank();renderSuggest();
- loadCatalog();
 }
 function allApproved(){return entries.filter(p=>p.status==='approved')}
 function find(title,reference,age){
@@ -104,6 +103,7 @@ function init(){
  document.getElementById('miBankSearch')?.addEventListener('input',renderBank);
  for(const id of ['topicSuggestions','newLesson','acervoNew'])document.getElementById(id)?.addEventListener('click',()=>{Promise.resolve().then(renderSuggest)});
  renderBank();renderSuggest();
+ loadCatalog();
 }
 window.MI_ACTIVITY_BANK=Object.freeze({entries,find,pick,renderReady,refresh:renderSuggest,renderBank,get approvedCount(){return allApproved().length}});
 window.MI_PREPARED_LESSONS=Object.freeze({find:pick,refresh:renderSuggest,get count(){return allApproved().length}});
