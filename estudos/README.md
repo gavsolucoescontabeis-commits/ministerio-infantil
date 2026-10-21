@@ -35,6 +35,16 @@ Módulo **integrado ao aplicativo oficial** pela aba **Estudos**, dentro do menu
 - **Compatibilidade:** aulas antigas sem gabarito permanecem legíveis. Não se inventam respostas para perguntas escritas manualmente; nesse caso, cabe ao professor preencher e conferir o campo.
 - Esta versão **não usa IA generativa** nem cria ilustrações fotorrealistas. Usa roteiros editoriais e figuras vetoriais próprias, otimizadas para impressão preto e branco.
 
+## Atividades Criativas — Versão Colorida
+
+- As fichas passaram a ter **identidade visual infantil colorida**, com cabeçalhos ilustrados, cartões de desafios, bordas suaves, ilustrações vetoriais e espaço ampliado para desenho. Não utiliza imagens de bancos de terceiros.
+- **Exercícios variados:** perguntas de marcar, completar, ligar pares, colocar os acontecimentos em ordem, caça-palavras de 11×11 letras, labirintos solucionáveis para os pequenos, missão prática e desenho. Cada modelo é selecionado conforme a faixa etária e o assunto.
+- **Exercícios por tema:** o módulo identifica 12 conjuntos editoriais (Semeador, Jonas 1/2/3, Bodas de Caná, Noé 6/7, Bom Samaritano, Davi e Golias, Zaqueu, Tempestade, Amor de Deus). Para outros assuntos, oferece atividades genéricas de investigação da passagem com palavras do tema, **sem atribuir fatos bíblicos inventados**.
+- **Gabarito específico:** a Aula do Professor contém as respostas das alternativas, a ordem correta das cenas, os pares de associação, as palavras com suas coordenadas no caça-palavras, o caminho do labirinto e questões abertas claramente indicadas como pessoais.
+- **Impressão:** seletor Colorida (padrão) / Econômica. A versão econômica elimina os preenchimentos coloridos, preservando contornos e espaços para responder. No navegador pode ser necessário ativar "gráficos de fundo" para reproduzir todas as cores no PDF.
+- **Correção bíblica:** Davi e Golias agora é representado por uma funda e pedras, em vez de coroa. As ilustrações são simbólicas, voltadas ao ensino e à pintura.
+- A rotina de áudio/voz **não foi alterada** nesta melhoria. Mantida a pendência da voz Daniel, conforme solicitado pelo usuário.
+
 ## Dados e privacidade
 - Os rascunhos de aula permanecem em **localStorage deste navegador**; não são sincronizados com Supabase. Em outro dispositivo, é necessário importar o arquivo de backup. Isso é informado diretamente na tela.
 - O módulo não consulta nem transmite dados pessoais de crianças ou professores.
