@@ -348,8 +348,11 @@ function create({title,reference,age}){
  const dynamic=idx<2?'Dinâmica rápida (cerca de 2 minutos): '+action:
   idx===2?'Desafio investigativo (cerca de 2 minutos): '+action:
   'Discussão orientada (cerca de 2 minutos): '+action;
- const inquiry='Perguntas para conversar:\n'+questions.map(([q],i)=>(i+1)+'. '+q).join('\n');
- const answerKey=questions.map(([q,a],i)=>(i+1)+'. '+a).join('\n');
+ const inquiry='Perguntas para conversar:\n'+questions.slice(0,3).map(([q],i)=>(i+1)+'. '+q).join('\n');
+ const secondQuestions=questions.length>2?questions.slice(-2):questions.slice(0,2);
+ const inquiry2='Investigue e converse:\n'+secondQuestions.map(([q],i)=>(i+1)+'. '+q).join('\n')+'\n'+(secondQuestions.length+1)+'. Em qual trecho da passagem o ensino central pode ser observado?';
+ const answerKey=questions.slice(0,3).map(([q,a],i)=>(i+1)+'. '+a).join('\n');
+ const answerKey2=secondQuestions.map(([q,a],i)=>(i+1)+'. '+a).join('\n')+'\n'+(secondQuestions.length+1)+'. Compare a resposta com a passagem '+reference+'.';
  const objectives=[
   'Identificar os acontecimentos e reconhecer: '+entry.teaching,
   'Explicar com palavras simples a ideia principal da passagem: '+entry.teaching,
@@ -357,7 +360,7 @@ function create({title,reference,age}){
   'Analisar a narrativa, suas decisões e consequências: '+entry.teaching,
   'Argumentar com base na passagem, distinguindo fatos e aplicações: '+entry.teaching
  ];
- return {storyId:story.id,teaching:entry.teaching,goal:objectives[idx],dynamic,questions:[inquiry,inquiry],answerKey:[answerKey,answerKey],curated:true};
+ return {storyId:story.id,teaching:entry.teaching,goal:objectives[idx],dynamic,activityAlternatives:[dynamic,'Desafio alternativo (cerca de 2 minutos): '+entry.actions[(Math.min(idx===4?2:Math.floor(idx/2),2)+1)%entry.actions.length]],questions:[inquiry,inquiry2],answerKey:[answerKey,answerKey2],curated:true};
 }
 window.MI_STUDY_PEDAGOGY=Object.freeze({create,subjectCount:Object.keys(catalog).length});
 })();
