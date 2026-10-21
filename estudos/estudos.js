@@ -556,6 +556,20 @@ function renderWorksheetChallenge(challenge,index){
    for(const char of line)grid.append(worksheetNode('span','worksheet-letter',char));
   }
   content.append(grid,worksheetNode('p','worksheet-word-list','Encontre: '+challenge.words.join(' · ')));
+ }else if(challenge.type==='maze'){
+  const maze=challenge.maze,grid=worksheetNode('div','worksheet-maze-grid');
+  grid.style.gridTemplateColumns='repeat('+maze.size+', 1fr)';
+  for(const [idx,cell] of maze.cells.entries()){
+   const entry=worksheetNode('span','worksheet-maze-cell');
+   entry.style.borderTop=cell.n?'2px solid currentColor':'2px solid transparent';
+   entry.style.borderRight=cell.e?'2px solid currentColor':'2px solid transparent';
+   entry.style.borderBottom=cell.s?'2px solid currentColor':'2px solid transparent';
+   entry.style.borderLeft=cell.w?'2px solid currentColor':'2px solid transparent';
+   if(idx===0){entry.textContent='★';entry.classList.add('maze-start')}
+   if(idx===maze.cells.length-1){entry.textContent='▣';entry.classList.add('maze-end')}
+   grid.append(entry);
+  }
+  content.append(grid,worksheetNode('p','worksheet-maze-caption','★ Comece aqui    ▣ Chegue até a Bíblia'));
  }else if(challenge.type==='fill'){
   content.append(worksheetNode('p','worksheet-fill','Banco de palavras: '+challenge.words.join(' / ')));
  }else if(challenge.type==='reflect'){
