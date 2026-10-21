@@ -27,7 +27,7 @@ async function load(){
     }));
     state.missing=results.filter(Boolean);
     if(state.missing.length){mark('aguardando_arte','Imagens ausentes/inválidas: '+state.missing.join(', '));return}
-    if(!window.MI_ESTUDOS_EDITORIAL?.mount)throw new Error('Editor de Estudos não carregou');
+    if(!window.MI_ESTUDOS_EDITORIAL?.mount)throw new Error('Editor anterior indisponível para retorno seguro');
     mark('carregando','Artes completas, iniciando novo editor');
     const style=document.createElement('link');
     style.rel='stylesheet';
@@ -35,8 +35,8 @@ async function load(){
     document.head.append(style);
     const script=document.createElement('script');
     script.src='./editorial-v66.js?ver=66.1';
-    script.onload=()=>mark(window.MI_ESTUDOS_EDITORIAL?.version?.startsWith('66.')?'ativo':'erro','');
-    script.onerror=()=>mark('erro','Falha ao carregar o compositor V66');
+    script.onload=()=>{if(window.MI_ESTUDOS_EDITORIAL?.version?.startsWith('66.')) mark('ativo','Biblioteca validada e compositor V66 carregado'); else mark('erro','Arquivo V66 carregou sem substituir o editor');};
+    script.onerror=()=>{style.remove();mark('erro','Falha ao carregar o compositor V66; editor anterior preservado')};
     document.head.append(script);
   }catch(error){mark('aguardando_arte',String(error?.message||error))}
 }
