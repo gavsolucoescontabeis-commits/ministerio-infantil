@@ -354,8 +354,7 @@ const LESSON_FIELDS=Object.freeze({
  story:['lessonStory','História Bíblica Explicada'],
  application:['lessonApplication','Aplicação Prática'],
  questions:['lessonQuestions','Perguntas para Conversar'],
- activity:['lessonActivity','Atividade, Dinâmica e Ilustração'],
- prayer:['lessonPrayer','Encerramento e Oração']
+ activity:['lessonActivity','Atividade, Dinâmica e Ilustração']
 });
 function selectedAge(){
  const age=$('lessonAge').value;
@@ -684,7 +683,7 @@ function printReadyLesson(kind='teacher'){
 }
 function lessonPrompt(){const x=getLessonForm();
  if(!x.title||!x.reference){toast('Preencha o tema e a referência bíblica antes de pedir a aula.');return null}
- const details=[['Objetivo',x.goal],['Contexto já anotado',x.context],['História já anotada',x.story],['Aplicação desejada',x.application],['Perguntas desejadas',x.questions],['Atividade sugerida',x.activity],['Encerramento',x.prayer]].filter(row=>row[1]).map(row=>row[0]+': '+row[1]).join('\n');
+ const details=[['Objetivo',x.goal],['Contexto já anotado',x.context],['História já anotada',x.story],['Aplicação desejada',x.application],['Perguntas desejadas',x.questions],['Atividade sugerida',x.activity]].filter(row=>row[1]).map(row=>row[0]+': '+row[1]).join('\n');
  return 'SUGESTÃO DE AULA — MINISTÉRIO INFANTIL 4ª IEQ\n\n'+
  'Prepare uma aula bíblica cristã evangélica para crianças de '+x.age+'.\n'+
  'Tema: '+x.title+'\nPassagem principal: '+x.reference+'\n'+(x.date?'Data prevista: '+showDate(x.date)+'\n':'')+'\n'+
