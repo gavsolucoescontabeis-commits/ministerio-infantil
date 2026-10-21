@@ -81,9 +81,44 @@ const days=[
  ['Gratidão e Oração','Separe um momento com Deus.','Faça uma oração curta por alguém.']
 ];
 function weeklyPlan(data){
- const age=window.MI_LESSON_STORYTELLING?.ageGroup(data.age)||'middle',little=['little','early'].includes(age);
- return {title:'Tempo com Deus',reference:String(data.reference||''),age:String(data.age||''),mission:profile(data)?.mission||'Demonstre uma atitude de amor e respeito durante a semana.',
-  days:weekdays.map((day,i)=>({day,label:days[i][0],lead:days[i][1],task:little?days[i][2].replace('Escreva ou diga','Conte').replace('Escolha uma palavra','Diga uma palavra'):days[i][2]}))};
+ const age=window.MI_LESSON_STORYTELLING?.ageGroup(data.age)||'middle';
+ const little=age==='little',early=age==='early',older=age==='older',teen=age==='teen';
+ const ageTasks=teen?[
+  'Identifique a ideia central e indique em que parte do texto ela aparece.',
+  'Descreva uma decisão ou ensinamento explícito da passagem, com referência.',
+  'Pense numa situação atual que poderia ser orientada pelo ensinamento.',
+  'Converse com alguém sobre a diferença entre interpretar e inventar fatos.',
+  'Anote uma dúvida séria para discutir com seu professor.',
+  'Escreva um parágrafo: como aplicar o texto com respeito e responsabilidade?',
+  'Ore e registre uma forma de servir sem esperar reconhecimento.'
+ ]:older?[
+  'Escreva uma frase com o ensinamento principal.',
+  'Encontre dois detalhes no texto que ajudam a compreendê-lo.',
+  'Escolha uma atitude para praticar e explique sua decisão.',
+  'Converse com alguém sobre como o texto se aplica à vida atual.',
+  'Anote uma palavra importante e explique o significado dela.',
+  'Crie um pequeno desenho ou texto com uma comparação atual, sem alterar os fatos.',
+  'Faça uma oração e escreva uma atitude de gratidão.'
+ ]:little?[
+  'Escute a passagem e faça um pequeno desenho.',
+  'Conte com a ajuda de um adulto quem aparece ou o que o texto ensina.',
+  'Dê um abraço ou mostre carinho com respeito.',
+  'Conte a alguém o que você aprendeu.',
+  'Escolha uma palavra bonita para repetir.',
+  'Desenhe o que mais gostou de aprender.',
+  'Faça uma oração curtinha com alguém.'
+ ]:early?[
+  'Leia ou ouça a passagem e desenhe uma palavra importante.',
+  'Descubra com o professor o que acontece no texto.',
+  'Pratique uma atitude boa durante o dia.',
+  'Conte para alguém da família o que aprendeu.',
+  'Escreva uma palavra que aparece na história.',
+  'Faça um desenho do ensinamento da semana.',
+  'Faça uma oração agradecendo pelo cuidado de Deus.'
+ ]:days.map(x=>x[2]);
+ return {title:'Tempo com Deus',reference:String(data.reference||''),age:String(data.age||''),
+  mission:profile(data)?.mission||'Demonstre uma atitude de amor e respeito durante a semana.',
+  days:weekdays.map((day,i)=>({day,label:days[i][0],lead:days[i][1],task:ageTasks[i]}))};
 }
 window.MI_MAGAZINE_ART=Object.freeze({svgFor,weeklyPlan,profile,artTypes:Object.keys(symbols).length});
 })();
