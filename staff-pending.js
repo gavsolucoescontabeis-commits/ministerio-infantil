@@ -136,6 +136,22 @@ async function resendActivation(app,button,statusEl){
  finally{button.disabled=false;button.textContent=old}
 }
 
+async function createTemporaryPassword(app,button,statusEl){
+ if(!confirm('Gerar uma senha provisória para '+app.full_name+'? A senha anterior deixará de funcionar.'))return;
+ button.disabled=true;statusEl.textContent='Gerando senha provisória...';
+ try{
+  const data=await request('/functions/v1/v60-resend-staff-activation',{method:'POST',body:JSON.stringify({applicationId:app.id,action:'temporary-password'})});
+  if(!data?.temporaryPassword)throw Error('A senha não foi retornada.');
+  statusEl.replaceChildren();
+  const msg=document.createElement('div');msg.textContent='Senha provisória criada. Copie e entregue diretamente à pessoa. Não envie em grupos. Ela deve alterá-la após entrar.';
+  const pass=document.createElement('code');pass.textContent=data.temporaryPassword;pass.style.display='block';pass.style.fontSize='18px';pass.style.margin='8px 0';
+  const copy=document.createElement('button');copy.type='button';copy.textContent='Copiar senha provisória';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(pass.textContent);copy.textContent='Copiada!'}catch{copy.textContent='Selecione e copie a senha acima.'}});
+  const close=document.createElement('button');close.type='button';close.textContent='Ocultar senha';close.addEventListener('click',()=>{pass.textContent='';copy.remove();close.remove()});
+  statusEl.append(msg,pass,copy,close);
+ }catch(e){statusEl.textContent=e.message||'Não foi possível gerar a senha provisória.'}
+ finally{button.disabled=false}
+}
+
 async function loadRecentDocuments(){
  const fields='person_key,issued_on,due_on,verified_manually,created_at';
  return await request('/rest/v1/v58_staff_documents?select='+encodeURIComponent(fields)+'&order=issued_on.desc');
@@ -188,7 +204,9 @@ function renderRecentRows(rows,documents=null){
     const resend=document.createElement('button');resend.type='button';resend.className='soft';resend.textContent='✉️ Reenviar e-mail de criação da senha';
     const feedback=document.createElement('span');feedback.className='small';feedback.style.marginLeft='8px';
     resend.addEventListener('click',()=>resendActivation(app,resend,feedback));
-    card.append(resend,feedback);
+    const temporary=document.createElement('button');temporary.type='button';temporary.className='soft';temporary.textContent='🔑 Gerar senha provisória (sem e-mail)';
+    temporary.addEventListener('click',()=>createTemporaryPassword(app,temporary,feedback));
+    card.append(resend,temporary,feedback);
   }
   recentList.appendChild(card);
  }
