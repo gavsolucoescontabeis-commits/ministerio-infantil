@@ -55,6 +55,17 @@ Módulo **integrado ao aplicativo oficial** pela aba **Estudos**, dentro do menu
 - **Compatibilidade:** mantidos os rascunhos locais, a importação/exportação JSON, os botões de impressão, o visualizador das aulas e as permissões existentes. **Não foi alterado o áudio ou a voz Daniel**.
 - **Revisão antes de impressão:** confira a referência bíblica, a adequação à idade e a pré-visualização de impressão do navegador. A diagramação usa folhas A4 e evita a quebra dos cartões de atividades ao meio.
 
+## Novo Padrão de Atividades — Caderno Bíblico
+
+- **Identidade visual original:** folhas coloridas próprias, molduras leves, ilustrações vetoriais simbólicas de 11 assuntos (incluindo Semeador, Jonas, Ester, a Grande Festa, Mulher Samaritana, Davi, Noé, Cornélio e Filipe), sem reproduzir as revistas usadas como referência.
+- **Atividades contextualizadas:** exercícios específicos para 17 conjuntos editoriais, incluindo Ester 4, Lucas 14, João 4, Atos 8 e Atos 10. Os demais temas recebem atividades gerais de exploração da referência, sem fatos inventados.
+- **Adaptação de idade:** 4–6 anos (colorir, marcar, completar e labirintos), 7–8 (observar, ligar, jogos de palavras e labirintos), 9 (liga-pares, ordem bíblica, caça-palavras), 10–12 (sequência, caça-palavras e anagramas), adolescentes (ordenação, anagramas, investigação do texto versus aplicação moderna).
+- **Duas folhas independentes:** o **Caderno Bíblico** apresenta a atividade; **Tempo com Deus** apresenta sete tarefas curtas, de domingo a sábado, com linguagem e exigência ajustadas à idade, mais missão prática e espaço para o versículo da semana. A segunda folha é opcional.
+- **Impressão A4:** opções Colorida e Econômica; desafios organizados em grade, cartões com quebra de página evitada e duas folhas planejadas. A visualização de impressão real pode variar conforme navegador e impressora; é importante conferir margens e prévia, sobretudo no celular.
+- **Gabarito exclusivo do professor:** respostas de múltipla escolha, liga-pares, sequência, anagramas, caça-palavras (com coordenadas) e solução de labirintos não são exibidos na folha infantil.
+- **Proteção dos aprovados:** nenhuma alteração nos cadastros, check-in/check-out, permissões, aulas salvas, backup JSON ou módulo de áudio. O problema previamente registrado da voz Daniel continua pendente.
+- Os desenhos são **simbólicos e pedagógicos**, não representações documentais de todos os detalhes bíblicos. Releia a passagem selecionada antes de ensinar e confira a prévia da impressão.
+
 ## Dados e privacidade
 - Os rascunhos de aula permanecem em **localStorage deste navegador**; não são sincronizados com Supabase. Em outro dispositivo, é necessário importar o arquivo de backup. Isso é informado diretamente na tela.
 - O módulo não consulta nem transmite dados pessoais de crianças ou professores.
