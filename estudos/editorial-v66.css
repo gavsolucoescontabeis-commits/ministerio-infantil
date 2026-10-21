@@ -241,3 +241,5 @@ body.v66-ready .weekly-sheet{display:none!important}
  body.v66-ready #miEditorial .v66-key .v66-pagebody{column-count:2!important}
  body.v66-ready #miEditorial .v66-foot{padding:5px!important}
 }
+#miEditorial .v664-section-title{font-size:13px;font-weight:900;color:#a65c26;margin:5px 0 7px;letter-spacing:.03em}
+@media print{body.v66-ready #miEditorial .v664-section-title{font-size:10.5pt!important;margin:3px 0 5px!important}}
