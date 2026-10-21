@@ -14,7 +14,7 @@ const DAYS=[
  ['05','Aves e seres aquáticos','Deus criou as aves e os seres que vivem nas águas.','Gênesis 1:20–23'],
  ['06','Animais e humanidade','Deus criou animais terrestres e seres humanos à Sua imagem.','Gênesis 1:24–31']
 ];
-const AS='/ministerio-infantil/estudos/assets/estudos/';
+const AS='./assets/estudos/';
 const assets={
  lia:'lia_investigadora.webp',pipo:'pipo_aventureiro.webp',maya:'maya_fe.webp',
  capa:'criacao_capa.webp',paisagem:'criacao_natureza.webp',animais:'criacao_animais.webp',
@@ -69,7 +69,7 @@ function buildCreation(d,age){
  ['Fomos criadas no quinto dia e voamos pelo céu. Quem somos?',''],
  ['Fomos criados à imagem de Deus. Quem somos?','']
  ].map((a,i)=>'<div class="v66-riddle"><span class="v66-riddle-n">'+(i+1)+'</span><p>'+a[0]+'</p>'+lines(1)+'</div>').join('')+'</div><div class="v66-two-images">'+image('animais','','Animais da criação')+image('peixes','','Peixes da criação')+'</div>',{theme:'orange',subtitle:'Quatro pistas, quatro descobertas'}));
- student.push(sheet('child','DESAFIOS PARA A VIDA','<div class="v66-challenges"><section class="v66-challenge">'+image('pipo','v66-character-img','Aventureiro em ação')+'<div><h3>CORAGEM PARA FAZER O BEM</h3><p>Na praça, algumas crianças deixaram embalagens no chão. O que é mais sábio fazer sem brigar?</p><div class="v66-options">'+['A. Fingir que não viu.','B. Jogar lixo também.','C. Recolher somente o que for seguro e orientar com respeito.','D. Gritar com todos.'].map(x=>'<label><i></i>'+esc(x)+'</label>').join('')+'</div></div></section><section class="v66-challenge v66-challenge-faith">'+image('maya','v66-character-img','Menina refletindo com fé')+'<div><h3>PENSANDO COM FÉ</h3>'+[
+ student.push(sheet('child','DESAFIOS PARA A VIDA','<div class="v66-challenges"><section class="v66-challenge">'+image('cuidado','v66-character-img','Aventureiro escolhendo cuidar da criação')+'<div><h3>CORAGEM PARA FAZER O BEM</h3><p>Na praça, algumas crianças deixaram embalagens no chão. O que é mais sábio fazer sem brigar?</p><div class="v66-options">'+['A. Fingir que não viu.','B. Jogar lixo também.','C. Recolher somente o que for seguro e orientar com respeito.','D. Gritar com todos.'].map(x=>'<label><i></i>'+esc(x)+'</label>').join('')+'</div></div></section><section class="v66-challenge v66-challenge-faith">'+image('gratidão','v66-character-img','Momento de gratidão diante da criação')+'<div><h3>PENSANDO COM FÉ</h3>'+[
  'O que a criação ensina sobre Deus?','Qual parte da criação mais desperta sua admiração?',
  'Qual atitude demonstra cuidado com o que Deus criou?'
  ].map(q=>'<div class="v66-reflect"><b>'+esc(q)+'</b>'+lines(2)+'</div>').join('')+'</div></section></div>',{theme:'pink',subtitle:'Coragem, sabedoria, gratidão e cuidado'}));
@@ -178,5 +178,5 @@ function beforePrint(kind){
  if(kind==='teacher'&&keys.length){const target=$('miEditorial .v66-stage')||document.querySelector('#miEditorial .v66-stage');if(target)target.insertAdjacentHTML('beforeend',keys.map((p,i)=>wrap(p,i,keys.length,current)).join(''))}
 }
 function afterPrint(){if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'66.0',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'66.1',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
 })();
