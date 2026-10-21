@@ -211,7 +211,7 @@ function generic(d,age){
  return {student:[cover,page2,page3,page4],teacher,answers,curated:!!creative?.curated,theme:group};
 }
 function teacherPages(d,book){
- const units=[],threshold=2700;for(const [label,body0]of book.teacher){
+ const units=[],threshold=3800;for(const [label,body0]of book.teacher){
   const body=String(body0||'').trim();if(!body)continue;
   if(body.length<900){units.push([label,body]);continue}
   let p=body.split(/\n\s*\n/).filter(Boolean),buf='';
@@ -224,7 +224,7 @@ function teacherPages(d,book){
  }
  const packets=[];let packet=[],weight=0;
  for(const unit of units){let n=unit[1].length+unit[0].length;
- if(packet.length&&(weight+n>threshold||packet.length>=8)){packets.push(packet);packet=[];weight=0}
+ if(packet.length&&(weight+n>threshold||packet.length>=12)){packets.push(packet);packet=[];weight=0}
  packet.push(unit);weight+=n}
  if(packet.length)packets.push(packet);
  return packets.map((rows,i)=>sheet('teacher',i===0?'AULA DO PROFESSOR':'ROTEIRO DA AULA',rows.map(([name,value])=>card(esc(name),para(value))).join(''),{subtitle:d.reference+' · parte '+(i+1)+'/'+packets.length}));
@@ -263,5 +263,5 @@ function beforePrint(kind){
  if(kind==='teacher'&&keys.length){const target=$('miEditorial .v66-stage')||document.querySelector('#miEditorial .v66-stage');if(target)target.insertAdjacentHTML('beforeend',keys.map((p,i)=>wrap(p,i,keys.length,current)).join(''))}
 }
 function afterPrint(){if(usingPrevious)return previousEditor?.afterPrint?.();if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'68.0',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'68.1',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
 })();
