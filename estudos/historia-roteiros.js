@@ -301,6 +301,31 @@ stories.push(
 }
 );
 
+
+/* V68: os relatos de Gênesis 2 e 3 não devem usar perguntas genéricas ou cenas da Criação. */
+stories.push(
+{
+ id:'adao-eva-jardim',titles:['adao e eva','adao','eva','jardim do eden'],passages:['Gênesis 2'],
+ scenes:[
+ [7,9,'Deus formou o homem do pó da terra e lhe deu o fôlego de vida. Plantou um jardim no Éden e ali o colocou.','Gênesis 2 conta que o Senhor Deus formou o homem do pó da terra e soprou em suas narinas o fôlego de vida. Depois, plantou um jardim no Éden e colocou o homem ali. O relato apresenta um ambiente com árvores agradáveis e alimento, mas não fornece detalhes de roupas, cidades ou ferramentas de jardinagem.'],
+ [10,17,'No jardim havia um rio e árvores. Deus deu ao homem a tarefa de cultivar e guardar o jardim e uma orientação sobre a árvore do conhecimento do bem e do mal.','O texto descreve um rio que saía do Éden. Deus colocou o homem no jardim para o cultivar e guardar. Também lhe deu uma orientação específica: poderia comer das árvores, mas não da árvore do conhecimento do bem e do mal. Essa ordem faz parte da narrativa e não deve ser confundida com um costume moderno.'],
+ [18,20,'Deus disse que não era bom que o homem estivesse só. Os animais foram apresentados ao homem, que lhes deu nomes.','Deus declarou que não era bom que o homem estivesse só e que lhe faria uma auxiliadora correspondente. O Senhor formou animais do campo e aves e os trouxe ao homem, que lhes deu nomes. Porém, entre eles, não se encontrou uma auxiliadora correspondente ao homem.'],
+ [21,25,'Deus fez a mulher e a trouxe ao homem. O relato apresenta o início da união entre homem e mulher.','Deus fez cair um profundo sono sobre o homem e, de uma de suas costelas, formou a mulher, trazendo-a até ele. O homem a reconheceu como parte de si. A passagem apresenta o fundamento da união entre marido e mulher; não apresenta uma festa de casamento com convidados nem acontecimentos posteriores.']
+ ],
+ analogy:{little:'Podemos agradecer a Deus pela vida e cuidar com carinho de plantas, animais e pessoas.',middle:'Receber uma tarefa e cuidar dela com atenção é um exemplo atual de responsabilidade. Isso não significa que a escola já existisse no Éden.',older:'O relato permite conversar sobre dignidade humana, responsabilidade e relacionamento sem inventar pormenores que o texto bíblico não registra.'}
+},
+{
+ id:'adao-eva-escolhas',titles:['adao e eva','adao','eva','jardim do eden','queda','desobediencia'],passages:['Gênesis 3'],
+ scenes:[
+ [1,6,'A serpente conversou com a mulher e questionou a orientação de Deus. A mulher comeu do fruto e o deu ao homem, que também comeu.','Gênesis 3 registra a conversa entre a serpente e a mulher. A serpente questionou a ordem de Deus sobre a árvore. A mulher viu que o fruto era desejável, tomou-o e comeu; depois deu ao seu marido, que também comeu. A Bíblia não identifica o fruto como maçã.'],
+ [7,13,'Os dois perceberam que estavam nus, fizeram coberturas e se esconderam. Deus lhes perguntou o que havia acontecido.','Depois de comerem, o homem e a mulher perceberam que estavam nus e fizeram coberturas com folhas de figueira. Ao ouvirem a voz do Senhor Deus no jardim, esconderam-se. Deus chamou o homem e perguntou o que havia acontecido. O homem e a mulher responderam às perguntas e procuraram transferir a responsabilidade.'],
+ [14,21,'Deus anunciou as consequências da desobediência. Também fez vestes de peles e os vestiu.','O Senhor anunciou consequências para a serpente, a mulher e o homem. O texto fala de dificuldades, trabalho e morte. O Senhor Deus fez vestes de peles para o homem e sua mulher e os vestiu. O relato não deve ser reduzido somente a uma lição sobre cuidar de árvores.'],
+ [22,24,'Deus enviou o homem para fora do jardim, impedindo o acesso à árvore da vida.','Ao final do capítulo, o Senhor Deus enviou o homem para cultivar a terra fora do jardim do Éden e colocou querubins e uma espada flamejante para guardar o caminho da árvore da vida. O texto não descreve os querubins como crianças com asas pequenas.']
+ ],
+ analogy:{little:'Quando fazemos algo errado, é importante falar a verdade, procurar ajuda e reconhecer a atitude.',middle:'Ao quebrar uma regra em casa, podemos escolher esconder o erro ou reconhecê-lo. Essa é uma comparação atual; ela não ocorreu no Éden.',older:'O relato permite discutir tentação, responsabilidade, justificativas e consequências, distinguindo a narrativa da reflexão sobre escolhas contemporâneas.'}
+}
+);
+
 const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
 function storyFor(topic,reference){
  const query=normalize(topic),ref=normalize(reference);
