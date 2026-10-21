@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "name": "Banco de Atividades Bíblicas — Ministério Infantil 4ª IEQ",
+  "storage": "Arquivos estáticos compartilhados via GitHub Pages, sem custo de API ou servidor adicional",
+  "approvalRule": "Apenas registros com status approved aparecem para professores. Materiais em review ou draft não são sugeridos.",
+  "items": [
+    {
+      "id": "criacao-9",
+      "title": "A Criação",
+      "age": 9,
+      "ageLabel": "9 anos",
+      "status": "review",
+      "aliases": [
+        "a criação",
+        "criação",
+        "criação do mundo",
+        "o começo do mundo",
+        "começo do mundo",
+        "início do mundo",
+        "deus criou todas as coisas",
+        "deus criou tudo",
+        "gênesis 1",
+        "dias da criação",
+        "deus criou o mundo"
+      ],
+      "books": [
+        "genesis 1"
+      ],
+      "references": [
+        "Gênesis 1:1–2:3"
+      ],
+      "summary": "Caderno ilustrado de A Criação; a revisão visual ainda não foi aprovada.",
+      "student": "./pacotes/criacao-9-anos.html",
+      "teacher": "./pacotes/criacao-9-professor.html",
+      "cover": "./assets/estudos/criacao_capa.webp",
+      "pages": 4
+    }
+  ]
+}
