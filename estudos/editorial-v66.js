@@ -87,7 +87,7 @@ function buildCreation(d,age){
  ['Dinâmica de 2 minutos',d.activity||'“Criado ou construído?”: compare árvore, peixe, estrela com casa, papel e livro. Explique a diferença.'],
  ['Aplicação prática',d.application||'Demonstre gratidão a Deus e responsabilidade ao cuidar da criação. A situação da praça é aplicação atual, não faz parte da narrativa bíblica.'],
  ['Missão única para casa','Observe algo da criação, pratique um gesto de cuidado e relate o aprendizado na próxima aula.'],
- ['Orientação para conclusão','Retome o ensinamento central e deixe as crianças compartilharem a descoberta da atividade.']
+ ['Observação final','']
  ].filter(a=>a[1]);
  const answers=[
  ['Ordem da criação','Na ordem impressa: 5, 1, 6, 4, 3, 2.'],
@@ -263,5 +263,5 @@ function beforePrint(kind){
  if(kind==='teacher'&&keys.length){const target=$('miEditorial .v66-stage')||document.querySelector('#miEditorial .v66-stage');if(target)target.insertAdjacentHTML('beforeend',keys.map((p,i)=>wrap(p,i,keys.length,current)).join(''))}
 }
 function afterPrint(){if(usingPrevious)return previousEditor?.afterPrint?.();if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'68.1',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'68.2',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
 })();
