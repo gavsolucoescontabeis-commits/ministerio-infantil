@@ -114,35 +114,81 @@ function buildCreation(d,age){
  if(small)teacher.push(['Adaptação pedagógica','Para crianças menores, faça leitura guiada e respostas orais. Não exigir análise longa por escrito.']);
  return {student,teacher,answers,curated:true};
 }
-function generic(d,age){
- const ageSmall=age<8,focus=norm(d.title+' '+d.goal+' '+d.application);
- const mascot= /corag|desafio|davi|vitoria|persever/.test(focus)?'pipo':/fe|orac|confi|grat|esper/.test(focus)?'maya':'lia';
- const story=String(d.story||'').trim(),questions=parts(d.questions).filter(s=>s.length>6);
- const collected=window.MI_CREATIVE_WORKSHEETS?.activitySheet?.(d);
- const exercises=collected?.curated&&Array.isArray(collected.exercises)?collected.exercises.slice(0,5):[];
- const student=[sheet('child',d.title.toUpperCase(),'<div class="v66-general-cover"><div>'+image(mascot,'v66-general-hero','Personagem de apoio para aula')+'</div><div><h3>Uma nova descoberta na Bíblia</h3><p>Leia: <b>'+esc(d.reference)+'</b></p><p>'+esc(d.goal||'Vamos investigar esta passagem e seus ensinamentos.')+'</p><div class="v66-name">Nome: __________________________<br>Data: ______ / ______ / __________</div></div></div>',{cover:true,theme:'sun'})];
- const prompts=questions.length?questions.slice(0,6):['Que acontecimentos podemos confirmar nesta passagem?', 'Que atitude ou ensinamento encontramos no texto bíblico?', 'Que parte da história chama mais a sua atenção?'];
- student.push(sheet('child','LEITURA E DESCOBERTA',card('CONHEÇA A PASSAGEM',para(story||'Leia a passagem com o professor. Observe os acontecimentos reais e confira as informações diretamente na Bíblia.'))+card('PRIMEIRA INVESTIGAÇÃO',promptCard(prompts[0],ageSmall?1:3)),{theme:'sky',subtitle:d.reference}));
- const chunks=[];for(let i=1;i<prompts.length;i+=3)chunks.push(prompts.slice(i,i+3));
- chunks.forEach((chunk,i)=>student.push(sheet('child','INVESTIGAÇÃO '+(i+1),'<div class="v66-general-work"><div>'+chunk.map(q=>promptCard(q,ageSmall?2:3)).join('')+'</div>'+image(mascot,'v66-general-rail','Personagem de apoio na descoberta')+'</div>',{theme:i%2?'pink':'jade',subtitle:'Respostas baseadas em '+d.reference})));
- if(exercises.length){
-  let rendered=[];
-  for(const x of exercises){
-   const heading=esc(x.title||'Desafio bíblico'),q=esc(x.prompt||'Leia e resolva.');
-   let body='<p>'+q+'</p>';
-   if(x.type==='choice'&&x.options?.length)body+='<div class="v66-bullets">'+x.options.map(v=>'<label class="v66-check"><i></i><span>'+esc(v)+'</span></label>').join('')+'</div>';
-   else if(x.type==='sequence'&&x.items?.length)body+='<div class="v66-order">'+x.items.map(v=>'<div><i></i>'+esc(v)+'</div>').join('')+'</div>';
-   else body+=lines(3);
-   rendered.push(card(heading,body));
-  }
-  for(let i=0;i<rendered.length;i+=2)student.push(sheet('child','DESAFIOS DA PALAVRA',rendered.slice(i,i+2).join(''),{theme:'orange',subtitle:d.reference}));
+
+/* V67: o mesmo projeto editorial vale para qualquer passagem, sem inventar acontecimentos.
+   As cenas especiais só existem quando um pacote real de imagem foi preparado. */
+function renderEducationalExercise(x,age){
+ const title=esc(x.title||'Atividade bíblica'),prompt=esc(x.prompt||'Confira a passagem bíblica');
+ let body='<p class="v67-exercise-lead">'+prompt+'</p>';
+ const list=(xs,cls='v67-choices')=>'<div class="'+cls+'">'+xs.map((v,i)=>'<div class="v67-entry"><span class="v67-emptybox"></span><span>'+esc(v)+'</span></div>').join('')+'</div>';
+ switch(x.type){
+  case 'choice':body+=list(x.options||[]);break;
+  case 'fill':body+='<div class="v67-word-bank">'+(x.words||[]).map(tag).join('')+'</div>'+lines(age<7?1:2);break;
+  case 'match':
+   body+='<div class="v67-match"><div>'+((x.left||[]).map(y=>'<div>'+esc(y)+'</div>').join(''))+'</div><div>'+((x.right||[]).map(y=>'<div>'+esc(y)+'</div>').join(''))+'</div></div>';
+   break;
+  case 'sequence':body+='<div class="v66-order">'+(x.items||[]).map(y=>'<div><i></i><span>'+esc(y)+'</span></div>').join('')+'</div>';break;
+  case 'wordsearch':
+   if(Array.isArray(x.grid)&&x.grid.length){body+='<div class="v67-wordlist">'+(x.words||[]).map(tag).join('')+'</div><table class="v66-wordgrid v67-wordgrid">'+x.grid.map(row=>'<tr>'+row.map(ch=>'<td>'+esc(ch)+'</td>').join('')+'</tr>').join('')+'</table>'}
+   else body+=lines(2);
+   break;
+  case 'anagram':body+='<div class="v67-anagrams">'+(x.words||[]).map(w=>'<p>'+esc(w.mixed)+': ____________________</p>').join('')+'</div>';break;
+  case 'maze':body+='<div class="v67-draw-space"><b>Desenhe um caminho até a Bíblia:</b><div>✦ <span>→ → →</span> 📖</div></div>';break;
+  case 'reflect':case 'analysis':body+=lines(age<8?2:4);break;
+  default:body+=lines(age<8?1:3);
  }
- const mission=String(d.application||'Pratique uma atitude de cuidado e amor que esteja de acordo com o ensinamento bíblico.').split(/\n/)[0].slice(0,260);
- student.push(sheet('child','APRENDI E VOU PRATICAR',card('MINHA DESCOBERTA','<p>O que aprendi ao estudar '+esc(d.reference)+'?</p>'+lines(ageSmall?2:4))+card('UMA ÚNICA MISSÃO PARA CASA',para(mission))+image(mascot,'v66-closing-mascot','Personagem na conclusão'),{theme:'pink',subtitle:'Compartilhe na próxima aula'}));
- const teacher=[['Objetivo',d.goal],['Contexto bíblico',d.context],['História bíblica preparada',d.story],['Perguntas',d.questions],['Dinâmica/atividade',d.activity],['Aplicação',d.application],['Missão para casa',mission],['Oração',d.prayer]].filter(x=>String(x[1]||'').trim());
- const answers=(collected?.answerKey||[]).map(a=>[a.title||'Resposta',a.answer||'']).concat(d.answers?[['Gabarito informado',d.answers]]:[]);
- if(!answers.length)answers.push(['Conferência','As respostas discursivas devem ser verificadas na passagem '+d.reference+'. Não presumir resposta única para questões abertas.']);
- return{student,teacher,answers,curated:!!collected?.curated};
+ return card(title,body,'v67-exercise v67-type-'+esc(x.type||'other'));
+}
+function generic(d,age){
+ const group=age<7?'little':age<9?'early':age<10?'middle':age<13?'older':'teen';
+ const mood=norm(d.title+' '+d.goal+' '+d.application);
+ const primary=/corag|desafio|davi|vitoria|persever|luta/.test(mood)?'pipo':/fe|orac|confi|grat|esper|obedien/.test(mood)?'maya':'lia';
+ const companion=primary==='lia'?'maya':primary==='pipo'?'lia':'pipo';
+ const topic=norm(d.title),eden=/adao|eva|jardim do eden/.test(topic)&&/genesis\s*[23]/.test(norm(d.reference));
+ const lessonRef=esc(d.reference),lessonTitle=esc(d.title);
+ const illustration=eden?'<div class="v67-eden-hero"><img class="v67-eden-illustration" src="./assets/estudos/adao_eva_exploradores.webp" alt="Exploradores diante de uma paisagem exuberante, como ilustração temática" loading="eager"></div>':
+ '<div class="v67-cover-art v67-cover-art-'+primary+'">'+image(primary,'v67-cover-character','Mascote em aventura de aprendizado')+'</div>';
+ const cover=sheet('child',d.title.toUpperCase(),
+  '<div class="v67-cover-container">'+illustration+
+  '<div class="v67-cover-copy"><p class="v67-small-label">CADERNO DE ATIVIDADES BÍBLICAS</p><h3>'+lessonTitle+'</h3><p>Vamos investigar o que a Bíblia ensina!</p><strong>'+lessonRef+'</strong><div class="v66-name">Nome: ___________________________________ &nbsp; Data: ___ / ___ / ______</div></div></div>',
+  {cover:true,theme:'sun',subtitle:d.reference+' · '+d.age});
+ const creative=window.MI_CREATIVE_WORKSHEETS?.activitySheet?.(d);
+ const exercises=(creative?.exercises||[]).slice(0,7),answerRows=(creative?.answerKey||[]).map(a=>[a.title||'Gabarito',a.answer||'']);
+ const prompts=parts(d.questions).filter(v=>v.length>9).slice(0,4);
+ const inquiry=exercises.filter(x=>['choice','fill','match','sequence'].includes(x.type));
+ const games=exercises.filter(x=>['wordsearch','anagram','maze'].includes(x.type));
+ const deep=exercises.filter(x=>['reflect','analysis'].includes(x.type));
+ // Não suponha que uma pergunta gerada seja um fato bíblico; ancoragem no material preparado pelo professor.
+ if(!inquiry.length)inquiry.push({type:'reflect',title:age<8?'Observe e conte':'Investigue na Bíblia',prompt:prompts[0]||'Qual acontecimento ou ensinamento você encontra nesta passagem?'});
+ if(inquiry.length===1&&prompts.length>1)inquiry.push({type:'reflect',title:'Procure mais uma pista',prompt:prompts[1]});
+ const inquiryContent='<div class="v67-content-with-scene"><div class="v67-exercise-stack">'+inquiry.slice(0,age<8?2:3).map(x=>renderEducationalExercise(x,age)).join('')+'</div>'+
+ '<div class="v67-context-art">'+image('lia','','Explore as pistas na Bíblia')+'</div></div>';
+ const page2=sheet('child',age<8?'OBSERVE E DESCUBRA':'INVESTIGAÇÃO BÍBLICA',inquiryContent,
+  {theme:'jade',subtitle:'Atividades baseadas em '+d.reference});
+ let p3Content='';
+ if(games.length)p3Content=games.slice(0,age<9?1:2).map(x=>renderEducationalExercise(x,age)).join('');
+ else if(deep.length)p3Content=deep.slice(0,2).map(x=>renderEducationalExercise(x,age)).join('');
+ else p3Content=renderEducationalExercise({type:'reflect',title:'O que aprendi?',prompt:prompts[1]||'O que a passagem bíblica nos ensina?'},age);
+ if(deep.length&&games.length) p3Content+='<div class="v67-short-reflect">'+renderEducationalExercise(deep[0],age)+'</div>';
+ p3Content+='<div class="v67-illustrated-rail">'+image(companion,'','Refletindo sobre o ensinamento')+'</div>';
+ const page3=sheet('child',age<8?'VAMOS BRINCAR E APRENDER':'DESAFIOS E DESCOBERTAS',p3Content,
+  {theme:'orange',subtitle:'Jogos e pensamentos ligados à Palavra'});
+ const mission=String(d.application||'Pratique uma atitude que combine com o ensinamento bíblico.').split(/\n/)[0].replace(/^COMPARAÇÃO ATUAL.*:/i,'').slice(0,210);
+ const reflection=prompts.slice(0,age<8?1:2).map(q=>promptCard(q,age<8?1:2)).join('');
+ const page4=sheet('child','MISSÃO E TEMPO COM DEUS',
+  '<div class="v67-closing">'+card('MINHA DESCOBERTA',reflection||'<p>O que aprendi hoje?</p>'+lines(age<8?2:3))+
+  card('UMA MISSÃO PARA CASA',para(mission))+
+  card('TEMPO COM DEUS','<p>Leia ou relembre '+lessonRef+' e agradeça a Deus pelo que aprendeu.</p><p><b>Minha oração:</b></p>'+lines(2))+
+  '<div class="v67-final-illustration">'+image(companion,'','Apoio visual à reflexão')+'</div></div>',
+  {theme:'pink',subtitle:'Uma missão prática, sem tarefas por dias da semana'});
+ const teacher=[['Objetivo',d.goal||'Ler e compreender '+d.reference],['Contexto bíblico',d.context||'Consulte o texto bíblico completo.'],
+ ['Roteiro da aula',d.story||'Leia '+d.reference+' com a turma e explique os acontecimentos ou ensinamentos registrados no texto.'],
+ ['Perguntas para conversar',d.questions||'O que aprendemos com este texto?'],['Dinâmica',d.activity||'Compartilhe uma descoberta da leitura.'],
+ ['Aplicação',d.application||'Converse sobre uma atitude coerente com a passagem.'],
+ ['Missão para casa',mission],['Oração',d.prayer||'Agradeça a Deus por Sua Palavra.']];
+ const answers=answerRows.concat(d.answers?[['Gabarito preparado pelo professor',d.answers]]:[]);
+ if(!answers.length)answers.push(['Questões abertas','Confira as respostas conforme o texto bíblico '+d.reference+'.']);
+ return {student:[cover,page2,page3,page4],teacher,answers,curated:!!creative?.curated,theme:group};
 }
 function teacherPages(d,book){
  const units=[],threshold=2700;for(const [label,body0]of book.teacher){
@@ -185,9 +231,8 @@ function mount(d){
  current=d;const creation=/criacao|deus criou|principio/.test(norm(d.title))&&/genesis\s*1/.test(norm(d.reference));
  // Sem pacote de arte bíblica revisado para outros temas, preservamos o editor V65.
  // Não publicar uma falsa aula ilustrada apenas reaproveitando mascotes.
- if(!creation){usingPrevious=true;document.body.classList.remove('v66-ready');return !!previousEditor?.mount?.(d)}
  usingPrevious=false;
- book=buildCreation(d,getAge(d));
+ book=creation?buildCreation(d,getAge(d)):generic(d,getAge(d));
  student=book.student;teachers=teacherPages(d,book);keys=answerPages(d,book);
  view='child';page=0;printing=false;document.body.classList.add('mi-editorial-ready','v66-ready');
  render();return true;
@@ -198,5 +243,5 @@ function beforePrint(kind){
  if(kind==='teacher'&&keys.length){const target=$('miEditorial .v66-stage')||document.querySelector('#miEditorial .v66-stage');if(target)target.insertAdjacentHTML('beforeend',keys.map((p,i)=>wrap(p,i,keys.length,current)).join(''))}
 }
 function afterPrint(){if(usingPrevious)return previousEditor?.afterPrint?.();if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'66.4',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'67.0',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
 })();
