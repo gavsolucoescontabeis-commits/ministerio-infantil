@@ -516,29 +516,83 @@ function renderReadyLesson(data){
  $('readyAnswersText').textContent=key;
  renderPrintableWorksheet(data);
 }
+function worksheetNode(tag,cls,txt){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(txt!==undefined)node.textContent=String(txt);
+ return node;
+}
+function renderWorksheetChallenge(challenge,index){
+ const card=worksheetNode('section','worksheet-challenge worksheet-'+challenge.type);
+ const title=worksheetNode('div','worksheet-challenge-title');
+ const num=worksheetNode('span','worksheet-challenge-number',String(index+1).padStart(2,'0'));
+ const name=worksheetNode('h3','',challenge.title);
+ title.append(num,name);card.append(title);
+ if(challenge.prompt)card.append(worksheetNode('p','worksheet-challenge-prompt',challenge.prompt));
+ const content=worksheetNode('div','worksheet-challenge-content');
+ if(challenge.type==='choice'){
+  const options=worksheetNode('div','worksheet-choice-options');
+  for(const option of challenge.options){const line=worksheetNode('div','worksheet-choice');line.append(worksheetNode('span','worksheet-choice-bubble',''),worksheetNode('span','',option));options.append(line)}
+  content.append(options);
+ }else if(challenge.type==='match'){
+  const columns=worksheetNode('div','worksheet-match');
+  const left=worksheetNode('div','worksheet-match-column'),right=worksheetNode('div','worksheet-match-column');
+  for(const word of challenge.left)left.append(worksheetNode('div','worksheet-match-entry','◯  '+word));
+  for(const word of challenge.right)right.append(worksheetNode('div','worksheet-match-entry','◯  '+word));
+  columns.append(left,right);content.append(columns);
+  content.append(worksheetNode('p','worksheet-small-help','Trace linhas para ligar os pares corretos.'));
+ }else if(challenge.type==='sequence'){
+  const list=worksheetNode('div','worksheet-order-grid');
+  for(const moment of challenge.items){
+   const item=worksheetNode('div','worksheet-order-item');
+   item.append(worksheetNode('span','worksheet-order-box',''),worksheetNode('span','worksheet-order-label',moment));
+   list.append(item);
+  }
+  content.append(list);
+ }else if(challenge.type==='wordsearch'){
+  const grid=worksheetNode('div','worksheet-wordsearch-grid');
+  grid.setAttribute('aria-label','Caça-palavras com '+challenge.grid.length+' linhas');
+  for(const line of challenge.grid){
+   for(const char of line)grid.append(worksheetNode('span','worksheet-letter',char));
+  }
+  content.append(grid,worksheetNode('p','worksheet-word-list','Encontre: '+challenge.words.join(' · ')));
+ }else if(challenge.type==='fill'){
+  content.append(worksheetNode('p','worksheet-fill','Banco de palavras: '+challenge.words.join(' / ')));
+ }else if(challenge.type==='reflect'){
+  const lines=worksheetNode('div','worksheet-answer-lines');
+  for(let i=0;i<3;i++)lines.append(worksheetNode('div','worksheet-answer-line'));
+  content.append(lines);
+ }
+ card.append(content);return card;
+}
 function renderPrintableWorksheet(data){
  const generator=window.MI_PRINTABLE_ACTIVITIES;
  if(!generator||typeof generator.worksheetFor!=='function'){toast('As atividades ilustradas não foram carregadas. Atualize a página.');return}
  const worksheet=generator.worksheetFor(data);
+ const creative=window.MI_CREATIVE_WORKSHEETS?.activitySheet(data)||null;
  $('worksheetTitle').textContent=worksheet.title;
  $('worksheetReference').textContent='Passagem Bíblica: '+worksheet.reference+' • '+worksheet.age;
- // A ilustração SVG é uma das figuras estáticas do módulo, nunca texto recebido do usuário.
+ $('worksheetThemeTag').textContent=creative?.theme||'Exploradores da Palavra';
+ // Somente figuras vetoriais locais, nunca HTML recebido de um campo do usuário.
  $('worksheetArt').innerHTML=worksheet.artwork.svg;
- const tasks=$('worksheetTasks');tasks.replaceChildren();
- worksheet.prompts.forEach((prompt,index)=>{
-  const block=document.createElement('section');block.className='worksheet-task';
-  const question=document.createElement('h3');question.textContent=(index+1)+'. '+prompt;
-  block.append(question);
-  if(index>0&&index<worksheet.prompts.length-1){
-   const lines=document.createElement('div');lines.className='worksheet-answer-lines';
-   const lineCount=worksheet.group==='little'?1:worksheet.group==='early'?2:3;
-   for(let i=0;i<lineCount;i++){const line=document.createElement('div');line.className='worksheet-answer-line';lines.append(line)}
-   block.append(lines);
-  }
-  tasks.append(block);
- });
+ $('worksheetTasks').replaceChildren();
+ const challenges=$('worksheetExercises');challenges.replaceChildren();
+ if(creative?.exercises?.length){
+  creative.exercises.forEach((item,index)=>challenges.append(renderWorksheetChallenge(item,index)));
+ }else{
+  worksheet.prompts.forEach((prompt,index)=>{
+   const block=worksheetNode('section','worksheet-task');
+   block.append(worksheetNode('h3','',(index+1)+'. '+prompt));
+   challenges.append(block);
+  });
+ }
  $('readyWorksheetAdvice').hidden=false;
- $('readyWorksheetTeacherHint').textContent=worksheet.teacherHint;
+ let hint=worksheet.teacherHint;
+ if(creative?.answerKey?.length){
+  hint+='\n\nGABARITO DOS DESAFIOS IMPRESSOS:\n'+creative.answerKey.map((a,i)=>(i+1)+'. '+a.title+' — '+a.answer).join('\n');
+ }
+ $('readyWorksheetTeacherHint').textContent=hint;
+ $('readyWorksheetSheet').dataset.style=$('worksheetPrintMode').value;
 }
 function openReadyLesson(data){
  previewLessonId=data.id;renderReadyLesson(data);navigate('aula-pronta');
@@ -562,6 +616,7 @@ function editReadyLesson(){
 function printReadyLesson(kind='teacher'){
  if(state.view!=='aula-pronta'){toast('Abra primeiro a visualização da aula pronta.');return}
  document.body.dataset.miPrint=kind==='student'?'student':'teacher';
+ document.body.dataset.miWorksheetStyle=$('worksheetPrintMode').value;
  const done=()=>{if(document.body.dataset.miPrint===kind)delete document.body.dataset.miPrint};
  window.addEventListener('afterprint',done,{once:true});
  try{window.print()}catch(e){done();toast('Não foi possível abrir a impressão neste navegador.')}
@@ -639,6 +694,7 @@ function init(){
  $('readyPrintLessonBottom').addEventListener('click',()=>printReadyLesson('teacher'));
  $('readyPrintWorksheet').addEventListener('click',()=>printReadyLesson('student'));
  $('readyPrintWorksheetBottom').addEventListener('click',()=>printReadyLesson('student'));
+ $('worksheetPrintMode').addEventListener('change',e=>{$('readyWorksheetSheet').dataset.style=e.target.value;document.body.dataset.miWorksheetStyle=e.target.value;});
  $('fillEmptyLessonFields').addEventListener('click',fillEmptyLessonFields);
  $('lessonForm').addEventListener('submit',saveLesson);$('newLesson').addEventListener('click',()=>{if(confirm('Iniciar uma preparação em branco? As alterações ainda não salvas serão descartadas.'))putLessonForm(null)});
  $('copyMasterPrompt').addEventListener('click',()=>{const prompt=lessonPrompt();if(prompt)copy(prompt)});
