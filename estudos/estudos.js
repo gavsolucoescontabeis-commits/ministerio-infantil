@@ -570,6 +570,29 @@ function renderWorksheetChallenge(challenge,index){
    grid.append(entry);
   }
   content.append(grid,worksheetNode('p','worksheet-maze-caption','★ Comece aqui    ▣ Chegue até a Bíblia'));
+ }else if(challenge.type==='anagram'){
+  const board=worksheetNode('div','worksheet-anagram-board');
+  for(const word of challenge.words){
+   const line=worksheetNode('div','worksheet-anagram-row');
+   const mixed=worksheetNode('div','worksheet-anagram-letters');
+   for(const letter of word.mixed)mixed.append(worksheetNode('span','worksheet-anagram-letter',letter));
+   line.append(mixed,worksheetNode('div','worksheet-anagram-answer','Resposta: __________________'));
+   board.append(line);
+  }
+  content.append(board);
+ }else if(challenge.type==='analysis'){
+  const panel=worksheetNode('div','worksheet-analysis');
+  if(challenge.source){
+   panel.append(worksheetNode('strong','','Fato ou acontecimento para conferir na Bíblia:'),
+                worksheetNode('p','',challenge.source));
+  }
+  if(challenge.application){
+   panel.append(worksheetNode('strong','','Comparação com a vida de hoje:'),
+                worksheetNode('p','',challenge.application));
+  }
+  panel.append(worksheetNode('strong','','O que você concluiu?'));
+  for(let i=0;i<3;i++)panel.append(worksheetNode('div','worksheet-answer-line'));
+  content.append(panel);
  }else if(challenge.type==='fill'){
   content.append(worksheetNode('p','worksheet-fill','Banco de palavras: '+challenge.words.join(' / ')));
  }else if(challenge.type==='reflect'){
