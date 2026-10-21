@@ -160,6 +160,17 @@ collections.unshift(
  }
 );
 
+
+collections.unshift({
+ id:'criacao1',test:/CRIACAO|DEUS CRIOU|INICIO DE TUDO/,references:[/^GENESIS 1/],
+ theme:'A Criação e a Gratidão',words:['DEUS','LUZ','TERRA','AGUAS','AVES'],
+ choice:{q:'O que Deus criou no primeiro dia?',options:['A luz','As aves','Os peixes'],answer:0,ref:'Gênesis 1:3–5'},
+ fill:{text:'Deus disse: Haja ______.',answers:['LUZ'],ref:'Gênesis 1:3'},
+ match:{q:'Ligue cada dia ao acontecimento registrado.',pairs:[['Dia 1','Deus fez a luz'],['Dia 3','Deus fez surgir as plantas'],['Dia 5','Deus criou aves e seres aquáticos']],ref:'Gênesis 1:3–23'},
+ order:{q:'Coloque os acontecimentos em ordem.',items:['Deus criou a luz.','Deus fez surgir a terra seca e as plantas.','Deus criou os luminares.','Deus criou os seres aquáticos e as aves.'],ref:'Gênesis 1:1–23'},
+ talk:'O que na criação faz você admirar o poder e o cuidado de Deus?'
+});
+
 const choose=(data)=>{
  const title=norm(data.title),ref=norm(data.reference);
  return collections.find(x=>x.test.test(title)&&x.references.some(p=>p.test(ref)))||null;
