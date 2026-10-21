@@ -16,7 +16,7 @@ function matchesTheme(p,title,reference){
  const name=norm(title),r=norm(reference);
  if(!name&&!r)return false;
  if(p.id==='criacao-9'&&/\badao\b|\beva\b/.test(name))return false;
- const byName=p.aliases.some(alias=>name===norm(alias));
+ const byName=p.aliases.some(alias=>{const value=norm(alias);return name===value||(value.length>=13&&name.includes(value))});
  const byRef=p.books.some(b=>r===b||r.startsWith(b+' '));
  return byName||(!name&&byRef);
 }
