@@ -88,6 +88,7 @@ function fallbackStoryScript({reference,age,verses,firstVerse,lastVerse,interact
 }
 function generate({title,reference,age,verses,firstVerse=1,lastVerse=999}){
  const profile=editorialProfile(title,reference),topic=String(title||'').trim(),ref=String(reference||'').trim();
+ const pedagogy=window.MI_STUDY_PEDAGOGY?.create({title,reference:ref,age})||null;
  const list=verses.filter(v=>v.verse>=firstVerse&&v.verse<=lastVerse&&v.text);
  if(!list.length)throw Error('Nenhum versículo válido na passagem informada.');
  const group=ageGroup(age);
@@ -113,39 +114,35 @@ function generate({title,reference,age,verses,firstVerse=1,lastVerse=999}){
  const story1=narrated?.script||fallbackStoryScript({reference:ref,age,verses:list,firstVerse,lastVerse});
  const story2=interactive?.script||fallbackStoryScript({reference:ref,age,verses:list,firstVerse,lastVerse,interactive:true});
  const qa=window.MI_PRINTABLE_ACTIVITIES?.makeQuestionSets({title,reference:ref,age,verses:list,firstVerse,lastVerse})||{questions:['1. O que o texto bíblico diz?','1. Onde podemos encontrar a passagem?'],answerKey:['Conferir diretamente '+ref+'.','Ler '+ref+' na Bíblia Livre.']};
- const activity1=isLittle?
-   'Desenhe um acontecimento da história ou organize três figuras simples em ordem. O professor confere cada cena com o texto bíblico.':
-   isEarly?'Em grupo, organize cartões com os acontecimentos principais. Cada cartão precisa corresponder à passagem estudada.':
-   isTeen?'Prepare uma apresentação curta com três partes: o que a Bíblia diz, o que ela ensina e uma aplicação atual. Evite confundir opinião com texto bíblico.':
-    (profile?.activity||'Faça com a turma uma linha do tempo com os acontecimentos reais da passagem e confira a sequência na Bíblia.');
- const activity2=isLittle?'Brinquem de completar frases simples sobre a passagem. Depois, conversem sobre uma atitude boa para praticar.':
-   isEarly?'Prepare um cartaz com duas colunas: “Na Bíblia” e “Na Minha Vida”. Desenhe um fato em uma coluna e uma comparação atual na outra.':
-   isTeen?'Promova uma conversa orientada: o que a passagem afirma, como é interpretada e que decisões práticas ela pode inspirar hoje?':
-    'Em duplas, preparem um quadro com “Acontecimentos Bíblicos” e “Comparação Atual”. Cada dupla apresenta uma ligação fiel ao ensinamento.';
+ const firstVerseSnippet=String(list[0]?.text||'').replace(/\s+/g,' ').slice(0,180);
+ const fallbackActivities=[
+  'Leia a primeira frase do texto-base e peça às crianças que encontrem o nome de uma pessoa, lugar ou acontecimento: '+ref+'.',
+  'Peça que um aluno leia '+ref+' e que outro diga, com suas palavras, o fato ou ensinamento confirmado pela leitura.',
+  'Escreva uma palavra do texto no quadro e peça que os alunos encontrem o versículo correspondente: '+firstVerseSnippet,
+  'Escolha uma decisão ou ensinamento de '+ref+' e discuta qual detalhe está no texto e qual é apenas nossa aplicação atual.'
+ ];
+ const code=[...ref].reduce((n,c)=>(Math.imul(n,31)+c.charCodeAt(0))>>>0,0);
+ const fallbackFirst=fallbackActivities[code%fallbackActivities.length];
+ const fallbackSecond=fallbackActivities[(code+1)%fallbackActivities.length];
+ const activity1=pedagogy?.activityAlternatives?.[0]||profile?.activity||fallbackFirst;
+ const activity2=pedagogy?.activityAlternatives?.[1]||fallbackSecond;
  const agePractice=isLittle?'Converse com as crianças e escolha uma atitude simples para praticar com a família.':
    isEarly?'Convide cada criança a citar uma atitude de cuidado, respeito ou responsabilidade que pode praticar esta semana.':
    'Peça que as crianças expliquem a diferença entre o acontecimento bíblico e o exemplo atual, e escolham uma ação concreta para a semana.';
- const prayer1=isLittle?'Senhor Jesus, obrigado por Tua Palavra. Ajuda-nos a aprender e a fazer o que é bom. Amém.':
-   isTeen?'Senhor Deus, concede-nos sabedoria para compreender Tua Palavra, discernimento para tomar boas decisões e amor para servir ao próximo. Em nome de Jesus, amém.':
-   'Senhor Deus, obrigado pela Tua Palavra. Ajuda-nos a compreender '+ref+' e a praticar Seus ensinamentos com amor. Em nome de Jesus, amém.';
  return {
-  goal:[goal1,goal2],
+  goal:[pedagogy?.goal||goal1,goal2],
   context:[context1,context2],
   story:[story1,story2],
   application:[
-   (profile?.lesson||'O ensinamento da passagem merece ser colocado em prática.')+
+   (pedagogy?.teaching||profile?.lesson||'O ensinamento da passagem merece ser colocado em prática.')+
    '\n\nCOMPARAÇÃO ATUAL — NÃO FAZ PARTE DA HISTÓRIA BÍBLICA:\n'+analogy+
    '\n\n'+agePractice,
    'Vamos pensar no nosso dia a dia: '+analogy+
    '\n\nPergunte: “O que a Bíblia ensina? Como nossa escolha de hoje pode demonstrar que compreendemos?”'
   ],
-  questions:qa.questions,
-  answerKey:qa.answerKey,
+  questions:pedagogy?.questions||qa.questions,
+  answerKey:pedagogy?.answerKey||qa.answerKey,
   activity:[activity1,activity2],
-  prayer:[
-   prayer1,
-   'Senhor Jesus, ensina-nos a ouvir a Tua Palavra e a viver com amor, obediência e sabedoria. Guarda nossas crianças e nossa equipe. Amém.'
-  ],
   meta:{narrativeMode:narrated?'narrative':'guided',ageGroup:group,reference:ref}
  };
 }
