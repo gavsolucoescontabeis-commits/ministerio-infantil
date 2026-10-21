@@ -6,7 +6,7 @@ const norm=x=>txt(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase
 function el(tag,cls,value){const a=document.createElement(tag);if(cls)a.className=cls;if(value!==undefined)a.textContent=String(value);return a}
 function add(parent,...items){for(const item of items)if(item)parent.append(item);return parent}
 const p=s=>el('p','mi-ed-p',s);
-const panel=(name,body)=>add(el('section','mi-ed-panel'),el('h3','',name),p(body));
+const panel=(name,body)=>{const block=el('section','mi-ed-panel');const para=p(body);para.style.whiteSpace='pre-line';return add(block,el('h3','',name),para)};
 const answer=(n=3)=>{const a=el('div','mi-ed-lines');for(let i=0;i<n;i++)a.append(el('div','mi-ed-answer-line'));return a};
 function item(title,description,lines=2){return add(el('section','mi-ed-item'),el('h3','',title),p(description||''),answer(lines))}
 function choice(prompt,values,checkbox=false){const a=add(el('section','mi-ed-item'),el('h3','','Marque a resposta'),p(prompt));values.forEach((v,i)=>{const label=el('label','mi-ed-choice'),input=el('input');input.type=checkbox?'checkbox':'radio';input.name='ed-'+prompt.slice(0,24);input.value=String(i);add(label,input,el('span','',v));a.append(label)});return a}
@@ -86,12 +86,15 @@ function creationWorkbook(d,age){
   box.append(panel('Para guardar','Gênesis 1:1'))
  },'grupo'));
  return{pages,curated:true,teacher:[
- ['Objetivo','Compreender a ordem da criação e reconhecer poder, sabedoria, bondade e propósito do Criador.'],
- ['Abertura · 3 minutos','Pergunte: o que mais chama sua atenção na natureza? Leia Gênesis 1:1.'],
- ['História','Explique os seis dias na ordem da Bíblia e leia Gênesis 2:1–3 sobre o sétimo dia.'],
- ['Dinâmica · 2 minutos','“Criado ou construído?”: árvore, cadeira, peixe, casa, estrela e livro. Compare elementos naturais e construções humanas.'],
- ['Aplicação','Reflita sobre gratidão e cuidado. A situação da praça é uma aplicação moderna, não parte da narrativa bíblica.'],
- ['Missão para casa','Observe algo da criação, pratique um gesto de cuidado e compartilhe na próxima aula.']],
+ ['Objetivo da aula',txt(d.goal)||'Compreender a ordem da criação e reconhecer poder, sabedoria, bondade e propósito do Criador.'],
+ ['Abertura · 3 minutos','Pergunte: o que mais chama sua atenção na natureza? O que você acredita que a Bíblia diz sobre o início do mundo? Leia Gênesis 1:1 e ouça as respostas.'],
+ ['Contexto bíblico',txt(d.context)||'Gênesis abre as Escrituras apresentando Deus como Criador. No princípio, Deus criou os céus e a terra (Gênesis 1:1). A terra estava sem forma e vazia, e o Espírito de Deus pairava sobre as águas (Gênesis 1:2).'],
+ ['História bíblica — roteiro para ensinar',txt(d.story)||'DIA 1 — Deus disse: Haja luz. Separou luz e trevas (Gênesis 1:3–5).\n\nDIA 2 — Fez o firmamento, separando as águas (Gênesis 1:6–8).\n\nDIA 3 — Ajuntou as águas, apareceu a terra seca e fez brotar plantas e árvores (Gênesis 1:9–13).\n\nDIA 4 — Criou os luminares para marcar dias, estações e anos (Gênesis 1:14–19).\n\nDIA 5 — Criou os seres aquáticos e as aves (Gênesis 1:20–23).\n\nDIA 6 — Criou os animais terrestres e os seres humanos à sua imagem (Gênesis 1:24–31). Viu tudo quanto tinha feito, e era muito bom.\n\nDIA 7 — Concluiu a obra, descansou e abençoou o sétimo dia (Gênesis 2:1–3).'],
+ ['Perguntas para conversar',txt(d.questions)||'1. Em qual dia surgiu a luz? 2. O que distingue o primeiro e o quarto dias? 3. Em qual dia Deus criou os seres humanos? 4. O que significa cuidar da criação?'],
+ ['Dinâmica e atividade · 2 minutos',txt(d.activity)||'“Criado ou construído?”: árvore, cadeira, peixe, casa, estrela e livro. Compare elementos naturais com objetos construídos pelas pessoas com recursos da criação.'],
+ ['Aplicação prática',txt(d.application)||'A criação desperta gratidão e responsabilidade. Cuidar com respeito do que Deus criou é uma aplicação atual; a situação da praça não faz parte do relato de Gênesis.'],
+ ['Missão única para casa','Observe algo da criação, pratique um gesto de cuidado e compartilhe na próxima aula.'],
+ ['Oração',txt(d.prayer)||'Agradeça a Deus pela vida e peça sabedoria para cuidar da criação.']],
  answers:tiny?[
  'Primeiro dia: luz. Quinto dia: seres aquáticos e aves. Corrigir as respostas orais e os desenhos com Gênesis 1.'
  ]:[
@@ -144,7 +147,8 @@ function generalWorkbook(d,age){
   ['Objetivo',d.goal||'Compreender o ensinamento da passagem com fidelidade bíblica.'],
   ['Contexto',d.context||'Consultar o texto bíblico e seu contexto.'],
   ['História e explicação',d.story||'Leia a passagem integralmente com a turma.'],
-  ['Dinâmica · 2 minutos','Cada criança encontra uma palavra significativa na passagem e explica por que a escolheu.'],
+  ['Perguntas para conversar',d.questions||'Solicite que as crianças encontrem duas informações confirmadas na passagem.'],
+  ['Dinâmica e atividade · 2 minutos',d.activity||'Cada criança encontra uma palavra significativa na passagem e explica por que a escolheu.'],
   ['Aplicação',d.application||'Identifique uma aplicação atual fiel ao texto.'],
   ['Missão única para casa',mission],
   ['Oração',d.prayer||'Conclua com uma oração relacionada ao ensinamento.']
@@ -160,6 +164,23 @@ function buildPage(part,i,count){
  if(art)body.append(art);
  part.render(body);add(pageNode,head,body,el('footer','mi-ed-footer','MINISTÉRIO INFANTIL • 4ª IEQ CURITIBA  ·  '+current.reference));return pageNode
 }
+function editorialSheet(title,subtitle,rows,mark){
+ const sheet=el('article','mi-ed-page'+(mark?' '+mark:'')),head=el('header','mi-ed-page-head'),body=el('div','mi-ed-body');
+ add(head,el('small','','MINISTÉRIO INFANTIL · ESTUDOS'),el('h2','',title),p(subtitle||current.reference));
+ rows.forEach(([label,content])=>body.append(panel(label,content)));
+ add(sheet,head,body,el('footer','mi-ed-footer','4ª IEQ CURITIBA · '+current.title+' · '+current.reference));
+ return sheet;
+}
+function groupSections(rows,limit){
+ const groups=[];let chunk=[],used=0;
+ for(const row of rows){
+  const n=txt(row[1]).length+txt(row[0]).length;
+  if(chunk.length && (used+n>limit || chunk.length>=3)){groups.push(chunk);chunk=[];used=0}
+  chunk.push(row);used+=n
+ }
+ if(chunk.length)groups.push(chunk);
+ return groups.length?groups:[[ ['Orientações','Consulte e explique a passagem bíblica.'] ]];
+}
 function render(){
  const target=$('miEditorial');if(!target||!current||!book)return;
  target.replaceChildren();const frame=el('div','mi-ed-frame');
@@ -171,26 +192,24 @@ function render(){
  });frame.append(tabs);
  frame.append(p(book.curated?'Atividades organizadas para a passagem e a faixa etária.':'Sem roteiro específico revisado: atividades de pesquisa bíblica, sem inventar fatos.'));
  const stage=el('div','mi-ed-stage');
+ const teacherGroups=groupSections(book.teacher,1250);
+ const keyGroups=groupSections(book.answers.map((a,i)=>['Resposta '+(i+1),a]),1500);
+ const count=view==='student'?book.pages.length:view==='teacher'?teacherGroups.length:keyGroups.length;
+ index=Math.max(0,Math.min(index,count-1));
  if(view==='student'){
   book.pages.forEach((pg,i)=>{const result=buildPage(pg,i,book.pages.length);result.hidden=i!==index;stage.append(result)});
+ }else if(view==='teacher'){
+  teacherGroups.forEach((group,i)=>{const node=editorialSheet('Aula do professor','Roteiro '+(i+1)+' / '+teacherGroups.length,group,'mi-ed-teacher-sheet');node.hidden=i!==index;stage.append(node)});
+  keyGroups.forEach((group,i)=>{const node=editorialSheet('Gabarito exclusivo do professor','Respostas '+(i+1)+' / '+keyGroups.length,group,'mi-ed-print-key');node.hidden=true;stage.append(node)});
  }else{
-  const sheet=el('article','mi-ed-page'),head=el('header','mi-ed-page-head'),body=el('div','mi-ed-body');
-  head.append(el('h2','',view==='teacher'?'Aula do professor':'Gabarito exclusivo do professor'));
-  (view==='teacher'?book.teacher.map(a=>panel(a[0],a[1])):book.answers.map((a,i)=>panel('Resposta '+(i+1),a))).forEach(p=>body.append(p));
-  add(sheet,head,body);stage.append(sheet);
-  if(view==='teacher'){
-   const keySheet=el('article','mi-ed-page'),keyHead=el('header','mi-ed-page-head'),keyBody=el('div','mi-ed-body');
-   keyHead.append(el('h2','','Gabarito — somente professor'));
-   book.answers.forEach((x,i)=>keyBody.append(panel('Resposta '+(i+1),x)));
-   keySheet.append(keyHead,keyBody);stage.append(keySheet);
-  }
+  keyGroups.forEach((group,i)=>{const node=editorialSheet('Gabarito exclusivo do professor','Respostas '+(i+1)+' / '+keyGroups.length,group,'mi-ed-key-sheet');node.hidden=i!==index;stage.append(node)});
  }
  frame.append(stage);
  const nav=el('div','mi-ed-navigation');
  const prev=el('button','','← Anterior'),next=el('button','','Próxima →');
- prev.disabled=view!=='student'||index===0;next.disabled=view!=='student'||index===book.pages.length-1;
- prev.onclick=()=>{index=Math.max(0,index-1);render()};next.onclick=()=>{index=Math.min(book.pages.length-1,index+1);render()};
- add(nav,prev,el('strong','',view==='student'?(index+1)+' / '+book.pages.length:(view==='teacher'?'Roteiro de aula':'Uso do professor')),next);frame.append(nav);target.append(frame)
+ prev.disabled=index===0;next.disabled=index===count-1;
+ prev.onclick=()=>{index=Math.max(0,index-1);render()};next.onclick=()=>{index=Math.min(count-1,index+1);render()};
+ add(nav,prev,el('strong','',(index+1)+' / '+count),next);frame.append(nav);target.append(frame)
 }
 function mount(data){
  if(!data||!$('miEditorial'))return false;
@@ -199,5 +218,5 @@ function mount(data){
 }
 function beforePrint(kind){if(!book)return;const host=$('miEditorial');host.dataset.restoreView=view;host.dataset.restoreIndex=String(index);view=kind==='teacher'?'teacher':'student';index=0;render()}
 function afterPrint(){const host=$('miEditorial');if(!host)return;view=host.dataset.restoreView||'student';index=Number(host.dataset.restoreIndex||0);render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'65.0'});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'65.1'});
 })();
