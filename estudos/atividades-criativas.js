@@ -104,7 +104,7 @@ const hash=s=>{let n=2166136261;for(const c of String(s)){n^=c.charCodeAt(0);n=M
 const cellWords=(words,seed)=>{
  const sorted=[...new Set(words.map(w=>norm(w).replace(/\s/g,'')).filter(w=>w.length>=3&&w.length<=10))].slice(0,5);
  const N=11,grid=Array.from({length:N},()=>Array(N).fill('')),placed=[],locations=[];
- let v=seed>>>0;const roll=m=>{v=(Math.imul(v,1664525)+1013904223)>>>0;return v%m};
+ let v=(seed>>>0)||0x9e3779b9;const roll=m=>{v^=v<<13;v^=v>>>17;v^=v<<5;return (v>>>0)%m};
  for(const word of sorted){
   let found=false;
   for(let tries=0;tries<180&&!found;tries++){
@@ -114,7 +114,7 @@ const cellWords=(words,seed)=>{
    if([...chars].every((c,i)=>{const rr=row+(vertical?i:0),cc=col+(vertical?0:i);return !grid[rr][cc]||grid[rr][cc]===c})){
     [...chars].forEach((c,i)=>{grid[row+(vertical?i:0)][col+(vertical?0:i)]=c});
     placed.push(word);
-    locations.push(word+': linha '+(row+1)+', coluna '+(col+1)+' ('+(vertical?(reverse?'para cima ↑':'para baixo ↓'):(reverse?'para a esquerda ←':'para a direita →'))+').');
+    locations.push(word+': linha '+(row+(vertical&&reverse?word.length-1:0)+1)+', coluna '+(col+(!vertical&&reverse?word.length-1:0)+1)+' ('+(vertical?(reverse?'para cima ↑':'para baixo ↓'):(reverse?'para a esquerda ←':'para a direita →'))+').');
     found=true;
    }
   }
