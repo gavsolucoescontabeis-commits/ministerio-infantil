@@ -161,9 +161,12 @@ function activitySheet(data){
   add({type:'reflect',title:'Minha Missão',prompt:'Escreva ou desenhe uma atitude de cuidado que combina com o que você aprendeu.'},'Resposta pessoal. O professor verifica a relação com o texto estudado.');
  }
  // Para pequenos, priorizar tarefas curtas e desenho, sem sobrecarregar.
- const selected=little?exercises.filter(x=>['choice','fill','reflect'].includes(x.type)).slice(0,3):
-   early?exercises.filter(x=>['choice','fill','match','sequence','reflect'].includes(x.type)).slice(0,4):
-   exercises.filter(x=>['match','sequence','wordsearch','choice','reflect'].includes(x.type)).slice(0,4);
+ const kinds=little?['choice','fill','reflect']:
+  early?['choice','fill','match','reflect']:
+  ['match','sequence','wordsearch','reflect'];
+ const selected=kinds.map(kind=>exercises.find(x=>x.type===kind)).filter(Boolean);
+ // Assuntos sem um bloco temático ainda recebem reflexão e um passatempo seguro.
+ if(!selected.length)selected.push(...exercises.slice(0,3));
  const selectedTitles=new Set(selected.map(x=>x.title));
  return {theme:item?.theme||'Exploradores da Palavra',ageGroup:age,exercises:selected,answerKey:answers.filter(x=>selectedTitles.has(x.title)),curated:!!item,reference:data.reference};
 }
