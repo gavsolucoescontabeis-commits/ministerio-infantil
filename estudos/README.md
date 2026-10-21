@@ -45,6 +45,16 @@ Módulo **integrado ao aplicativo oficial** pela aba **Estudos**, dentro do menu
 - **Correção bíblica:** Davi e Golias agora é representado por uma funda e pedras, em vez de coroa. As ilustrações são simbólicas, voltadas ao ensino e à pintura.
 - A rotina de áudio/voz **não foi alterada** nesta melhoria. Mantida a pendência da voz Daniel, conforme solicitado pelo usuário.
 
+## Revista da Palavra — Novo Padrão de Qualidade
+
+- **Caderno Bíblico próprio:** visual original com desenhos vetoriais temáticos (sementes, Jonas, Ester, convite para festa, samaritano, poço, Davi, arca e amor), sem copiar as páginas ou ilustrações de referência. Quando o assunto não possui figura contextualizada, o sistema usa a Bíblia aberta como ilustração neutra.
+- **Primeira página — Atividade:** título, tema, faixa etária, nome e data, arte ilustrada colorida ou contorno para colorir na impressão econômica, exercícios e espaço de desenho. Os dados da aula permanecem iguais aos da preparação salva.
+- **Segunda página opcional — Tempo com Deus:** sete pequenas propostas (domingo a sábado), referência da passagem, uma missão prática vinculada ao tema e espaço para anotar o versículo da semana. Os desafios variam entre pré-escola, crianças maiores e adolescentes; **não inventam versículos**.
+- **Controle de impressão:** seleção Colorida / Econômica e marcação **Incluir Tempo com Deus (2ª página)**. O gabarito e as orientações continuam exclusivos da impressão do professor. A folha semanal é omitida quando o professor desmarcar a opção.
+- **Atividades por idade mais distintas:** crianças pequenas recebem desenho, escolhas simples, completar palavras e labirintos; 7–8 anos recebem ligação e observação; 9 anos recebem sequência e caça-palavras; 10–12 anos recebem palavras embaralhadas; adolescentes recebem análise do que é fato do texto bíblico e do que é aplicação atual.
+- **Compatibilidade:** mantidos os rascunhos locais, a importação/exportação JSON, os botões de impressão, o visualizador das aulas e as permissões existentes. **Não foi alterado o áudio ou a voz Daniel**.
+- **Revisão antes de impressão:** confira a referência bíblica, a adequação à idade e a pré-visualização de impressão do navegador. A diagramação usa folhas A4 e evita a quebra dos cartões de atividades ao meio.
+
 ## Dados e privacidade
 - Os rascunhos de aula permanecem em **localStorage deste navegador**; não são sincronizados com Supabase. Em outro dispositivo, é necessário importar o arquivo de backup. Isso é informado diretamente na tela.
 - O módulo não consulta nem transmite dados pessoais de crianças ou professores.
