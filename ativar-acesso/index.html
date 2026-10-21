@@ -45,17 +45,39 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const supabase=createClient("https://jthxnjvqmvtydyfuqcct.supabase.co","sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs",{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:true}});
 const intro=document.getElementById("intro"),box=document.getElementById("formBox"),success=document.getElementById("successBox"),status=document.getElementById("status"),form=document.getElementById("passwordForm");
 function fail(msg){intro.textContent="Não foi possível validar este link.";box.hidden=true;status.className="err";status.textContent=msg+" Se o link expirou, peça à coordenação para reenviar o e-mail de criação da senha."}
+let authReady=false;
+function showForm(){authReady=true;intro.textContent="";box.hidden=false;status.textContent="";status.className=""}
 async function showIfSession(){
- const {data:{session}}=await supabase.auth.getSession();
- if(session){intro.textContent="";box.hidden=false;status.textContent="";return true}
+ const {data:{session},error}=await supabase.auth.getSession();
+ if(!error&&session){showForm();return true}
  return false;
 }
-supabase.auth.onAuthStateChange(async(event,session)=>{
- if((event==="PASSWORD_RECOVERY"||event==="SIGNED_IN")&&session){intro.textContent="";box.hidden=false;status.textContent=""}
+supabase.auth.onAuthStateChange((event,session)=>{
+ if((event==="PASSWORD_RECOVERY"||event==="SIGNED_IN")&&session)showForm();
 });
-const params=new URLSearchParams(location.search);
-if(params.get("error_description"))fail(decodeURIComponent(params.get("error_description")));
-else setTimeout(async()=>{if(!(await showIfSession()))fail("O link é inválido ou já expirou.")},700);
+async function startRecovery(){
+ const query=new URLSearchParams(location.search);
+ const fragment=new URLSearchParams(location.hash.slice(1));
+ const reported=query.get("error_description")||fragment.get("error_description");
+ if(reported){fail("O link foi recusado pelo serviço de autenticação: "+reported.slice(0,160));return}
+ const tokenHash=query.get("token_hash");
+ const type=query.get("type");
+ if(tokenHash&&type==="recovery"){
+  const {data,error}=await supabase.auth.verifyOtp({token_hash:tokenHash,type:"recovery"});
+  if(error){fail("Não foi possível confirmar o código de recuperação.");return}
+  if(data.session){showForm();return}
+ }
+ const code=query.get("code");
+ if(code){
+  const {data,error}=await supabase.auth.exchangeCodeForSession(code);
+  if(error){fail("Não foi possível validar o código de acesso.");return}
+  if(data.session){showForm();return}
+ }
+ if(await showIfSession())return;
+ await new Promise(resolve=>setTimeout(resolve,1800));
+ if(!authReady&&!(await showIfSession()))fail("Não foi encontrada uma sessão de recuperação válida.");
+}
+startRecovery();
 form.addEventListener("submit",async e=>{
  e.preventDefault();status.className="";status.textContent="";
  const a=document.getElementById("password").value,b=document.getElementById("confirm").value;
