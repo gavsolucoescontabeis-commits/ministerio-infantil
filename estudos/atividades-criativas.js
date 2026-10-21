@@ -139,6 +139,14 @@ function makeMaze(seed,size=7){
  const path=walk(0,-1,[]);
  return {size:n,cells,path,answer:'Caminho do Labirinto: '+path.map((p,i)=>(i+1)+'. linha '+(Math.floor(p/n)+1)+', coluna '+(p%n+1)).join(' → ')+'.'};
 }
+function scrambleWord(word,seed){
+ const chars=[...norm(word).replace(/[^A-Z]/g,'')];
+ if(chars.length<4)return chars.join('');
+ let output=seededShuffle(chars,seed).join('');
+ if(output===chars.join(''))output=chars.slice(1).concat(chars[0]).join('');
+ if(output===chars.join(''))output=[...chars].reverse().join('');
+ return output;
+}
 function activitySheet(data){
  const item=choose(data);
  const age=window.MI_LESSON_STORYTELLING?.ageGroup(data.age)||'middle';
@@ -171,6 +179,17 @@ function activitySheet(data){
    const puzzle=cellWords(item.words,seed);
    if(puzzle.words.length>=3)add({type:'wordsearch',title:'Caça-Palavras Bíblico',prompt:'Encontre as palavras ligadas ao tema.',grid:puzzle.grid,words:puzzle.words},puzzle.answer);
   }
+  if(older){
+   const words=item.words.slice(0,4).map(word=>({answer:norm(word).replace(/[^A-Z]/g,''),mixed:scrambleWord(word,seed+hash(word))})).filter(x=>x.answer.length>=4);
+   if(words.length)add({type:'anagram',title:'Palavras Embaralhadas',prompt:'Descubra as palavras relacionadas à passagem. Escreva cada palavra na linha correspondente.',words},
+     'Respostas: '+words.map(x=>x.mixed+' → '+x.answer).join('; ')+'. Palavras do tema da aula.');
+  }
+  if(age==='teen'){
+   const reported=item.order?.items?.[0]||null;
+   const q='Qual a diferença entre o que o texto realmente relata e uma aplicação atual?';
+   add({type:'analysis',title:'Investigação Bíblica',prompt:q,source:reported,application:item.talk,reference:data.reference},
+    (reported?'Acontecimento conferível: '+reported+' ':'Confira a passagem antes de definir os fatos. ')+'A aplicação é uma reflexão para o presente, não algo ocorrido na narrativa. Base: '+data.reference+'.');
+  }
   if(little||early){const maze=makeMaze(seed,little?6:7);add({type:'maze',title:'Labirinto da Descoberta',prompt:'Encontre o caminho da estrela até a Bíblia. Passe o lápis pelo percurso.',maze},maze.answer)}
   add({type:'reflect',title:older?'Missão da Semana':'Minha Escolha de Hoje',prompt:item.talk},'Resposta pessoal. A aplicação deve respeitar o ensinamento da passagem.');
  }else{
@@ -185,13 +204,21 @@ function activitySheet(data){
    'Ordem: 1. Abrir e ler a passagem bíblica. 2. Compreender o que o texto ensina. 3. Escolher uma atitude para praticar.');
   const puzzle=cellWords(words,seed);
   if(!little)add({type:'wordsearch',title:'Palavras do Nosso Tema',prompt:'Encontre palavras do título da aula e do estudo da Bíblia. Este é um jogo de palavras, não uma lista de fatos da história.',grid:puzzle.grid,words:puzzle.words},puzzle.answer);
+  if(older){
+   const scrambled=words.filter(w=>w.length>=4).slice(0,4).map(w=>({answer:w,mixed:scrambleWord(w,seed+hash(w))}));
+   add({type:'anagram',title:'Palavras Embaralhadas',prompt:'Reorganize as letras para descobrir as palavras do tema.',words:scrambled},'Soluções: '+scrambled.map(x=>x.mixed+' → '+x.answer).join('; ')+'.');
+  }
+  if(age==='teen')add({type:'analysis',title:'Investigação Bíblica',prompt:'O que a passagem afirma e o que é apenas uma aplicação atual?',source:null,reference:data.reference},
+   'Conferir '+data.reference+'. Separe os fatos ou ensinamentos registrados de uma reflexão atual escolhida pelo grupo.');
   if(little||early){const maze=makeMaze(seed,little?6:7);add({type:'maze',title:'Labirinto da Descoberta',prompt:'Siga o caminho da estrela até a Bíblia. O jogo é uma ilustração, não um fato bíblico.',maze},maze.answer)}
   add({type:'reflect',title:'Minha Missão',prompt:'Leia '+data.reference+' com seu professor. Escreva ou desenhe uma atitude que combina com o que você aprendeu.'},'Resposta pessoal. O professor verifica a relação com o texto estudado.');
  }
  // Para pequenos, priorizar tarefas curtas e desenho, sem sobrecarregar.
  const kinds=little?['choice','fill','maze','reflect']:
   early?['choice','fill','match','maze','reflect']:
-  ['match','sequence','wordsearch','reflect'];
+  age==='middle'?['match','sequence','wordsearch','reflect']:
+  age==='older'?['sequence','wordsearch','anagram','reflect']:
+  ['sequence','anagram','analysis','reflect'];
  const selected=kinds.map(kind=>exercises.find(x=>x.type===kind)).filter(Boolean);
  // Assuntos sem um bloco temático ainda recebem reflexão e um passatempo seguro.
  if(!selected.length)selected.push(...exercises.slice(0,3));
