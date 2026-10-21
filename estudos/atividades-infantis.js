@@ -74,8 +74,38 @@ function worksheetFor(data){
  'Dê um exemplo atual e explique por que ele não é um fato do relato bíblico.',
  'Desenhe uma atitude inspirada no ensinamento.'
  ];
+
+ // Exercícios vinculados ao tema: as alternativas e respostas são conferíveis.
+ const topic=norm(data.title),artKind=artworkFor(data).kind;
+ const taskBank={
+  soil:{small:'CIRCULE A RESPOSTA: EM QUAL TERRA A SEMENTE CRESCEU E DEU FRUTO? CAMINHO / ESPINHOS / TERRA BOA.',
+   older:'O QUE JESUS EXPLICOU SOBRE A SEMENTE E A BOA TERRA?',answer:'A semente representa a Palavra. A boa terra representa quem ouve e a recebe, produzindo fruto. Conferir Mateus 13:18-23, Marcos 4:14-20 ou Lucas 8:11-15 conforme a passagem.'},
+  fish:{small:'CIRCULE A RESPOSTA: QUEM FOI ENGOLIDO PELO GRANDE PEIXE? JONAS / NOÉ / ZAQUEU.',
+   older:'O QUE APRENDEMOS SOBRE A RESPOSTA DE JONAS À ORDEM DE DEUS?',answer:'Jonas tentou fugir da missão; depois orou ao Senhor e foi chamado novamente a ir a Nínive. Conferir o capítulo de Jonas selecionado.'},
+  ark:{small:'CIRCULE A RESPOSTA: QUEM CONSTRUIU A ARCA? NOÉ / DAVI / PEDRO.',
+   older:'QUAL FOI A ATITUDE DE NOÉ DIANTE DAS INSTRUÇÕES DO SENHOR?',answer:'Noé cumpriu as orientações de Deus. Conferir Gênesis 6:22 e contexto da passagem escolhida.'},
+  sheep:{small:'CIRCULE A RESPOSTA: JESUS É O BOM... PASTOR / BARQUEIRO / REI DA FLORESTA.',
+   older:'COMO JESUS DESCREVE A RELAÇÃO DO BOM PASTOR COM SUAS OVELHAS?',answer:'Jesus Se apresenta como o Bom Pastor que conhece as ovelhas e dá a vida por elas (João 10:11-18).'},
+  bread:{small:'CIRCULE A RESPOSTA: O QUE JESUS MULTIPLICOU? PÃES E PEIXES / PEDRAS / SAPATOS.',
+   older:'O QUE JESUS FEZ ANTES DE DISTRIBUIR O ALIMENTO?',answer:'Jesus deu graças antes da distribuição dos alimentos (João 6:11).'},
+  jar:{small:'CIRCULE A RESPOSTA: EM CANÁ, JESUS TRANSFORMOU ÁGUA EM... VINHO / AREIA / PÃO.',
+   older:'O QUE JOÃO DISSE QUE JESUS MANIFESTOU COM ESSE PRIMEIRO SINAL?',answer:'João 2:11 declara que Jesus manifestou Sua glória e Seus discípulos creram nele.'},
+  boat:{small:'OBSERVE O BARCO. PINTE E CONVERSE SOBRE QUEM NOS ENSINA A CONFIAR EM DEUS.',
+   older:'O QUE O RELATO ENSINA SOBRE A PRESENÇA E A AUTORIDADE DE DEUS?',answer:'Conferir a passagem escolhida. Os relatos de tempestade, travessia e caminhada sobre águas são acontecimentos diferentes e não devem ser misturados.'},
+  tree:{small:'PINTE A ÁRVORE. CONTE AO PROFESSOR O QUE ACONTECEU NA HISTÓRIA.',
+   older:'O QUE O TEXTO CONTA SOBRE A ÁRVORE OU A PLANTA CITADA?',answer:'Conferir a passagem: Zaqueu e a videira são temas diferentes; as respostas dependem da referência escolhida.'},
+  crown:{small:'PINTE A COROA. CONVERSE COM O PROFESSOR SOBRE A CORAGEM E A SABEDORIA.',
+   older:'QUAIS ATITUDES OU DECISÕES DOS PERSONAGENS APARECEM NO TEXTO?',answer:'Conferir a narrativa bíblica selecionada. A coroa é apenas uma figura de apoio.'},
+  heart:{small:'PINTE O CORAÇÃO. COMPLETE: DEUS NOS ENSINA A __________.',
+   older:'QUAL ATITUDE DE AMOR OU PERDÃO VOCÊ CONSEGUE JUSTIFICAR PELA PASSAGEM?',answer:'Resposta pessoal com fundamento na passagem. O professor deve conferir as palavras do texto.'}
+ };
+ const special=taskBank[artKind];
+ if(special){
+  const exercise=(small||early)?special.small:special.older;
+  prompts.splice(1,1,exercise);
+ }
  const scene=storyAPI()?.storyFor(data.title,data.reference)?.scenes?.[0];
- const teacherHint=scene?'Confira a passagem '+data.reference+'. Início do relato: '+scene[3]:'Leia '+data.reference+' para verificar as respostas. O desenho é simbólico e não acrescenta fatos ao texto.';
+ const teacherHint=(scene?'Confira a passagem '+data.reference+'. Início do relato: '+scene[3]:'Leia '+data.reference+' para verificar as respostas. O desenho é simbólico e não acrescenta fatos ao texto.')+(special?'\nResposta Orientadora do Exercício: '+special.answer:'');
  return {title:String(data.title||''),reference:String(data.reference||''),age:String(data.age||''),prompts,artwork:artworkFor(data),teacherHint,group};
 }
 window.MI_PRINTABLE_ACTIVITIES=Object.freeze({makeQuestionSets,worksheetFor,artworkFor});
