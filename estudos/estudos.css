@@ -323,3 +323,27 @@
  body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"] *{background-color:transparent!important;color:#222!important;text-shadow:none!important}
  body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"] .worksheet-art path,body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"] .worksheet-art circle{stroke:#222!important;fill:none!important}
 }
+
+/* Grade editorial: mais atividades por folha, mantendo leitura confortável. */
+.worksheet-exercises{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:13px;row-gap:10px;align-items:start}
+.worksheet-exercises .worksheet-challenge{min-width:0;margin:0}
+.worksheet-exercises .worksheet-wordsearch{grid-column:span 1}
+.worksheet-wordsearch-grid{max-width:100%}
+.worksheet-exercises .worksheet-choice-options{grid-template-columns:1fr}
+.worksheet-exercises .worksheet-match{column-gap:9px}
+.worksheet-exercises .worksheet-match-entry{font-size:10px}
+.worksheet-exercises .worksheet-challenge-prompt{min-height:2.6em}
+@media(max-width:610px){
+ .worksheet-exercises{grid-template-columns:minmax(0,1fr)}
+ .worksheet-exercises .worksheet-challenge-prompt{min-height:0}
+ .worksheet-exercises .worksheet-wordsearch{grid-column:auto}
+}
+@media print{
+ body[data-mi-print="student"] .worksheet-exercises{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:10px!important;row-gap:8px!important;align-items:start!important}
+ body[data-mi-print="student"] .worksheet-exercises .worksheet-challenge{padding:8px!important;margin:0!important}
+ body[data-mi-print="student"] .worksheet-exercises .worksheet-challenge-title h3{font-size:10pt!important}
+ body[data-mi-print="student"] .worksheet-exercises .worksheet-wordsearch-grid{max-width:100%!important}
+ body[data-mi-print="student"] .worksheet-exercises .worksheet-letter{height:18px!important;font-size:8pt!important}
+ body[data-mi-print="student"] .worksheet-exercises .worksheet-match-entry{font-size:9pt!important}
+ body[data-mi-print="student"] .worksheet-exercises .worksheet-choice{min-height:27px!important;padding:5px!important;font-size:9pt!important}
+}
