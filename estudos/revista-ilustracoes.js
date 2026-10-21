@@ -12,6 +12,10 @@ const profiles=[
  {match:/no[eé]|arca/,ref:/^G[eê]nesis [6789]\b/i,art:'ark',theme:'Cuidado e Obediência',mission:'Conclua com atenção uma tarefa importante.'},
  {match:/amor|perd[aã]o|fam[ií]lia/,ref:/^(Jo[aã]o|1 Jo[aã]o|Romanos|Marcos|Mateus)\b/i,art:'heart',theme:'Espalhando o Amor',mission:'Faça um gesto de bondade e gratidão.'}
 ];
+profiles.push(
+ {match:/corn[eé]lio|pedro e corn[eé]lio/,ref:/^Atos 10\b/i,art:'people',theme:'A Boa Notícia é para Todos',mission:'Trate com respeito e amor pessoas de origens diferentes.'},
+ {match:/filipe|et[ií]ope|eti[oó]pia|oficial da rainha/,ref:/^Atos 8\b/i,art:'chariot',theme:'Uma Conversa no Caminho',mission:'Converse com alguém sobre a passagem e escute as perguntas dessa pessoa.'}
+);
 const profile=data=>profiles.find(p=>p.match.test(norm(data.title))&&p.ref.test(String(data.reference||'')))||null;
 const common='<defs><linearGradient id="miSky" x2="0" y2="1"><stop stop-color="#e7f6ff"/><stop offset="1" stop-color="#fff5d6"/></linearGradient></defs>'+
 '<rect x="0" y="0" width="800" height="220" rx="27" fill="url(#miSky)"/>'+
@@ -66,6 +70,8 @@ const symbols={
  '<path d="M3 97q-39-27-18-50q17-17 35 7 19-24 36-7 21 23-18 50L20 114Z" fill="#ffe08d" stroke="#d7a65a" stroke-width="5"/>'+
  '<path d="M297 112q-34-23-16-46q19-16 36 6 18-22 37-6q18 23-16 46l-21 16Z" fill="#a5dbbc" stroke="#6bb395" stroke-width="5"/></g>'
 };
+symbols.people='<g transform="translate(215 8)"><g fill="#f8c999" stroke="#a47859" stroke-width="5"><circle cx="91" cy="82" r="42"/><circle cx="214" cy="71" r="43"/><circle cx="333" cy="84" r="41"/></g><path d="M31 186q0-70 60-70t60 70" fill="#92d6ae" stroke="#4c9d78" stroke-width="7"/><path d="M150 188q0-81 64-81t64 81" fill="#efb978" stroke="#bd804f" stroke-width="7"/><path d="M272 188q0-70 61-70t61 70" fill="#a8cfe2" stroke="#6998ac" stroke-width="7"/><g fill="#574539"><circle cx="78" cy="82" r="4"/><circle cx="106" cy="82" r="4"/><circle cx="201" cy="71" r="4"/><circle cx="227" cy="71" r="4"/><circle cx="320" cy="84" r="4"/><circle cx="346" cy="84" r="4"/></g></g>';
+symbols.chariot='<g transform="translate(159 10)"><path d="M60 102h488l-39 54H99Z" fill="#d6a273" stroke="#956948" stroke-width="7"/><path d="M120 100V36h345v66M114 36q170-45 358 0" fill="none" stroke="#956948" stroke-width="10"/><g fill="#f0d0a1" stroke="#95724d" stroke-width="7"><circle cx="154" cy="164" r="39"/><circle cx="448" cy="164" r="39"/></g><g fill="none" stroke="#96774f" stroke-width="6"><path d="M115 164h78m-39-39v78M409 164h78m-39-39v78"/></g></g>';
 function svgFor(data){
  const kind=profile(data)?.art;
  return '<svg class="magazine-scene" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 220" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Ilustração simbólica original relacionada ao tema, não necessariamente uma cena bíblica.">'+common+(symbols[kind]||baseBook)+'</svg>';
