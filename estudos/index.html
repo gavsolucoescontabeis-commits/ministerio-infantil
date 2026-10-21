@@ -7,10 +7,11 @@
   <meta name="description" content="Estudos bíblicos, leitura, devocionais e preparação de aulas para o Ministério Infantil da 4ª IEQ Curitiba.">
   <title>Estudos • Ministério Infantil – 4ª IEQ</title>
   <link rel="icon" type="image/svg+xml" href="./logo-ministerio.svg">
-  <link rel="stylesheet" href="./estudos.css?v=10">
+  <link rel="stylesheet" href="./estudos.css?v=11">
   <script src="./temas.js?v=2" defer></script>
   <script src="./historia-roteiros.js?v=3" defer></script>
-  <script src="./sugestoes-aula.js?v=4" defer></script><script src="./estudos.js?v=11" defer></script>
+  <script src="./atividades-infantis.js?v=1" defer></script>
+  <script src="./sugestoes-aula.js?v=5" defer></script><script src="./estudos.js?v=12" defer></script>
 </head>
 <body>
   <div class="workspace">
@@ -122,7 +123,7 @@
               </div>
               <div class="form-part"><h3>03. Aplicação e Participação</h3>
                 <label for="lessonApplication">Aplicação Prática para as Crianças</label><textarea id="lessonApplication" rows="3" placeholder="Como essa passagem se relaciona com o dia a dia das crianças?"></textarea>
-                <label for="lessonQuestions">Perguntas para Conversar</label><textarea id="lessonQuestions" rows="3" placeholder="Perguntas relacionadas aos fatos e ao ensino da passagem."></textarea>
+                <label for="lessonQuestions">Perguntas para Conversar</label><textarea id="lessonQuestions" rows="3" placeholder="Perguntas relacionadas aos fatos e ao ensino da passagem."></textarea><label for="lessonAnswers">Gabarito do Professor — Respostas e Referências Bíblicas</label><textarea id="lessonAnswers" rows="4" placeholder="Respostas das perguntas, com referências para conferência. O gabarito não aparece na atividade da criança."></textarea><p class="answer-key-note">Ao escolher uma opção de perguntas, o gabarito correspondente será preenchido automaticamente. Se editar as perguntas manualmente, confira e atualize as respostas.</p>
                 <label for="lessonActivity">Atividade / Dinâmica / Ilustração</label><textarea id="lessonActivity" rows="3" placeholder="Sugestões para ajudar a compreender e lembrar da lição."></textarea>
                 <label for="lessonPrayer">Encerramento e Oração</label><textarea id="lessonPrayer" rows="2" placeholder="Como concluir a aula e orar com as crianças?"></textarea>
               </div>
@@ -145,15 +146,26 @@
           <div class="ready-actions">
             <button type="button" class="outline-btn" id="readyEditLesson">← Voltar e Editar</button>
             <button type="button" class="soft-btn" id="readySavedLessons">Minhas Aulas</button>
-            <button type="button" class="primary-btn" id="readyPrintLesson">Imprimir / Salvar em PDF</button>
+            <button type="button" class="soft-btn" id="readyPrintWorksheet">Imprimir Atividade das Crianças</button><button type="button" class="primary-btn" id="readyPrintLesson">Imprimir Aula do Professor</button>
           </div>
           <article class="ready-sheet card" id="readyLessonSheet" aria-label="Aula formatada para impressão">
             <div class="ready-logo"><img src="./logo-ministerio.svg" alt="Ministério Infantil – 4ª IEQ Curitiba"></div>
             <div class="ready-head"><div class="eyebrow">MINISTÉRIO INFANTIL • 4ª IEQ CURITIBA</div><h2 id="readyLessonTitle"></h2><div class="ready-meta" id="readyLessonMeta"></div></div>
-            <div id="readyLessonSections"></div>
+            <div id="readyLessonSections"></div><section class="ready-section ready-answer-key" id="readyAnswersSection" hidden><h3>Gabarito do Professor — Respostas</h3><div class="ready-section-text" id="readyAnswersText"></div><p class="answer-privacy">Uso do professor. Não entregar esta página junto à atividade da criança.</p></section><section class="ready-section ready-worksheet-advice" id="readyWorksheetAdvice" hidden><h3>Orientações para a Atividade das Crianças</h3><div class="ready-section-text" id="readyWorksheetTeacherHint"></div></section>
             <footer class="ready-credits">Texto bíblico: Bíblia Livre (BLIVRE), Diego Santos, Mario Sérgio e Marco Teles. Licença <a href="https://creativecommons.org/licenses/by/3.0/br/" target="_blank" rel="noopener noreferrer">CC BY 3.0 Brasil</a>. Verifique as referências e os fatos bíblicos antes da aula.</footer>
           </article>
-          <div class="ready-actions ready-bottom-actions"><button type="button" class="outline-btn" id="readyEditLessonBottom">Editar Aula</button><button type="button" class="primary-btn" id="readyPrintLessonBottom">Imprimir / Salvar em PDF</button></div>
+
+          <div class="worksheet-preview-heading"><h2>Atividade para as Crianças</h2><p>Ficha ilustrada, com espaço para escrever, colorir e desenhar. O gabarito do professor não é impresso nesta ficha.</p></div>
+          <article class="card worksheet-sheet" id="readyWorksheetSheet" aria-label="Atividade ilustrada para as crianças">
+            <div class="worksheet-brand"><strong>MINISTÉRIO INFANTIL • 4ª IEQ CURITIBA</strong><span>ATIVIDADE BÍBLICA</span></div>
+            <h2 id="worksheetTitle"></h2><p class="worksheet-reference" id="worksheetReference"></p>
+            <div class="worksheet-identification"><span>Nome: _____________________________________</span><span>Data: ____ / ____ / ______</span></div>
+            <div class="worksheet-illustration" id="worksheetArt"></div>
+            <div class="worksheet-tasks" id="worksheetTasks"></div>
+            <div class="worksheet-drawing" aria-label="Espaço em branco para desenhar"><strong>Espaço para Meu Desenho</strong><div class="worksheet-drawing-space"></div></div>
+            <footer class="worksheet-footer">Bíblia Livre (BLIVRE) • Diego Santos, Mario Sérgio e Marco Teles • CC BY 3.0 Brasil.</footer>
+          </article>
+          <div class="ready-actions ready-bottom-actions"><button type="button" class="outline-btn" id="readyEditLessonBottom">Editar Aula</button><button type="button" class="soft-btn" id="readyPrintWorksheetBottom">Imprimir Atividade das Crianças</button><button type="button" class="primary-btn" id="readyPrintLessonBottom">Imprimir Aula do Professor</button></div>
         </section>
 
         <section class="page" id="view-acervo">
