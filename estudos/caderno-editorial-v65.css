@@ -1,0 +1,85 @@
+/* V65 • Caderno Bíblico editorial — isolamento total do módulo Estudos. */
+#miEditorial{margin:18px 0 24px;color:#273f51}
+body.mi-editorial-ready #readyLessonSheet,
+body.mi-editorial-ready .worksheet-preview-heading,
+body.mi-editorial-ready #readyWorksheetSheet,
+body.mi-editorial-ready #readyWeeklySheet{display:none!important}
+.mi-ed-frame{background:#fff;border:1px solid #dbe4ea;border-radius:17px;overflow:hidden;box-shadow:0 8px 28px #25496711}
+.mi-ed-heading{padding:21px 23px;background:#23435f;color:white}
+.mi-ed-heading h2{font-size:19px;color:white;margin:0;font-weight:850}
+.mi-ed-frame>.mi-ed-p{font-size:12px;color:#72848e;margin:0;padding:12px 17px;background:#f5f9fa}
+.mi-ed-tabs{display:flex;flex-wrap:wrap;gap:7px;padding:12px 14px;background:#fff;border-bottom:1px solid #e4e8eb}
+.mi-ed-tab{border:1px solid #d5dfe7;background:#fff;border-radius:9px;padding:10px 13px;font-size:12px;font-weight:800;color:#31546b;cursor:pointer}
+.mi-ed-tab.active{border-color:#74b9a8;background:#e7f5ef;color:#165e4a}
+.mi-ed-stage{padding:23px 13px;background:#f2f6f8;min-height:500px}
+.mi-ed-page{width:100%;max-width:710px;min-height:625px;margin:auto;background:#fff9ed;color:#2b4150;border:1px solid #e8dac5;border-radius:13px;overflow:hidden;box-shadow:0 5px 18px #40566417}
+.mi-ed-page[hidden]{display:none}
+.mi-ed-page-head{background:#247969;color:#fff;padding:20px 25px}
+.mi-ed-page-head small{display:block;color:#e0f5ed;font-size:10px;font-weight:800;letter-spacing:.08em;margin-bottom:8px}
+.mi-ed-page-head h2{font-size:clamp(21px,4vw,29px);color:#fff;font-weight:900;line-height:1.2;margin:0}
+.mi-ed-page-head .mi-ed-p{font-size:12px;color:#e3f6ef;margin:6px 0 0;line-height:1.5}
+.mi-ed-body{padding:24px 28px;min-height:500px}
+.mi-ed-cover{background:linear-gradient(160deg,#fff8de,#eff9e8 60%,#eaf4ff)}
+.mi-ed-cover>.mi-ed-panel:first-child{padding:26px;text-align:center;border:2px solid #eed9aa;background:#fffaf2}
+.mi-ed-p{font-size:13px;line-height:1.65;margin:8px 0 12px;color:#445d66}
+.mi-ed-panel,.mi-ed-item{border:1px solid #e8e1d6;border-radius:12px;background:#fff;padding:15px 17px;margin:0 0 13px}
+.mi-ed-panel h3,.mi-ed-item h3{font-size:15px;font-weight:850;color:#26725f;margin:0 0 7px;line-height:1.4}
+.mi-ed-panel .mi-ed-p,.mi-ed-item .mi-ed-p{margin:5px 0 9px}
+.mi-ed-lines{margin:7px 0 4px}.mi-ed-answer-line{height:28px;border-bottom:1px solid #aec2c8}
+.mi-ed-choice{display:flex;gap:10px;align-items:start;padding:11px;border:1px solid #e6e7e3;background:#fffefb;border-radius:8px;margin:8px 0;font-size:13px;line-height:1.5;cursor:pointer}
+.mi-ed-choice input{margin-top:4px;accent-color:#287f6b;flex:none}
+.mi-ed-sequence{display:flex;align-items:center;gap:11px;border:1px solid #d8e8e0;border-radius:9px;padding:12px;margin:8px 0;background:#fff;line-height:1.4;font-size:13px}
+.mi-ed-seq-box{border:2px solid #6ea89c;min-width:28px;height:28px;border-radius:6px;display:inline-block}
+.mi-ed-words{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}
+.mi-ed-words span{padding:6px 8px;background:#e4f1e9;border-radius:6px;font-weight:800;color:#2c7258;font-size:11px}
+.mi-ed-grid{border-collapse:collapse;max-width:100%;margin:14px auto 8px;font-family:ui-monospace,monospace}
+.mi-ed-grid td{width:26px;height:26px;text-align:center;border:1px solid #cad7dc;background:#fff;font-size:12px;color:#2d5065;font-weight:900}
+.mi-ed-match{display:grid;grid-template-columns:1fr 1fr;gap:7px}.mi-ed-match span{background:#f1f8f9;border:1px solid #dce7e7;border-radius:8px;padding:9px;font-size:12px}
+.mi-ed-maze{width:260px;max-width:100%;display:grid;aspect-ratio:1;margin:16px auto;background:#fff;padding:5px}
+.mi-ed-cell{display:grid;place-items:center;font-size:14px;font-weight:900}
+.mi-ed-scene{display:block;width:100%;max-height:310px;object-fit:contain;margin:0 auto 15px;border-radius:9px}
+.mi-ed-footer{padding:10px 23px;font-size:9px;letter-spacing:.03em;color:#709096;border-top:1px solid #e9e2d5}
+.mi-ed-navigation{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 16px;border-top:1px solid #dce5e8;background:#fff}
+.mi-ed-navigation button{border:1px solid #cfdee2;border-radius:9px;background:white;padding:11px 14px;color:#2c596d;font-size:12px;font-weight:800;cursor:pointer}
+.mi-ed-navigation button:last-child{background:#dfefe7;border-color:#a7d7c4}
+.mi-ed-navigation button:disabled{opacity:.35;cursor:default}
+.mi-ed-navigation strong{font-size:12px;color:#59727e}
+@media(max-width:650px){
+ #miEditorial{margin:12px 0}.mi-ed-heading{padding:17px 15px}
+ .mi-ed-tabs{gap:5px}.mi-ed-tab{font-size:11px;padding:9px}
+ .mi-ed-stage{padding:12px 6px}
+ .mi-ed-body{padding:16px 13px}.mi-ed-page-head{padding:17px 16px}
+ .mi-ed-panel,.mi-ed-item{padding:12px}.mi-ed-grid td{width:20px;height:22px;font-size:10px}
+ .mi-ed-navigation button{padding:9px;font-size:11px}
+}
+@page{size:A4 portrait;margin:12mm}
+@media print{
+ body.mi-editorial-ready #view-aulas{display:none!important}
+ body.mi-editorial-ready #view-aula-pronta{display:block!important}
+ body.mi-editorial-ready .ready-actions,
+ body.mi-editorial-ready #readyLessonSheet,
+ body.mi-editorial-ready .worksheet-preview-heading,
+ body.mi-editorial-ready #readyWorksheetSheet,
+ body.mi-editorial-ready #readyWeeklySheet,
+ body.mi-editorial-ready .ready-screen-heading,
+ body.mi-editorial-ready .mi-ed-tabs,
+ body.mi-editorial-ready .mi-ed-navigation,
+ body.mi-editorial-ready .mi-ed-heading,
+ body.mi-editorial-ready .mi-ed-frame>.mi-ed-p{display:none!important}
+ body.mi-editorial-ready #miEditorial,
+ body.mi-editorial-ready .mi-ed-stage,
+ body.mi-editorial-ready .mi-ed-frame{display:block!important;visibility:visible!important;border:0!important;padding:0!important;margin:0!important;min-height:0!important;width:100%!important;box-shadow:none!important;background:white!important}
+ body.mi-editorial-ready .mi-ed-page,
+ body.mi-editorial-ready .mi-ed-page[hidden]{display:block!important;width:100%!important;max-width:none!important;min-height:0!important;break-after:page;page-break-after:always;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important;background:#fff!important}
+ body.mi-editorial-ready .mi-ed-page:last-child{break-after:auto;page-break-after:auto}
+ body.mi-editorial-ready .mi-ed-page-head{padding:10px 14px!important;border:1px solid #aaa!important;background:#eaf3f0!important;color:#222!important}
+ body.mi-editorial-ready .mi-ed-page-head h2{color:#1e5648!important;font-size:18pt!important}
+ body.mi-editorial-ready .mi-ed-page-head small,body.mi-editorial-ready .mi-ed-page-head .mi-ed-p{color:#315c55!important}
+ body.mi-editorial-ready .mi-ed-body{padding:12px 8px!important;min-height:0!important}
+ body.mi-editorial-ready .mi-ed-panel,body.mi-editorial-ready .mi-ed-item{break-inside:avoid;page-break-inside:avoid;padding:9px 11px!important;margin-bottom:8px!important}
+ body.mi-editorial-ready .mi-ed-choice{padding:6px!important;margin:4px 0!important}
+ body.mi-editorial-ready .mi-ed-answer-line{height:21px!important}
+ body.mi-editorial-ready .mi-ed-grid td{width:19px;height:19px;font-size:9pt}
+ body.mi-editorial-ready .mi-ed-footer{font-size:8pt}
+ body.mi-editorial-ready[data-mi-worksheet-style="economy"] #miEditorial *{box-shadow:none!important}
+}
