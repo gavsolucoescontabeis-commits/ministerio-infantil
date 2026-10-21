@@ -174,12 +174,19 @@ function activitySheet(data){
   if(little||early){const maze=makeMaze(seed,little?6:7);add({type:'maze',title:'Labirinto da Descoberta',prompt:'Encontre o caminho da estrela até a Bíblia. Passe o lápis pelo percurso.',maze},maze.answer)}
   add({type:'reflect',title:older?'Missão da Semana':'Minha Escolha de Hoje',prompt:item.talk},'Resposta pessoal. A aplicação deve respeitar o ensinamento da passagem.');
  }else{
-  // Fallback honesto: sem criar respostas sobre uma passagem não revisada.
-  add({type:'reflect',title:'Detetive da Bíblia',prompt:'Leia a referência '+data.reference+' e anote duas palavras ou acontecimentos que realmente aparecem no texto.'},'Resposta aberta; conferir na Bíblia Livre, '+data.reference+'.');
-  const puzzle=cellWords(['BIBLIA','JESUS','AMOR','DEUS','PAZ'],seed);
-  if(!little)add({type:'wordsearch',title:'Palavras de Fé',prompt:'Encontre as palavras. Elas são um passatempo geral, não representam fatos adicionais da passagem.',grid:puzzle.grid,words:puzzle.words},puzzle.answer);
+  // Mesmo sem roteiro temático revisado, a atividade tem conteúdo a preencher e palavras do próprio título.
+  const tokens=norm(data.title).split(' ').filter(w=>w.length>=4&&!['PARA','COMO','SOBRE','JESUS'].includes(w)).slice(0,4);
+  const words=[...new Set([...tokens,'BIBLIA','DEUS','JESUS'])].slice(0,5);
+  add({type:'choice',title:'Detetive da Palavra',prompt:'Qual fonte devemos consultar para conferir o ensinamento desta aula?',options:['A Bíblia','Uma mensagem sem fonte','Um boato']},'Correta: A Bíblia. Referência a conferir: '+data.reference+'.');
+  add({type:'fill',title:'Nossa Referência',prompt:'O Livro, Capítulo ou Versículo de hoje é: ____________________',words:[String(data.reference)]},'Conferir '+data.reference+'.');
+  add({type:'match',title:'Ligue as Descobertas',prompt:'Ligue cada etapa do estudo ao seu significado.',left:['Leitura','Ensinamento','Aplicação'],right:['Como praticar o que aprendi','O que o texto ensina','O que está escrito na Bíblia']},
+   'Leitura → O que está escrito na Bíblia. Ensinamento → O que o texto ensina. Aplicação → Como praticar o que aprendi.');
+  add({type:'sequence',title:'Passos do Explorador',prompt:'Numere as etapas de um estudo bíblico.',items:seededShuffle(['Abrir e ler a passagem bíblica.','Compreender o que o texto ensina.','Escolher uma atitude para praticar.'],seed)},
+   'Ordem: 1. Abrir e ler a passagem bíblica. 2. Compreender o que o texto ensina. 3. Escolher uma atitude para praticar.');
+  const puzzle=cellWords(words,seed);
+  if(!little)add({type:'wordsearch',title:'Palavras do Nosso Tema',prompt:'Encontre palavras do título da aula e do estudo da Bíblia. Este é um jogo de palavras, não uma lista de fatos da história.',grid:puzzle.grid,words:puzzle.words},puzzle.answer);
   if(little||early){const maze=makeMaze(seed,little?6:7);add({type:'maze',title:'Labirinto da Descoberta',prompt:'Siga o caminho da estrela até a Bíblia. O jogo é uma ilustração, não um fato bíblico.',maze},maze.answer)}
-  add({type:'reflect',title:'Minha Missão',prompt:'Escreva ou desenhe uma atitude de cuidado que combina com o que você aprendeu.'},'Resposta pessoal. O professor verifica a relação com o texto estudado.');
+  add({type:'reflect',title:'Minha Missão',prompt:'Leia '+data.reference+' com seu professor. Escreva ou desenhe uma atitude que combina com o que você aprendeu.'},'Resposta pessoal. O professor verifica a relação com o texto estudado.');
  }
  // Para pequenos, priorizar tarefas curtas e desenho, sem sobrecarregar.
  const kinds=little?['choice','fill','maze','reflect']:
