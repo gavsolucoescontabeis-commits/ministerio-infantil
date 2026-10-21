@@ -1,8 +1,15 @@
 {
-  "release": "Ministério Infantil — V64.7a oficial (ordem dos relatórios)",
-  "build": "v64-20261018-certidoes-apos-relatorios7a",
-  "date": "2026-10-18",
+  "release": "Ministério Infantil — V65 (Estudos: caderno editorial)",
+  "build": "v65-20261021-estudos-editorial",
+  "date": "2026-10-21",
   "changes": [
+    "Estudos: aula navegável com abas separadas para criança, professor e gabarito",
+    "Estudos: páginas editoriais dinâmicas por tema, referência e faixa etária",
+    "A Criação: 10 páginas estruturadas para 9 anos, com investigação e reflexão",
+    "Impressões separadas para criança e professor, com gabarito somente no material docente",
+    "Uma dinâmica de 2 minutos e apenas uma missão de casa, sem tarefas divididas pela semana",
+    "Imagens não validadas ou genéricas não são exibidas no novo caderno; qualidade editorial preservada",
+    "Demais módulos e narração Daniel sem alterações",
     "Pré-cadastros: aprovação e documentação recebida integradas",
     "Status separado entre certidão recebida e autenticidade conferida",
     "Confirmar autenticidade de certidão já arquivada, sem anexar novamente",
