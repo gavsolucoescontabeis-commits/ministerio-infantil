@@ -32,12 +32,13 @@ const drawings={
  ark:'<path d="M49 113h268l-34 48H82zM79 113V69h205v44M94 69l36-29h103l35 29M157 40V25h48v15M34 178q17-15 34 0t34 0t34 0t34 0t34 0t34 0t34 0t34 0t34 0"/><path d="M116 90h23m19 0h23m19 0h23m19 0h23"/>',
  tree:'<path d="M181 164V92m0 37l-36-26m36 12l37-25M138 164h87M182 40q-28-29-58 0q-34-4-38 31q-32 27-1 48q21 21 49 10q23 24 49 7q35 12 52-6q38 8 42-22q23-28-7-45q3-34-35-36q-24-23-53 13z"/><circle cx="141" cy="77" r="5"/><circle cx="228" cy="81" r="5"/>',
  heart:'<path d="M180 155C142 130 84 78 102 44q24-45 78 7q54-52 78-7q18 34-78 111z"/><path d="M64 62l-16-8m264 0l-16 8M180 18V6"/>',
+ sling:'<path d="M138 44q43-31 89 0M138 44q-7 36 25 73M227 44q7 36-25 73M163 117q18 14 39 0l-5 34q-15 14-29 0z" /><circle cx="74" cy="147" r="12"/><circle cx="108" cy="150" r="11"/><circle cx="139" cy="168" r="11"/><circle cx="228" cy="168" r="11"/><circle cx="264" cy="146" r="12"/><path d="M52 177h244" />',
  crown:'<path d="M67 70l36 73h152l37-73l-66 34-45-64-44 64zM101 154h155v17H101z"/><circle cx="67" cy="67" r="7"/><circle cx="181" cy="37" r="7"/><circle cx="292" cy="67" r="7"/>',
  bread:'<path d="M52 125q-18-66 48-71q55-17 77 40l-9 41H52zM196 129q-13-66 49-72q54-4 56 72zM38 153q142 30 282 0"/><path d="M89 70l-11 38m39-38l-11 38m20-30l-10 29m114-32l-14 34m44-27l-12 27"/>',
  jar:'<path d="M130 42h100M145 42v23q-29 19-29 56q0 54 39 54h50q39 0 39-54q0-37-29-56V42M117 102h127M127 158h106"/>',
  bible:'<path d="M180 52Q116 22 45 47v112q68-22 135 13q67-35 134-13V47q-72-25-134 5zM180 52v120M59 70q43-12 105 7M59 90q43-11 105 9M196 76q45-19 104-8M196 99q45-19 104-9"/>'
 };
-const labels={soil:'sementes em solos diferentes',fish:'peixe',boat:'barco',sheep:'ovelha',ark:'arca',tree:'árvore',heart:'coração',crown:'coroa',bread:'pães',jar:'talha',bible:'Bíblia aberta'};
+const labels={soil:'sementes em solos diferentes',fish:'peixe',boat:'barco',sheep:'ovelha',ark:'arca',tree:'árvore',heart:'coração',crown:'coroa',sling:'funda e cinco pedras',bread:'pães',jar:'talha',bible:'Bíblia aberta'};
 const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 function artworkFor({title}){
  const topic=norm(title);let kind='bible';
@@ -48,7 +49,8 @@ function artworkFor({title}){
  else if(/ovelha|pastor/.test(topic))kind='sheep';
  else if(/vinho|cana|talha/.test(topic))kind='jar';
  else if(/videira|zaqueu|arvore/.test(topic))kind='tree';
- else if(/davi|golias|salomao|ester/.test(topic))kind='crown';
+ else if(/davi|golias/.test(topic))kind='sling';
+ else if(/salomao|ester/.test(topic))kind='crown';
  else if(/paes|multiplicacao/.test(topic))kind='bread';
  else if(/amor|perdao/.test(topic))kind='heart';
  return {kind,label:labels[kind],svg:'<svg xmlns="http://www.w3.org/2000/svg" class="worksheet-art" viewBox="0 0 360 195" role="img" aria-label="Ilustração para colorir: '+labels[kind]+'" fill="none" stroke="#222" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">'+drawings[kind]+'</svg>'};
