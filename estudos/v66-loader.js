@@ -29,6 +29,10 @@ async function load(){
     if(state.missing.length){mark('aguardando_arte','Imagens ausentes/inválidas: '+state.missing.join(', '));return}
     if(!window.MI_ESTUDOS_EDITORIAL?.mount)throw new Error('Editor de Estudos não carregou');
     mark('carregando','Artes completas, iniciando novo editor');
+    const style=document.createElement('link');
+    style.rel='stylesheet';
+    style.href='./editorial-v66.css?ver=66.1';
+    document.head.append(style);
     const script=document.createElement('script');
     script.src='./editorial-v66.js?ver=66.1';
     script.onload=()=>mark(window.MI_ESTUDOS_EDITORIAL?.version?.startsWith('66.')?'ativo':'erro','');
