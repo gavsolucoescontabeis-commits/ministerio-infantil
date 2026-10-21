@@ -105,7 +105,7 @@ function updateListenLabel(){
  btn.textContent=found?'♫ Ouvir do Versículo '+state.reader.selected:'♫ Ouvir Capítulo';
 }
 async function copy(text){try{await navigator.clipboard.writeText(text);toast('Copiado!')}catch(e){const t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.top='-9999px';document.body.append(t);t.select();try{document.execCommand('copy');toast('Copiado!')}catch(x){toast('Não foi possível copiar neste navegador.')}t.remove()}}
-function navigate(view,skipReaderLoad=false){if(!['inicio','biblia','aulas','aula-pronta','acervo'].includes(view))return;stopAudio();state.view=view;document.querySelectorAll('.page').forEach(n=>n.classList.toggle('active',n.id==='view-'+view));document.querySelectorAll('[data-view]').forEach(n=>{const active=n.dataset.view===(view==='aula-pronta'?'aulas':view);n.classList.toggle('active',active);if(active)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current')});$('sidebar').classList.remove('open');$('menuToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});if(view==='biblia'&&!state.reader.verses.length&&!skipReaderLoad)loadReader();if(view==='acervo')renderArchive();}
+function navigate(view,skipReaderLoad=false){if(!['inicio','biblia','aulas','aula-pronta','acervo','banco'].includes(view))return;stopAudio();state.view=view;document.querySelectorAll('.page').forEach(n=>n.classList.toggle('active',n.id==='view-'+view));document.querySelectorAll('[data-view]').forEach(n=>{const active=n.dataset.view===(view==='aula-pronta'?'aulas':view);n.classList.toggle('active',active);if(active)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current')});$('sidebar').classList.remove('open');$('menuToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});if(view==='biblia'&&!state.reader.verses.length&&!skipReaderLoad)loadReader();if(view==='acervo')renderArchive();if(view==='banco')window.MI_ACTIVITY_BANK?.renderBank?.();}
 async function getChapter(book,ch,translation=state.translation){const key=translation+'/'+book+'/'+ch;if(chapterCache.has(key))return chapterCache.get(key);
  const response=await fetch(API_ROOT+'/'+translation+'/'+Number(book)+'/'+Number(ch)+'.json',{cache:'default',headers:{'Accept':'application/json'}});if(!response.ok){if(response.status===429)throw Error('O serviço bíblico atingiu o limite de consultas. Tente novamente mais tarde.');throw Error('A fonte bíblica retornou erro '+response.status+'.')}
  const parsed=await response.json();if(!parsed||!Array.isArray(parsed.verses)||!parsed.verses.length)throw Error('A passagem não está disponível nesta tradução.');
@@ -354,7 +354,6 @@ const LESSON_FIELDS=Object.freeze({
  story:['lessonStory','História Bíblica Explicada'],
  application:['lessonApplication','Aplicação Prática'],
  questions:['lessonQuestions','Perguntas para Conversar'],
- activity:['lessonActivity','Atividade, Dinâmica e Ilustração']
 });
 function selectedAge(){
  const age=$('lessonAge').value;
@@ -493,28 +492,51 @@ function saveLesson(e){
  toast('Rascunho salvo. Use Montar Aula e Visualizar para ver a aula pronta.');
 }
 function renderReadyLesson(data){
- $('readyLessonTitle').textContent=data.title;
- const meta=$('readyLessonMeta');meta.replaceChildren();
+ const title=$('readyLessonTitle');if(title)title.textContent=data.title;
+ const meta=$('readyLessonMeta');if(meta){
+  meta.replaceChildren();
+  for(const v of [data.reference,data.age,data.date?showDate(data.date):'']){
+   if(!v)continue;const badge=document.createElement('span');badge.textContent=v;meta.append(badge);
+  }
+ }
+ // Novo fluxo: apenas o roteiro; não executar o compositor de atividades infantis.
+ document.body.classList.remove('mi-editorial-ready','v66-ready');
+ document.body.classList.add('mi-teacher-only');
+ const host=$('miTeacherOnly');if(!host)return;
+ host.replaceChildren();
+ const node=(tag,cls,value)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(value!==undefined)el.textContent=String(value);return el};
+ const header=node('header','mi-teacher-dochead');
+ header.append(node('div','mi-teacher-eyebrow','MINISTÉRIO INFANTIL · 4ª IEQ CURITIBA · ROTEIRO DO PROFESSOR'));
+ header.append(node('h2','',data.title));
+ const chips=node('div','mi-teacher-meta');
  for(const value of [data.reference,data.age,data.date?showDate(data.date):'']){
-  if(!value)continue;const badge=document.createElement('span');badge.textContent=value;meta.append(badge);
+  if(value)chips.append(node('span','',value));
  }
- const container=$('readyLessonSections');container.replaceChildren();
- for(const [field,[id,label]] of Object.entries(LESSON_FIELDS)){
-  const value=String(data[field]||'').trim();
-  if(!value)continue;
-  const section=document.createElement('section');section.className='ready-section';
-  const head=document.createElement('h3');head.textContent=label;
-  const content=document.createElement('div');content.className='ready-section-text';content.textContent=value;
-  section.append(head,content);container.append(section);
+ header.append(chips);host.append(header);
+ host.append(node('p','mi-teacher-intro','Apoio para conduzir o estudo bíblico. Confira os versículos, preserve a ordem dos fatos e adapte a linguagem à turma.'));
+ const sections=node('div','mi-teacher-sections');
+ const rows=[
+  ['Objetivo da aula',data.goal,'goal'],
+  ['Contexto bíblico e histórico',data.context,'context'],
+  ['Roteiro da história bíblica',data.story,'story'],
+  ['Perguntas para conversar',data.questions,'questions'],
+  ['Referências e orientações para respostas',data.answers,'answers'],
+  ['Aplicação prática',data.application,'application']
+ ];
+ let count=0;
+ for(const [label,raw,key] of rows){
+  const value=String(raw||'').trim();if(!value)continue;
+  const section=node('section','mi-teacher-section'+(key==='story'?' mi-teacher-story':''));
+  section.dataset.section=key;
+  section.append(node('h3','',label),node('p','',value));
+  sections.append(section);count++;
  }
- if(!container.children.length){
-  const p=document.createElement('p');p.className='ready-empty';p.textContent='Nenhum conteúdo de aula foi incluído. Volte à preparação, selecione sugestões ou escreva nos campos.';container.append(p);
- }
- const key=String(data.answers||'').trim();
- $('readyAnswersSection').hidden=!key;
- $('readyAnswersText').textContent=key;
- if(window.MI_ESTUDOS_EDITORIAL?.mount){window.MI_ESTUDOS_EDITORIAL.mount(data)}
- else renderPrintableWorksheet(data);
+ if(!count)sections.append(node('p','','Nenhum roteiro foi preparado. Volte para a preparação e escolha as sugestões da passagem.'));
+ host.append(sections);
+ host.append(node('footer','mi-teacher-notice','Material de apoio. Confira as referências bíblicas antes de ensinar. Atividades infantis ilustradas são opcionais e ficam exclusivamente no Banco de Atividades.'));
+ // Não adicionar imagens, mascotes, caderno infantil ou gabarito separado ao roteiro.
+ const ready=$('miReadyPackageOffer');
+ if(ready){ready.hidden=true;ready.replaceChildren();window.MI_ACTIVITY_BANK?.renderReady?.(data,ready)}
 }
 function worksheetNode(tag,cls,txt){
  const node=document.createElement(tag);
@@ -673,24 +695,23 @@ function editReadyLesson(){
 }
 function printReadyLesson(kind='teacher'){
  if(state.view!=='aula-pronta'){toast('Abra primeiro a visualização da aula pronta.');return}
- document.body.dataset.miPrint=kind==='student'?'student':'teacher';
- document.body.dataset.miWorksheetStyle=$('worksheetPrintMode').value;
- if(!window.MI_ESTUDOS_EDITORIAL) $('readyWeeklySheet').hidden=!$('worksheetIncludeWeek').checked;
- window.MI_ESTUDOS_EDITORIAL?.beforePrint(kind);
- const done=()=>{delete document.body.dataset.miPrint;window.MI_ESTUDOS_EDITORIAL?.afterPrint()};
+ if(kind!=='teacher'){toast('Os cadernos infantis ficam separados no Banco de Atividades, quando disponíveis.');return}
+ document.body.classList.add('mi-teacher-only');
+ document.body.dataset.miPrint='teacher';
+ const done=()=>{delete document.body.dataset.miPrint};
  window.addEventListener('afterprint',done,{once:true});
  try{window.print()}catch(e){done();toast('Não foi possível abrir a impressão neste navegador.')}
 }
 function lessonPrompt(){const x=getLessonForm();
  if(!x.title||!x.reference){toast('Preencha o tema e a referência bíblica antes de pedir a aula.');return null}
- const details=[['Objetivo',x.goal],['Contexto já anotado',x.context],['História já anotada',x.story],['Aplicação desejada',x.application],['Perguntas desejadas',x.questions],['Atividade sugerida',x.activity]].filter(row=>row[1]).map(row=>row[0]+': '+row[1]).join('\n');
+ const details=[['Objetivo',x.goal],['Contexto já anotado',x.context],['História já anotada',x.story],['Aplicação desejada',x.application],['Perguntas desejadas',x.questions],].filter(row=>row[1]).map(row=>row[0]+': '+row[1]).join('\n');
  return 'SUGESTÃO DE AULA — MINISTÉRIO INFANTIL 4ª IEQ\n\n'+
  'Prepare uma aula bíblica cristã evangélica para crianças de '+x.age+'.\n'+
  'Tema: '+x.title+'\nPassagem principal: '+x.reference+'\n'+(x.date?'Data prevista: '+showDate(x.date)+'\n':'')+'\n'+
  'Confirme a referência e leia o texto bíblico antes de escrever. Seja fiel à narrativa, ao contexto histórico, à ordem dos acontecimentos, aos personagens e às quantidades mencionadas. '+
  'Não invente detalhes, ações, objetos ou falas. Use explicações simples e adequadas à faixa etária. '+
  'Quando o texto mencionar expressamente idades, inclua-as; caso contrário, não atribua idades. '+
- 'Organize em história bíblica, ensinamento principal, perguntas, aplicação prática, dinâmica e oração final. '+
+ 'Organize somente um roteiro para o professor: objetivo, contexto, história bíblica, referências, perguntas para conduzir a conversa e aplicação. Não crie caderno do aluno, imagens, dinâmicas impressas nem oração padronizada. '+
  'Não torne a aula extensa desnecessariamente. Não altere o sentido da Escritura.\n\n'+
  (details?('Anotações do professor, para considerar e verificar à luz do texto:\n'+details+'\n\n'):'')+
  'Forneça referências bíblicas para conferir os principais acontecimentos. Evite tratar reflexões criadas como se fossem versículos.';
