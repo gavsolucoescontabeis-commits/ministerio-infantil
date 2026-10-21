@@ -119,6 +119,14 @@ function generalWorkbook(d,age){
   creative.exercises.slice(0,8).forEach(x=>pages.push(page(x.title||'Atividade bíblica',x.prompt||'',box=>box.append(activity(x)),/reflect/.test(x.type)?'fe':'investigacao')));
   (creative.answerKey||[]).forEach(a=>answers.push(a.title+': '+a.answer));
  }else{
+  const known=window.MI_LESSON_STORYTELLING?.storyFor?.(d.title,d.reference);
+  const scenes=(known?.scenes||[]).filter(x=>Array.isArray(x)&&x[3]).slice(0,6);
+  if(scenes.length>=2){
+   const prompts=scenes.map(x=>x[3]);
+   if(age==='little'||age==='early')pages.push(page('A história que lemos','Identifique os acontecimentos',box=>{prompts.slice(0,3).forEach((x,i)=>box.append(item('Descoberta '+(i+1),x,1)))},'investigacao'));
+   else pages.push(page('História em ordem','Sequência dos acontecimentos',box=>box.append(sequence([...prompts].reverse())),'investigacao'));
+   answers.push('Sequência conferida na passagem: '+prompts.map((x,i)=>(i+1)+'. '+x).join(' '));
+  }
   pages.push(page('Investigação do texto','Observe os fatos',box=>{
    box.append(item('Quem aparece na passagem?','Confira a informação no texto bíblico.',age==='little'?1:2));
    if(age!=='little')box.append(item('Qual ensinamento está escrito?','Indique um trecho que confirme sua resposta.',3))
@@ -170,6 +178,12 @@ function render(){
   head.append(el('h2','',view==='teacher'?'Aula do professor':'Gabarito exclusivo do professor'));
   (view==='teacher'?book.teacher.map(a=>panel(a[0],a[1])):book.answers.map((a,i)=>panel('Resposta '+(i+1),a))).forEach(p=>body.append(p));
   add(sheet,head,body);stage.append(sheet);
+  if(view==='teacher'){
+   const keySheet=el('article','mi-ed-page'),keyHead=el('header','mi-ed-page-head'),keyBody=el('div','mi-ed-body');
+   keyHead.append(el('h2','','Gabarito — somente professor'));
+   book.answers.forEach((x,i)=>keyBody.append(panel('Resposta '+(i+1),x)));
+   keySheet.append(keyHead,keyBody);stage.append(keySheet);
+  }
  }
  frame.append(stage);
  const nav=el('div','mi-ed-navigation');
