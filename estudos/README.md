@@ -25,6 +25,16 @@ Módulo **integrado ao aplicativo oficial** pela aba **Estudos**, dentro do menu
 - Este módulo permanece **editorial e orientado por regras, sem IA generativa integrada**. A conferência e a decisão pedagógica final são do professor.
 - Mudanças na faixa etária exigem gerar as sugestões novamente; o texto já aplicado não é apagado automaticamente.
 
+## Perguntas com Gabarito e Atividades Ilustradas
+
+- **Perguntas e Respostas:** o módulo de sugestões gera duas alternativas de perguntas, cada uma acompanhada do **gabarito do professor**. Os esclarecimentos vêm com capítulos e versículos para conferência na Bíblia Livre; quando o texto não possui roteiro narrativo revisado, a resposta apresenta o trecho bíblico original, sem improvisar fatos.
+- **Escolhas vinculadas:** ao escolher uma alternativa de perguntas, a resposta correspondente vai para o campo editável **Gabarito do Professor**. Se houver conteúdo no campo, a substituição exige confirmação. O professor pode ajustar perguntas e gabarito antes de salvar.
+- **Atividade da Criança:** documento separado para impressão em A4, com cabeçalho, nome e data, ilustração vetorial em preto e branco para colorir, perguntas adequadas à idade, linhas para escrever e espaço para desenhar. Existem temas ilustrados (semeador, Noé, Jonas, vinho em Caná, bom pastor, amor e outros) e desenho genérico da Bíblia para demais assuntos.
+- **Exercícios temáticos:** assuntos conhecidos incluem perguntas para circular a resposta correta ou escrever explicações, com resposta orientadora no material do professor. As imagens são esquemáticas e não acrescentam detalhes bíblicos inventados.
+- **Impressão separada:** botão **Imprimir Aula do Professor** mostra história, perguntas, respostas e orientações; **Imprimir Atividade das Crianças** imprime somente a ficha infantil, **sem o gabarito**.
+- **Compatibilidade:** aulas antigas sem gabarito permanecem legíveis. Não se inventam respostas para perguntas escritas manualmente; nesse caso, cabe ao professor preencher e conferir o campo.
+- Esta versão **não usa IA generativa** nem cria ilustrações fotorrealistas. Usa roteiros editoriais e figuras vetoriais próprias, otimizadas para impressão preto e branco.
+
 ## Dados e privacidade
 - Os rascunhos de aula permanecem em **localStorage deste navegador**; não são sincronizados com Supabase. Em outro dispositivo, é necessário importar o arquivo de backup. Isso é informado diretamente na tela.
 - O módulo não consulta nem transmite dados pessoais de crianças ou professores.
