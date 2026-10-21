@@ -230,3 +230,96 @@
  body[data-mi-print="teacher"] #readyLessonSheet{display:block!important}
  .ready-answer-key,.ready-worksheet-advice{background:#fff!important;border-color:#aaa!important;break-inside:avoid-page!important}
 }
+
+
+/* Estudos — identidade visual das Atividades Criativas */
+.worksheet-preview-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.worksheet-preview-heading h2{font-size:22px;letter-spacing:-.025em}
+.worksheet-preview-heading h2 span{color:#f3a51e}
+.worksheet-print-control{display:flex;flex-direction:column;gap:5px;min-width:162px}
+.worksheet-print-control label{font-size:11px;font-weight:800;color:#355e70}
+.worksheet-print-control select{border-radius:10px;border:1px solid #b8d9e9;background:#fff;min-height:38px;padding:7px 10px;font-size:12px;font-weight:700}
+.worksheet-sheet{position:relative;overflow:hidden;background:#fffefa!important;border:2px solid #a7d6ee!important;box-shadow:0 14px 32px rgba(54,103,144,.10)!important}
+.worksheet-sheet:before{content:"";position:absolute;z-index:0;pointer-events:none;right:-57px;top:-78px;width:235px;height:235px;border-radius:50%;background:radial-gradient(circle,#ffefa9 0%,#ffefa94a 55%,transparent 73%)}
+.worksheet-sheet:after{content:"";position:absolute;z-index:0;pointer-events:none;left:-70px;top:205px;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,#c8eff5a8 0%,transparent 75%)}
+.worksheet-sheet>*{position:relative;z-index:1}
+.worksheet-brand{border-bottom:3px solid #38a2ce;color:#17688c;padding-bottom:12px}
+.worksheet-brand span{display:inline-flex;background:#fff1bd;border:1px solid #f8cd58;border-radius:20px;color:#84601d;padding:6px 12px;letter-spacing:.06em}
+.worksheet-tag{display:table;max-width:100%;margin:17px auto 4px;padding:7px 17px;background:#d5f5e9;color:#16634c;border:1px solid #91d6b3;border-radius:40px;font-size:12px;font-weight:900;text-align:center;letter-spacing:.04em}
+.worksheet-sheet h2{color:#1b658c;font-weight:900;font-size:25px;letter-spacing:-.02em}
+.worksheet-reference{color:#587c8d!important;font-weight:700!important;margin-bottom:15px!important}
+.worksheet-identification{color:#344a60;border-bottom:1px dashed #91bad0;padding:11px 0 16px}
+.worksheet-illustration{padding:4px 18px 8px;background:linear-gradient(150deg,#fffdf3 0%,#f0fbff 98%);border:2px dashed #a6d9e6;border-radius:18px;margin:16px auto 13px;max-width:380px}
+.worksheet-art{stroke:#277e9e!important;stroke-width:3px}
+.worksheet-art circle{stroke:#eda93e!important;fill:#ffeba4!important}
+.worksheet-art path:nth-of-type(3n+2){stroke:#19946c!important}
+.worksheet-challenge{position:relative;break-inside:avoid;page-break-inside:avoid;margin:15px 0;border:1.5px solid #cfe4f1;border-radius:15px;background:linear-gradient(130deg,#fff 0%,#f8fcff 100%);padding:16px 19px 15px;box-shadow:0 3px 9px #266f9c08}
+.worksheet-challenge:nth-child(3n+2){background:linear-gradient(130deg,#fffcf1 0%,#fff 95%);border-color:#f3e0a0}
+.worksheet-challenge:nth-child(3n+3){background:linear-gradient(130deg,#f3fff9 0%,#fff 95%);border-color:#b4e5ce}
+.worksheet-challenge-title{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.worksheet-challenge-number{background:#268db7;color:white;font-weight:900;font-size:12px;border-radius:12px;display:grid;place-items:center;width:35px;height:35px;flex:none;box-shadow:0 3px 0 #1b6888}
+.worksheet-challenge:nth-child(3n+2) .worksheet-challenge-number{background:#c88c2c;box-shadow:0 3px 0 #976618}
+.worksheet-challenge:nth-child(3n+3) .worksheet-challenge-number{background:#2b9874;box-shadow:0 3px 0 #176a50}
+.worksheet-challenge-title h3{margin:0;font-size:16px;color:#24536a;font-weight:900}
+.worksheet-challenge-prompt{font-size:12px;line-height:1.6;color:#334d60;margin:0 0 11px}
+.worksheet-choice-options{display:grid;gap:9px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.worksheet-choice{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:750;min-height:39px;padding:8px 12px;background:white;border:1px solid #d4e7ef;border-radius:10px}
+.worksheet-choice-bubble{width:17px;height:17px;border:2px solid #659ab0;flex:none;border-radius:50%;background:#fff}
+.worksheet-match{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.worksheet-match-column{display:grid;gap:7px}
+.worksheet-match-entry{display:flex;align-items:center;min-height:48px;padding:8px 10px;border:1px dashed #90b7c8;border-radius:10px;background:#fff;font-size:11px;line-height:1.45;font-weight:750}
+.worksheet-small-help{color:#708695;font-size:10px;margin:8px 0 0}
+.worksheet-order-grid{display:grid;gap:7px}
+.worksheet-order-item{display:flex;align-items:center;gap:10px;padding:9px 10px;background:#fff;border:1px solid #c8e2d8;border-radius:9px;font-size:11px;line-height:1.5}
+.worksheet-order-box{flex:none;display:block;width:24px;height:24px;border:2px solid #6aa18c;border-radius:6px;background:#fff}
+.worksheet-wordsearch-grid{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:2px;max-width:355px;margin:8px auto 10px;border:2px solid #a8c9db;background:#fff;padding:5px;border-radius:12px}
+.worksheet-letter{height:27px;min-width:0;display:grid;place-items:center;font-weight:850;font-size:12px;color:#30536c;background:#f1f9fd;border-radius:4px}
+.worksheet-letter:nth-child(5n+1){background:#fff6dd}
+.worksheet-word-list{font-size:11px;color:#27638c;text-align:center;line-height:1.6;font-weight:800;margin:7px 0 0}
+.worksheet-fill{font-size:11px;font-weight:800;color:#327b62;background:#d9f5e7;border-radius:9px;padding:10px}
+.worksheet-answer-line{border-bottom:1px solid #7c9cb1}
+.worksheet-drawing{background:linear-gradient(150deg,#fff6d9 0%,#fff 58%);border:2px dashed #e8b94d;border-radius:16px;padding:14px}
+.worksheet-drawing strong{font-size:14px;color:#9b6b23}
+.worksheet-drawing p{margin:5px 0 2px;color:#866836;font-size:11px}
+.worksheet-drawing-space{min-height:140px;background:#fff;border:1px solid #ecd699;border-radius:11px}
+.worksheet-footer{color:#5a7484}
+.worksheet-sheet[data-style="economy"]{background:white!important;box-shadow:none!important;border-color:#777!important}
+.worksheet-sheet[data-style="economy"]:before,.worksheet-sheet[data-style="economy"]:after{display:none!important}
+.worksheet-sheet[data-style="economy"] .worksheet-challenge,.worksheet-sheet[data-style="economy"] .worksheet-drawing,.worksheet-sheet[data-style="economy"] .worksheet-illustration{background:white!important;border-color:#aaa!important;box-shadow:none!important}
+.worksheet-sheet[data-style="economy"] .worksheet-tag,.worksheet-sheet[data-style="economy"] .worksheet-brand span,.worksheet-sheet[data-style="economy"] .worksheet-challenge-number{background:#fff!important;color:#222!important;border:1px solid #777!important;box-shadow:none!important}
+.worksheet-sheet[data-style="economy"] .worksheet-art,.worksheet-sheet[data-style="economy"] .worksheet-art path,.worksheet-sheet[data-style="economy"] .worksheet-art circle{stroke:#222!important;fill:none!important}
+.worksheet-sheet[data-style="economy"] .worksheet-letter,.worksheet-sheet[data-style="economy"] .worksheet-drawing-space{background:#fff!important}
+@media(max-width:650px){
+ .worksheet-preview-heading{align-items:stretch}
+ .worksheet-print-control{width:100%;max-width:250px}
+ .worksheet-sheet{padding:22px 14px!important}
+ .worksheet-challenge{padding:13px 12px}
+ .worksheet-match{gap:9px}
+ .worksheet-match-entry{padding:7px 5px;font-size:10px}
+ .worksheet-wordsearch-grid{max-width:100%}
+ .worksheet-letter{height:24px;font-size:11px}
+}
+@page{size:A4 portrait;margin:12mm}
+@media print{
+ body[data-mi-print="student"] #readyWorksheetSheet{overflow:visible!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:white!important;padding:0!important}
+ body[data-mi-print="student"] #readyWorksheetSheet:before,body[data-mi-print="student"] #readyWorksheetSheet:after{display:none!important}
+ body[data-mi-print="student"] .worksheet-sheet h2{font-size:19pt!important}
+ body[data-mi-print="student"] .worksheet-brand{padding-bottom:7px!important}
+ body[data-mi-print="student"] .worksheet-tag{margin:8px auto 4px!important}
+ body[data-mi-print="student"] .worksheet-illustration{margin:8px auto 6px!important;padding:2px 5px!important}
+ body[data-mi-print="student"] .worksheet-art{height:105px!important;width:210px!important}
+ body[data-mi-print="student"] .worksheet-challenge{margin:8px 0!important;padding:9px 12px!important;border:1px solid #bbb!important;box-shadow:none!important;break-inside:avoid-page}
+ body[data-mi-print="student"] .worksheet-challenge-title{margin-bottom:5px!important}
+ body[data-mi-print="student"] .worksheet-challenge-title h3{font-size:11pt!important}
+ body[data-mi-print="student"] .worksheet-challenge-number{width:25px!important;height:25px!important;box-shadow:none!important}
+ body[data-mi-print="student"] .worksheet-challenge-prompt{font-size:10pt!important;margin:0 0 6px!important}
+ body[data-mi-print="student"] .worksheet-match-entry{min-height:34px!important;padding:6px 8px!important}
+ body[data-mi-print="student"] .worksheet-wordsearch-grid{max-width:278px!important;gap:1px!important;padding:3px!important}
+ body[data-mi-print="student"] .worksheet-letter{height:20px!important;font-size:9pt!important}
+ body[data-mi-print="student"] .worksheet-drawing{break-inside:avoid-page!important;padding:8px!important;margin-top:9px!important}
+ body[data-mi-print="student"] .worksheet-drawing-space{min-height:90px!important}
+ body[data-mi-print="student"] .worksheet-drawing p{font-size:9pt!important}
+ body[data-mi-print="student"] #readyWorksheetSheet:not([data-style="economy"]){-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+ body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"] *{background-color:transparent!important;color:#222!important;text-shadow:none!important}
+ body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"] .worksheet-art path,body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"] .worksheet-art circle{stroke:#222!important;fill:none!important}
+}
