@@ -492,3 +492,10 @@
  body[data-mi-print="student"] .worksheet-analysis{font-size:9pt!important}
  body[data-mi-print="student"] .worksheet-analysis .worksheet-answer-line{height:18px!important}
 }
+/* Transparência das figuras: arte de apoio não equivale à cena bíblica. */
+.magazine-art-caption{font-size:10px!important;line-height:1.35!important;color:#657b82!important;margin:3px 0 7px!important;text-align:center;font-style:italic}
+.worksheet-sheet[data-style="economy"] .magazine-art-caption{display:none!important}
+@media print{
+ body[data-mi-print="student"] .magazine-art-caption{font-size:7pt!important;margin:1px 0 3px!important}
+ body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"] .magazine-art-caption{display:none!important}
+}
