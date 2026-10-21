@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A Criação — Caderno Bíblico Ilustrado | 9 anos</title>
+<style>
+:root{--ink:#263d4b;--green:#137a66;--blue:#2374c3;--brown:#a85a21;--gold:#e2ac4b;--line:#c8dcd2}
+*{box-sizing:border-box}body{background:#ddebe4;font-family:"Trebuchet MS",Arial,sans-serif;color:var(--ink);margin:0}
+nav{max-width:870px;margin:14px auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 15px;background:#fff;border-radius:14px}
+nav b{flex:1}button,a.button{background:#137a66;border:0;color:#fff;padding:12px 18px;border-radius:9px;font:700 14px Arial;cursor:pointer;text-decoration:none}
+a.button{background:#36536b}.sheet{width:210mm;min-height:297mm;height:297mm;background:#fffdf7;box-shadow:0 4px 30px #223b3f33;overflow:hidden;position:relative;margin:0 auto 15px;padding:9mm 10mm 11mm;break-after:page;page-break-after:always}
+.sheet:last-of-type{break-after:auto;page-break-after:auto}.sheet:before{content:"";display:block;position:absolute;top:0;left:0;right:0;height:7mm;background:linear-gradient(90deg,#177b5e,#309bc6,#e2a844,#bf6542);z-index:0}
+.header{background:linear-gradient(115deg,#125e62,#2688a2);padding:12px 16px;color:white;border-radius:13px;margin:7mm 0 11px;display:flex;justify-content:space-between;align-items:center;gap:10px;position:relative}
+.header.brown{background:linear-gradient(110deg,#9c4922,#d89c36)}.header.blue{background:linear-gradient(110deg,#175f9a,#398bce)}.header.pink{background:linear-gradient(110deg,#a4457c,#dd849a)}
+.header h2{font-size:22px;line-height:1.08;margin:0;font-weight:900;letter-spacing:.2px}.header p{font-size:11px;margin:4px 0 0;color:#fffce8}.header small{font-size:10px;background:#fff5;padding:5px 9px;border-radius:30px;white-space:nowrap}
+.foot{position:absolute;bottom:6mm;left:10mm;right:10mm;font-size:9px;display:flex;justify-content:space-between;border-top:1px solid #d5dfd4;padding-top:5px;color:#506f67}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{background:#fff;border:1.5px solid #dfe7dc;border-radius:14px;padding:11px 12px;break-inside:avoid;position:relative}
+.card h3{font-size:14px;color:#146d5d;font-weight:900;margin:0 0 7px}.card.orange h3{color:#af6225}.card.blue h3{color:#286ca3}.card p{font-size:11.5px;line-height:1.4;margin:5px 0 8px}
+.line{height:19px;border-bottom:1px solid #9dbab7}.lines>*{height:18px;border-bottom:1px solid #9ebcba}
+.ring{display:inline-flex;border:2px solid #75a6a7;background:#fff;width:14px;height:14px;flex:0 0 14px;border-radius:4px;vertical-align:middle}
+.choice{display:flex;align-items:flex-start;gap:7px;padding:5px 7px;border-radius:7px;margin:4px 0;background:#f1f9f3;font-size:11px;line-height:1.27}
+.num{background:#2b8bc8;color:white;display:inline-flex;width:22px;height:22px;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:900;flex-shrink:0}
+.steps{display:grid;gap:4px}.step{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e3e6d9;border-radius:7px;font-size:11px;min-height:39px}
+.step b{display:block;flex:0 0 26px;height:25px;text-align:center;border:1.6px solid #94b5af;border-radius:5px;background:#fff}
+.qa{padding:6px 0 8px;border-bottom:1px dashed #d1ddd6}.qa:last-child{border:0}.qa strong{font-size:11px;line-height:1.37;display:block;margin-bottom:7px}.qa .line{height:17px}
+.illustration{object-fit:contain;display:block;max-width:100%}
+.hero{height:430px;border-radius:18px;border:5px solid #f4c876;overflow:hidden;background:#cce5dc;margin-top:12px;box-shadow:0 5px 14px #55746533}
+.hero img{width:100%;height:100%;object-fit:cover}
+.cover-title{background:linear-gradient(120deg,#6e370d,#c26d1f 50%,#e5ad50);color:#fff;text-align:center;border-radius:12px;padding:20px 10px 16px;margin-top:14px;box-shadow:0 5px 12px #9b542533}
+.cover-title p{font-weight:800;font-size:13px;margin:0;letter-spacing:1px}.cover-title h1{font-size:48px;line-height:1;margin:7px 0 9px;text-shadow:2px 3px 2px #492408}.cover-title b{font-size:18px;background:#fff4d9;color:#865019;padding:7px 16px;border-radius:20px}
+.cover-note{margin:15px 0;padding:15px;border-radius:13px;text-align:center;background:#fff9e9;border:2px solid #e6c881}
+.cover-note strong{font-size:19px;color:#265e50}.cover-note p{font-size:13px;font-weight:700;margin:9px 0 4px}.cover-name{display:flex;justify-content:space-between;gap:15px;font-size:12px;margin:22px 8px 0}
+.ribbon{font-size:12px;font-weight:800;color:#81531f;background:#fff2d0;padding:7px 11px;border-radius:10px;margin-bottom:9px}
+.wgrid{border-collapse:collapse;margin:9px auto 5px;border:2px solid #30776f;background:#fffef7}
+.wgrid td{width:22px;height:22px;min-width:22px;text-align:center;border:1px solid #cee1d7;font:900 12.5px Arial;color:#214c49}
+.wordlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}.wordlist span{background:#e1f5d9;border-radius:6px;padding:5px 8px;font-size:11px;font-weight:900;color:#306a4c}
+.truth{display:flex;gap:8px;align-items:start;padding:9px 0;border-bottom:1px dashed #d9e2db;font-size:11.5px;line-height:1.28}
+.truth span{font-weight:900;color:#2a8a84;min-width:31px}.complete{padding:7px 0;font-size:11.5px;line-height:1.46}
+.photo-fade{overflow:hidden;position:relative;border-radius:14px;background:linear-gradient(90deg,#eef8e4,#fef5dd)}
+.photo-fade img{width:100%;height:100%;object-fit:contain;mask-image:radial-gradient(ellipse at center,#000 47%,transparent 94%);-webkit-mask-image:radial-gradient(ellipse at center,#000 47%,transparent 94%)}
+.option{padding:8px 10px;background:#eaf7ea;margin:6px 0;border-radius:8px;font-size:11.7px;font-weight:700;line-height:1.4;display:flex;align-items:center;gap:8px}
+.option.bad{background:#fff1e6}.mission{background:#eef8df;border:2px solid #b8d99a;border-radius:14px;padding:13px}
+.mission p{line-height:1.45;font-size:12px}
+.mission .mission-check{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mission .mission-check label{font-size:11px;line-height:1.3;display:flex;gap:6px;align-items:center;background:white;padding:9px 6px;border-radius:7px}
+.verse{background:#fef3d1;border-radius:12px;border:2px solid #ecd28a;padding:13px;text-align:center;font-weight:800;color:#73551f;margin-top:12px}
+.compact-title{font-size:12px;color:#327567;font-weight:900;letter-spacing:.3px;margin:0 0 7px}
+@page{size:A4 portrait;margin:0}
+@media print{body{background:white}nav{display:none}.sheet{margin:0;box-shadow:none;border:0;padding:9mm 10mm 11mm;width:210mm;height:297mm;min-height:297mm;overflow:hidden;print-color-adjust:exact;-webkit-print-color-adjust:exact}.hero{box-shadow:none}}
+@media screen and (max-width:850px){.sheet{transform-origin:top left}body{overflow-x:auto}nav{min-width:600px}}
+</style></head>
+<body>
+<nav><b>Ministério Infantil • A Criação • 9 anos • 4 páginas A4</b>
+<a href="../index.html" class="button">Voltar aos Estudos</a>
+<button onclick="window.print()">Imprimir caderno infantil</button></nav>
+<section class="sheet" aria-label="Capa, página 1">
+<div class="cover-title"><p>MINISTÉRIO INFANTIL · 4ª IEQ CURITIBA · 9 ANOS</p><h1>A CRIAÇÃO</h1><b>Gênesis 1:1–2:3</b></div>
+<div class="hero"><img src="../assets/estudos/criacao_capa.webp" alt="Paisagem da criação com os três mascotes exploradores aprovados"></div>
+<div class="cover-note"><strong>DEUS CRIOU TODAS AS COISAS</strong><p>“No princípio, criou Deus os céus e a terra.”</p><small>Gênesis 1:1</small></div>
+<div class="cover-name"><span>Nome: _____________________________________</span><span>Data: ____ / ____ / ______</span></div>
+<div class="foot"><span>CADERNO DE ATIVIDADES BÍBLICAS · 9 ANOS</span><span>1 / 4</span></div>
+</section>
+<section class="sheet" aria-label="Investigação, ordem e enigmas, página 2">
+<header class="header"><div><h2>INVESTIGAÇÃO BÍBLICA</h2><p>Descubra, confira o texto e organize os fatos.</p></div><small>Gênesis 1</small></header>
+<div class="grid2" style="grid-template-columns:1.05fr .95fr">
+<div class="card blue"><h3>1. INVESTIGUE</h3><p>Marque a resposta correta depois de consultar Gênesis 1.</p>
+<p><strong>O que Deus criou no primeiro dia?</strong></p><div class="choice"><i class="ring"></i>A luz.</div><div class="choice"><i class="ring"></i>Os luminares.</div><div class="choice"><i class="ring"></i>Os animais.</div>
+<p><strong>Quando foram criados o Sol, a Lua e os luminares?</strong></p><div class="choice"><i class="ring"></i>No primeiro dia.</div><div class="choice"><i class="ring"></i>No quarto dia.</div><div class="choice"><i class="ring"></i>No sexto dia.</div>
+<p><strong>Em qual dia foi criado o ser humano?</strong></p><div class="choice"><i class="ring"></i>No terceiro dia.</div><div class="choice"><i class="ring"></i>No quinto dia.</div><div class="choice"><i class="ring"></i>No sexto dia.</div>
+</div>
+<div class="card orange"><h3>2. QUAL É A ORDEM?</h3><p>Numere de 1 a 6. O exemplo de cada cartão pertence a um dos dias.</p>
+<div class="steps">
+<div class="step"><b></b> Aves e seres aquáticos</div><div class="step"><b></b> Luz e trevas</div>
+<div class="step"><b></b> Animais terrestres e humanidade</div><div class="step"><b></b> Luminares</div>
+<div class="step"><b></b> Terra e plantas</div><div class="step"><b></b> Firmamento e águas</div>
+</div><p style="background:#fff2d7;padding:8px;border-radius:8px;font-size:11px;margin-top:10px"><b>Para lembrar:</b> depois dos seis dias, Deus concluiu a obra, descansou e abençoou o sétimo dia (Gênesis 2:1–3).</p></div>
+</div>
+<div class="card" style="margin-top:12px;background:#f8f7ea"><h3>3. ENIGMAS DA CRIAÇÃO</h3><div class="grid2">
+<div><div class="qa"><strong>A. Surgi no primeiro dia e fui separada das trevas. Quem sou?</strong><div class="line"></div></div>
+<div class="qa"><strong>B. Surgimos no quarto dia para marcar dias e tempos. Quem somos?</strong><div class="line"></div></div></div>
+<div><div class="qa"><strong>C. Fomos criadas no quinto dia e voamos pelo céu. Quem somos?</strong><div class="line"></div></div>
+<div class="qa"><strong>D. Fomos criados à imagem de Deus no sexto dia. Quem somos?</strong><div class="line"></div></div></div>
+</div></div>
+<div style="display:flex;align-items:center;gap:12px;margin:10px 4px 0"><div class="photo-fade" style="width:96px;height:78px;flex:none"><img src="../assets/estudos/lia_investigadora.webp" alt="Investigadora com lupa"></div><div class="ribbon" style="flex:1">DICA DA INVESTIGADORA: Procure as pistas no texto bíblico. As respostas estão em Gênesis 1!</div></div>
+<div class="foot"><span>A CRIAÇÃO · Atividades 1–3</span><span>2 / 4</span></div>
+</section>
+<section class="sheet" aria-label="Caça-palavras, verdadeiro ou falso e completar, página 3">
+<header class="header blue"><div><h2>DESAFIOS DA CRIAÇÃO</h2><p>Jogo de palavras, verdadeiro ou falso e descobertas.</p></div><small>9 ANOS</small></header>
+<div class="grid2" style="grid-template-columns:1.15fr .85fr;gap:10px">
+<div class="card"><h3>4. CAÇA-PALAVRAS</h3><p>Encontre dez palavras relacionadas ao relato da criação.</p><div class="wordlist"><span>DEUS</span><span>LUZ</span><span>TERRA</span><span>MAR</span><span>SOL</span><span>LUA</span><span>AVES</span><span>PEIXES</span><span>PLANTAS</span><span>VIDA</span></div>
+<table id="puzzle" class="wgrid" aria-label="Caça-palavras de doze linhas por doze colunas"></table><p style="font-size:10px;color:#456d65">As palavras aparecem na horizontal ou na vertical.</p>
+</div>
+<div class="card orange"><h3>5. VERDADEIRO OU FALSO</h3><p>Escreva V ou F em cada quadradinho.</p>
+<div class="truth"><span>( &nbsp; )</span>Deus criou a luz no primeiro dia.</div>
+<div class="truth"><span>( &nbsp; )</span>Os luminares foram criados no quarto dia.</div>
+<div class="truth"><span>( &nbsp; )</span>A Bíblia diz que Deus criou aviões.</div>
+<div class="truth"><span>( &nbsp; )</span>O ser humano foi criado à imagem de Deus.</div>
+<div class="truth"><span>( &nbsp; )</span>Os peixes e as aves foram criados no quinto dia.</div>
+<div class="truth"><span>( &nbsp; )</span>Deus concluiu a obra e descansou no sétimo dia.</div>
+</div></div>
+<div class="card blue" style="margin-top:11px"><h3>6. COMPLETE AS DESCOBERTAS</h3>
+<div style="display:flex;gap:6px;flex-wrap:wrap;font-size:11px;margin-bottom:8px"><b>Banco de palavras:</b> <span class="wordlist" style="margin:0"><span>LUZ</span><span>PLANTAS</span><span>AVES</span><span>DEUS</span></span></div>
+<div class="grid2">
+<div class="complete">A. No primeiro dia, Deus criou a _____________.</div>
+<div class="complete">B. No terceiro dia, surgiram as _____________.</div>
+<div class="complete">C. No quinto dia, Deus criou os peixes e as _____________.</div>
+<div class="complete">D. Quem criou todas as coisas foi _____________.</div>
+</div></div>
+<div style="margin-top:13px;padding:6px 13px;border-radius:12px;background:linear-gradient(90deg,#ddf2e4,#fdf0d3);display:flex;gap:9px;align-items:center">
+<img src="../assets/estudos/criacao_natureza.webp" alt="Paisagem com natureza da criação" style="height:70px;width:165px;object-fit:cover;border-radius:10px">
+<strong style="font-size:12px;line-height:1.4;color:#296554">A Bíblia é nossa fonte. Confira as respostas antes de entregar!</strong></div>
+<div class="foot"><span>A CRIAÇÃO · Atividades 4–6</span><span>3 / 4</span></div>
+</section>
+<section class="sheet" aria-label="Desafio do cotidiano, pensando com fé e missão, página 4">
+<header class="header pink"><div><h2>FÉ EM AÇÃO</h2><p>Escolhas, cuidado com a criação e missão para casa.</p></div><small>ÚLTIMA PÁGINA</small></header>
+<div class="card orange"><h3>7. DESAFIO DO COTIDIANO</h3>
+<div class="grid2" style="grid-template-columns:1.3fr .7fr;gap:10px">
+<div><p><b>Na praça, algumas crianças deixaram embalagens no chão.</b> Qual atitude demonstra cuidado com a criação de Deus, sem brigar com ninguém?</p>
+<div class="option bad"><i class="ring"></i>A. Fingir que não viu.</div>
+<div class="option bad"><i class="ring"></i>B. Jogar lixo também.</div>
+<div class="option"><i class="ring"></i>C. Recolher somente o que for seguro e orientar com respeito.</div>
+<div class="option bad"><i class="ring"></i>D. Gritar com todos.</div>
+</div>
+<div class="photo-fade" style="height:230px"><img src="../assets/estudos/pipo_cuidado.webp" alt="Aventureiro demonstrando cuidado com a natureza"></div>
+</div></div>
+<div class="card" style="margin-top:11px"><h3>8. PENSANDO COM FÉ</h3>
+<div class="grid2" style="grid-template-columns:1.36fr .64fr;align-items:end">
+<div>
+<div class="qa"><strong>1. O que a criação nos ensina sobre Deus?</strong><div class="lines"><div></div><div></div></div></div>
+<div class="qa"><strong>2. Qual parte da criação mais desperta sua admiração? Por quê?</strong><div class="lines"><div></div><div></div></div></div>
+<div class="qa"><strong>3. Como podemos cuidar melhor daquilo que Deus criou?</strong><div class="lines"><div></div><div></div></div></div>
+</div>
+<div class="photo-fade" style="height:235px"><img src="../assets/estudos/maya_fe.webp" alt="Mascote refletindo com fé"></div></div></div>
+<div class="mission" style="margin-top:11px"><h3 style="margin:0 0 7px;font-size:15px;color:#347346">9. MISSÃO PARA CASA</h3>
+<p>Escolha <b>uma atitude</b> de cuidado com a criação e conte na próxima aula o que fez.</p>
+<div class="mission-check">
+<label><i class="ring"></i>Cuidar de uma planta.</label>
+<label><i class="ring"></i>Economizar água.</label>
+<label><i class="ring"></i>Separar o lixo corretamente.</label>
+<label><i class="ring"></i>Tratar os animais com respeito.</label>
+</div></div>
+<div class="verse"><small>PARA GUARDAR · GÊNESIS 1:1</small><div style="margin:5px 0">“No princípio, criou Deus os céus e a terra.”</div></div>
+<div class="foot"><span>A CRIAÇÃO · Atividades 7–9</span><span>4 / 4</span></div>
+</section>
+<script>
+(function(){
+'use strict';
+const rows=12,cols=12,grid=Array.from({length:rows},()=>Array(cols).fill(null));
+const placements=[['DEUS',0,0,0,1],['PLANTAS',1,2,0,1],['PEIXES',2,1,0,1],
+['TERRA',3,4,0,1],['AVES',4,0,0,1],['SOL',5,8,0,1],
+['LUA',6,5,0,1],['MAR',7,0,0,1],['VIDA',8,4,0,1],['LUZ',9,9,1,0]];
+for(const [word,r,c,dr,dc] of placements){[...word].forEach((ch,i)=>{const y=r+i*dr,x=c+i*dc;if(y>=rows||x>=cols||grid[y][x]&&grid[y][x]!==ch)throw Error('Erro na grade: '+word);grid[y][x]=ch})}
+let seed=20261021;const letters='ABEICDFGHJKLMNOPRSTUV';
+const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed};
+const table=document.getElementById('puzzle');const tbody=document.createElement('tbody');
+grid.forEach(row=>{const tr=document.createElement('tr');row.forEach(ch=>{const td=document.createElement('td');td.textContent=ch||letters[rand()%letters.length];tr.appendChild(td)});tbody.appendChild(tr)});
+table.appendChild(tbody);
+window.MI_CRIA9_PUZZLE=Object.freeze({words:placements.map(x=>x[0]),rows,cols});
+})();
+</script>
+</body></html>
