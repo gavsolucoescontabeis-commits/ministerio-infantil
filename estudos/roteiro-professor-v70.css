@@ -95,3 +95,14 @@ body.mi-teacher-only .weekly-control {display:none!important}
   break-inside:auto!important;orphans:3;widows:3;
  }
 }
+
+
+/* Sobrescreve o #view-aulas impresso pelo CSS legado, impedindo páginas extras. */
+@media print{
+ body.mi-teacher-only #view-aulas.page,
+ body.mi-teacher-only #view-inicio.page,
+ body.mi-teacher-only #view-biblia.page,
+ body.mi-teacher-only #view-acervo.page,
+ body.mi-teacher-only #view-banco.page {display:none!important}
+ body.mi-teacher-only #view-aula-pronta.page {display:block!important}
+}
