@@ -109,6 +109,7 @@ function creationWorkbook(d,age){
 }
 function generalWorkbook(d,age){
  const creative=window.MI_CREATIVE_WORKSHEETS?.activitySheet?.(d);
+ const studentPrompts=txt(d.questions).split(/\\n+/).map(x=>x.trim().replace(/^(?:[-•*]\\s*|\\d+[.)]\\s*)/,'')).filter(x=>x.length>12).slice(0,6);
  const pages=[
  page(d.title,d.reference,box=>{box.append(panel('Nossa passagem',d.reference));box.append(p(txt(d.goal)||'Vamos aprender com uma leitura cuidadosa da Palavra de Deus.'))},'capa'),
  page('Lendo a Palavra','Compreensão do texto',box=>{
@@ -140,7 +141,14 @@ function generalWorkbook(d,age){
   },'fe'));
   answers.push('Esta passagem ainda não possui atividades temáticas revisadas. Corrija consultando '+d.reference+'.');
  }
- const mission=(txt(d.application).split('\n')[0]||'Converse em casa sobre a lição e pratique uma atitude relacionada ao ensino bíblico.').slice(0,260);
+ if(studentPrompts.length){
+  const chosen=(age==='little'||age==='early')?studentPrompts.slice(0,2):studentPrompts.slice(0,4);
+  pages.push(page('Investigue e responda','Perguntas da aula preparadas pelo professor',box=>{
+   chosen.forEach((q,i)=>box.append(item('Questão '+(i+1),q,age==='little'?1:age==='teen'?4:2)));
+  },'investigacao'));
+  answers.push('Perguntas selecionadas pelo professor: confira as respostas na passagem '+d.reference+'.');
+ }
+ const mission=(txt(d.application).split('\\n')[0]||'Converse em casa sobre a lição e pratique uma atitude relacionada ao ensino bíblico.').slice(0,260);
  pages.push(page('Missão para casa','Uma única missão prática',box=>{box.append(panel('Sua missão',mission));box.append(item('Compartilhe na próxima aula','O que você aprendeu e praticou?',2))},'fe'));
  if(txt(d.answers))answers.push('Gabarito informado pelo professor: '+d.answers);
  return{pages,answers,curated:!!creative?.curated,teacher:[
@@ -172,8 +180,31 @@ function editorialSheet(title,subtitle,rows,mark){
  return sheet;
 }
 function groupSections(rows,limit){
+ const expanded=[];
+ for(const [title,raw] of rows){
+  const content=txt(raw);
+  if(content.length<=limit){expanded.push([title,content]);continue}
+  const paragraphs=content.split(/\\n\\s*\\n|\\n(?=(?:DIA |[0-9]+[.)]|•))/).filter(Boolean);
+  const pieces=[];
+  for(const paragraph of paragraphs){
+   if(paragraph.length<=limit){pieces.push(paragraph);continue}
+   const sentences=paragraph.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[paragraph];let part='';
+   for(const sentence of sentences){
+    if(part && (part+sentence).length>limit){pieces.push(part.trim());part=''}
+    if(sentence.length>limit){for(let i=0;i<sentence.length;i+=limit)pieces.push(sentence.slice(i,i+limit));continue}
+    part+=sentence;
+   }
+   if(part.trim())pieces.push(part.trim())
+  }
+  let piece='';
+  for(const part of pieces){
+   if(piece&&(piece.length+part.length)>limit){expanded.push([title+(expanded.some(x=>x[0]===title)?' (continuação)':''),piece]);piece=''}
+   piece+=(piece?'\\n\\n':'')+part;
+  }
+  if(piece)expanded.push([title+(expanded.some(x=>x[0]===title)?' (continuação)':''),piece]);
+ }
  const groups=[];let chunk=[],used=0;
- for(const row of rows){
+ for(const row of expanded){
   const n=txt(row[1]).length+txt(row[0]).length;
   if(chunk.length && (used+n>limit || chunk.length>=3)){groups.push(chunk);chunk=[];used=0}
   chunk.push(row);used+=n
@@ -218,5 +249,5 @@ function mount(data){
 }
 function beforePrint(kind){if(!book)return;const host=$('miEditorial');host.dataset.restoreView=view;host.dataset.restoreIndex=String(index);view=kind==='teacher'?'teacher':'student';index=0;render()}
 function afterPrint(){const host=$('miEditorial');if(!host)return;view=host.dataset.restoreView||'student';index=Number(host.dataset.restoreIndex||0);render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'65.1'});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'65.2'});
 })();
