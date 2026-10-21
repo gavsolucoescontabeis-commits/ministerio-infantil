@@ -5,6 +5,7 @@
 (()=>{'use strict';
 const entries=[];
 let catalogError='';
+let lastReadyLesson=null;
 const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
 const ageNumber=raw=>{
  const value=String(raw||'').trim();
@@ -38,6 +39,7 @@ async function loadCatalog(){
   catalogError='';
  }catch(e){entries.splice(0);catalogError='O catálogo de atividades está temporariamente indisponível. Os roteiros do professor continuam funcionando normalmente.'}
  renderBank();renderSuggest();
+ if(lastReadyLesson)renderReady(lastReadyLesson);
 }
 function allApproved(){return entries.filter(p=>p.status==='approved')}
 function find(title,reference,age){
@@ -72,6 +74,7 @@ function renderSuggest(){
  box.append(card(p));
 }
 function renderReady(data,target){
+ lastReadyLesson=data||null;
  const box=target||document.getElementById('miReadyPackageOffer');if(!box)return;
  box.replaceChildren();const matches=find(data?.title,data?.reference,data?.age);
  if(!matches.length){box.hidden=true;return}
