@@ -17,6 +17,7 @@
   <script src="./pedagogia-v68.js?v=1" defer></script>
   <script src="./sugestoes-aula.js?v=7" defer></script>
   <script src="./caderno-editorial-v65.js?v=2" defer></script>
+  <script src="./pacotes-prontos.js?v=1" defer></script>
   <script src="./v66-loader.js?v=8" defer></script><script src="./estudos.js?v=21" defer></script>
 </head>
 <body>
@@ -122,6 +123,7 @@
                   <div class="span-2"><label for="lessonReference">Passagem Bíblica Principal *</label><input id="lessonReference" required maxlength="90" placeholder="Ex.: Marcos 10:13-16"><p class="topic-reference-help">Ao reconhecer um tema, sugerimos referências conferíveis. Você pode escolher outra passagem ou digitar manualmente.</p></div>
                 </div>
                 <div class="early-suggestion-action"><button type="button" id="generateLessonSuggestions" class="primary-btn">✦ Sugerir Aula</button><span>Informe tema, idade e passagem; depois escolha as sugestões para preparar a aula.</span></div>
+                <div id="miPreparedPackageCard" hidden aria-live="polite" aria-label="Material ilustrado pronto para este tema"></div>
               </div>
               <div class="form-part"><h3>02. Mensagem e Contexto</h3><p>A preparação deve permanecer fiel ao texto bíblico e à sua sequência.</p>
                 <label for="lessonGoal">Objetivo da Aula</label><textarea id="lessonGoal" rows="2" placeholder="O que as crianças devem compreender ao final da aula?"></textarea>
