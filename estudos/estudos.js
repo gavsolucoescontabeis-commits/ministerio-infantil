@@ -387,6 +387,12 @@ function applyLessonSuggestion(field,index){
  const values=lessonSuggestVariants?.[field];if(!Array.isArray(values)||!values[index])return;
  const [id,label]=LESSON_FIELDS[field]||[];const input=$(id);if(!input)return;
  if(input.value.trim()&&input.value.trim()!==values[index]&&!confirm('Substituir o conteúdo atual de "'+label+'"?'))return;
+ if(field==='questions'&&Array.isArray(lessonSuggestVariants.answerKey)){
+  const answer=lessonSuggestVariants.answerKey[index]||'';
+  const previous=$('lessonAnswers').value.trim();
+  if(previous&&previous!==answer&&!confirm('Atualizar também o Gabarito do Professor para corresponder às perguntas escolhidas?'))return;
+  $('lessonAnswers').value=answer;
+ }
  input.value=values[index];input.dispatchEvent(new Event('input',{bubbles:true}));
  lessonChoiceIndices[field]=index;updateChosenLessonOptions();
  toast('Opção escolhida para '+label+'. Continue escolhendo ou clique em Montar Aula e Visualizar.');
@@ -441,7 +447,10 @@ function fillEmptyLessonFields(){
  if(!lessonSuggestVariants)return;
  let applied=0;
  for(const [field,[id]] of Object.entries(LESSON_FIELDS)){
-  if(!$(id).value.trim()&&lessonSuggestVariants[field]?.[0]){$(id).value=lessonSuggestVariants[field][0];lessonChoiceIndices[field]=0;applied++}
+  if(!$(id).value.trim()&&lessonSuggestVariants[field]?.[0]){
+   $(id).value=lessonSuggestVariants[field][0];lessonChoiceIndices[field]=0;applied++;
+   if(field==='questions'&&!$('lessonAnswers').value.trim())$('lessonAnswers').value=lessonSuggestVariants.answerKey?.[0]||'';
+  }
  }
  updateChosenLessonOptions();
  toast(applied?applied+' campo(s) vazio(s) preenchido(s). Clique em Montar Aula e Visualizar para finalizar.':'Nenhum campo vazio. Escolha uma opção específica para substituir o texto.');
@@ -449,10 +458,10 @@ function fillEmptyLessonFields(){
 function getLessonForm(){const read=id=>$(id).value.trim();return {
  id:state.editingId,title:read('lessonTitle'),date:read('lessonDate'),age:selectedAge(),reference:read('lessonReference'),
  goal:read('lessonGoal'),context:read('lessonContext'),story:read('lessonStory'),application:read('lessonApplication'),
- questions:read('lessonQuestions'),activity:read('lessonActivity'),prayer:read('lessonPrayer')
+ questions:read('lessonQuestions'),answers:read('lessonAnswers'),activity:read('lessonActivity'),prayer:read('lessonPrayer')
 }}
 function putLessonForm(x){
- const ids={lessonTitle:'title',lessonDate:'date',lessonReference:'reference',lessonGoal:'goal',lessonContext:'context',lessonStory:'story',lessonApplication:'application',lessonQuestions:'questions',lessonActivity:'activity',lessonPrayer:'prayer'};
+ const ids={lessonTitle:'title',lessonDate:'date',lessonReference:'reference',lessonGoal:'goal',lessonContext:'context',lessonStory:'story',lessonApplication:'application',lessonQuestions:'questions',lessonAnswers:'answers',lessonActivity:'activity',lessonPrayer:'prayer'};
  for(const [id,key] of Object.entries(ids))$(id).value=x?.[key]??(id==='lessonDate'?dateNow():'');
  const chosenAge=String(x?.age||'9 anos');
  const known=['9 anos','4 a 6 anos','7 a 8 anos','10 a 12 anos','Adolescentes','Outra faixa etária'];
@@ -502,6 +511,34 @@ function renderReadyLesson(data){
  if(!container.children.length){
   const p=document.createElement('p');p.className='ready-empty';p.textContent='Nenhum conteúdo de aula foi incluído. Volte à preparação, selecione sugestões ou escreva nos campos.';container.append(p);
  }
+ const key=String(data.answers||'').trim();
+ $('readyAnswersSection').hidden=!key;
+ $('readyAnswersText').textContent=key;
+ renderPrintableWorksheet(data);
+}
+function renderPrintableWorksheet(data){
+ const generator=window.MI_PRINTABLE_ACTIVITIES;
+ if(!generator||typeof generator.worksheetFor!=='function'){toast('As atividades ilustradas não foram carregadas. Atualize a página.');return}
+ const worksheet=generator.worksheetFor(data);
+ $('worksheetTitle').textContent=worksheet.title;
+ $('worksheetReference').textContent='Passagem Bíblica: '+worksheet.reference+' • '+worksheet.age;
+ // A ilustração SVG é uma das figuras estáticas do módulo, nunca texto recebido do usuário.
+ $('worksheetArt').innerHTML=worksheet.artwork.svg;
+ const tasks=$('worksheetTasks');tasks.replaceChildren();
+ worksheet.prompts.forEach((prompt,index)=>{
+  const block=document.createElement('section');block.className='worksheet-task';
+  const question=document.createElement('h3');question.textContent=(index+1)+'. '+prompt;
+  block.append(question);
+  if(index>0&&index<worksheet.prompts.length-1){
+   const lines=document.createElement('div');lines.className='worksheet-answer-lines';
+   const lineCount=worksheet.group==='little'?1:worksheet.group==='early'?2:3;
+   for(let i=0;i<lineCount;i++){const line=document.createElement('div');line.className='worksheet-answer-line';lines.append(line)}
+   block.append(lines);
+  }
+  tasks.append(block);
+ });
+ $('readyWorksheetAdvice').hidden=false;
+ $('readyWorksheetTeacherHint').textContent=worksheet.teacherHint;
 }
 function openReadyLesson(data){
  previewLessonId=data.id;renderReadyLesson(data);navigate('aula-pronta');
@@ -522,9 +559,12 @@ function editReadyLesson(){
  if(lesson)putLessonForm(lesson);
  navigate('aulas');
 }
-function printReadyLesson(){
+function printReadyLesson(kind='teacher'){
  if(state.view!=='aula-pronta'){toast('Abra primeiro a visualização da aula pronta.');return}
- window.print();
+ document.body.dataset.miPrint=kind==='student'?'student':'teacher';
+ const done=()=>{if(document.body.dataset.miPrint===kind)delete document.body.dataset.miPrint};
+ window.addEventListener('afterprint',done,{once:true});
+ try{window.print()}catch(e){done();toast('Não foi possível abrir a impressão neste navegador.')}
 }
 function lessonPrompt(){const x=getLessonForm();
  if(!x.title||!x.reference){toast('Preencha o tema e a referência bíblica antes de pedir a aula.');return null}
@@ -595,8 +635,10 @@ function init(){
  $('readyEditLesson').addEventListener('click',editReadyLesson);
  $('readyEditLessonBottom').addEventListener('click',editReadyLesson);
  $('readySavedLessons').addEventListener('click',()=>navigate('acervo'));
- $('readyPrintLesson').addEventListener('click',printReadyLesson);
- $('readyPrintLessonBottom').addEventListener('click',printReadyLesson);
+ $('readyPrintLesson').addEventListener('click',()=>printReadyLesson('teacher'));
+ $('readyPrintLessonBottom').addEventListener('click',()=>printReadyLesson('teacher'));
+ $('readyPrintWorksheet').addEventListener('click',()=>printReadyLesson('student'));
+ $('readyPrintWorksheetBottom').addEventListener('click',()=>printReadyLesson('student'));
  $('fillEmptyLessonFields').addEventListener('click',fillEmptyLessonFields);
  $('lessonForm').addEventListener('submit',saveLesson);$('newLesson').addEventListener('click',()=>{if(confirm('Iniciar uma preparação em branco? As alterações ainda não salvas serão descartadas.'))putLessonForm(null)});
  $('copyMasterPrompt').addEventListener('click',()=>{const prompt=lessonPrompt();if(prompt)copy(prompt)});
