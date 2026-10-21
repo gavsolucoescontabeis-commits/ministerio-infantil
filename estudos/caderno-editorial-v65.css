@@ -83,3 +83,40 @@ body.mi-editorial-ready #readyWeeklySheet{display:none!important}
  body.mi-editorial-ready .mi-ed-footer{font-size:8pt}
  body.mi-editorial-ready[data-mi-worksheet-style="economy"] #miEditorial *{box-shadow:none!important}
 }
+
+/* V65.1 — impressão isolada do caderno editorial: não misturar modelo antigo. */
+@media screen {
+ #miEditorial .mi-ed-print-key {display:none!important}
+}
+@media print {
+ @page { size:A4 portrait; margin:10mm }
+ html,body {height:auto!important;overflow:visible!important}
+ body.mi-editorial-ready #readyLessonSheet,
+ body.mi-editorial-ready #readyWorksheetSheet,
+ body.mi-editorial-ready #readyWeeklySheet,
+ body.mi-editorial-ready #readyAnswersSection,
+ body.mi-editorial-ready #worksheetScene,
+ body.mi-editorial-ready .worksheet-preview-heading,
+ body.mi-editorial-ready .ready-actions {display:none!important}
+ body.mi-editorial-ready #view-aula-pronta {display:block!important;position:static!important;overflow:visible!important;height:auto!important;min-height:0!important}
+ body.mi-editorial-ready #miEditorial, body.mi-editorial-ready #miEditorial .mi-ed-frame,
+ body.mi-editorial-ready #miEditorial .mi-ed-stage {display:block!important;overflow:visible!important;position:static!important;height:auto!important;min-height:0!important;max-height:none!important;box-sizing:border-box!important}
+ body.mi-editorial-ready #miEditorial .mi-ed-page,
+ body.mi-editorial-ready #miEditorial .mi-ed-page[hidden] {
+   display:block!important;
+   position:static!important;break-inside:auto!important;page-break-inside:auto!important;
+   break-after:page!important;page-break-after:always!important;
+   width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;
+   padding:0!important;margin:0!important;box-sizing:border-box!important;
+ }
+ body.mi-editorial-ready #miEditorial .mi-ed-page:last-child{break-after:auto!important;page-break-after:auto!important}
+ body.mi-editorial-ready #miEditorial .mi-ed-page-head {padding:8px 13px!important}
+ body.mi-editorial-ready #miEditorial .mi-ed-body{padding:10px 9px!important;min-height:0!important}
+ body.mi-editorial-ready #miEditorial .mi-ed-item,
+ body.mi-editorial-ready #miEditorial .mi-ed-panel {break-inside:avoid-page!important;page-break-inside:avoid!important}
+ body.mi-editorial-ready #miEditorial .mi-ed-scene{max-height:58mm!important;object-fit:contain!important}
+ body.mi-editorial-ready #miEditorial .mi-ed-footer{padding:7px!important}
+ body.mi-editorial-ready[data-mi-print="student"] #miEditorial .mi-ed-teacher-sheet,
+ body.mi-editorial-ready[data-mi-print="student"] #miEditorial .mi-ed-print-key{display:none!important}
+ body.mi-editorial-ready[data-mi-print="teacher"] #miEditorial .mi-ed-print-key{display:block!important}
+}
