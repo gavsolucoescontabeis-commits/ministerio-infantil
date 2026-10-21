@@ -243,3 +243,78 @@ body.v66-ready .weekly-sheet{display:none!important}
 }
 #miEditorial .v664-section-title{font-size:13px;font-weight:900;color:#a65c26;margin:5px 0 7px;letter-spacing:.03em}
 @media print{body.v66-ready #miEditorial .v664-section-title{font-size:10.5pt!important;margin:3px 0 5px!important}}
+
+
+/* V67 — tema/idade universal com o mesmo acabamento visual de caderno. */
+#miEditorial .v67-cover-container{display:flex;flex-direction:column;gap:14px;min-height:625px;
+ background:linear-gradient(145deg,#eaf7dc,#e5f1ec 44%,#fef5d8 90%);padding:15px;border-radius:15px}
+#miEditorial .v67-cover-art,#miEditorial .v67-eden-hero{
+ height:380px;max-height:47vh;display:flex;align-items:center;justify-content:center;position:relative;
+ border-radius:18px;overflow:hidden;
+ background:radial-gradient(ellipse at 48% 60%,#fee7ac 0%,#ecf6d8 37%,#ccdfd0 78%,#acd2d9 100%)}
+#miEditorial .v67-cover-art::before,#miEditorial .v67-eden-hero::before{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(0deg,#f8f1d7 0%,transparent 26%,transparent 73%,#ecf8db66 100%);
+ z-index:1}
+#miEditorial .v67-cover-art img{height:96%;max-width:90%;width:auto;object-fit:contain;
+ -webkit-mask-image:radial-gradient(ellipse 79% 77% at 50% 49%,#000 53%,transparent 97%);
+ mask-image:radial-gradient(ellipse 79% 77% at 50% 49%,#000 53%,transparent 97%)}
+#miEditorial .v67-eden-hero img{position:absolute;top:8%;height:96%;max-width:55%;width:auto;object-fit:contain;
+ -webkit-mask-image:radial-gradient(ellipse 73% 71% at 49% 49%,#000 49%,transparent 97%);
+ mask-image:radial-gradient(ellipse 73% 71% at 49% 49%,#000 49%,transparent 97%)}
+#miEditorial .v67-eden-first{left:4%;z-index:2;transform:rotate(-4deg)}
+#miEditorial .v67-eden-second{right:5%;z-index:3;transform:rotate(4deg)}
+#miEditorial .v67-cover-copy{background:#fff9eaee;border:1px solid #ddca96;border-radius:14px;padding:17px 19px;text-align:center}
+#miEditorial .v67-cover-copy h3{font-size:24px;font-weight:900;color:#245d58;margin:5px 0}
+#miEditorial .v67-cover-copy p{font-size:13px;line-height:1.45;margin:5px auto}
+#miEditorial .v67-cover-copy>strong{font-size:13px;color:#9b5d1e}
+#miEditorial .v67-small-label{color:#a86e2b;letter-spacing:.07em;font-weight:850;font-size:11px!important}
+#miEditorial .v67-content-with-scene{display:grid;grid-template-columns:minmax(0,1fr) 135px;gap:12px;align-items:start}
+#miEditorial .v67-context-art{min-width:0;align-self:stretch;overflow:hidden;
+ background:radial-gradient(ellipse at 45% 53%,#d8eddd,#f6f8e9 69%,transparent 100%);border-radius:19px}
+#miEditorial .v67-context-art img{width:100%;height:310px;max-width:100%;object-fit:contain;object-position:center;
+ -webkit-mask-image:radial-gradient(ellipse at center,#000 46%,transparent 96%);
+ mask-image:radial-gradient(ellipse at center,#000 46%,transparent 96%)}
+#miEditorial .v67-exercise-stack{min-width:0}
+#miEditorial .v67-exercise{padding:11px 12px;margin-bottom:10px}
+#miEditorial .v67-exercise-lead{font-size:13px;line-height:1.45;font-weight:600;margin:0 0 9px}
+#miEditorial .v67-choices{display:grid;gap:5px}
+#miEditorial .v67-entry{display:flex;align-items:center;gap:9px;background:#f6faf5;border:1px solid #e1eade;border-radius:8px;padding:8px 9px;font-size:12px;line-height:1.25}
+#miEditorial .v67-emptybox{width:19px;height:19px;flex:none;border:2px solid #70ada5;background:white;border-radius:5px}
+#miEditorial .v67-word-bank,#miEditorial .v67-wordlist{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+#miEditorial .v67-match{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+#miEditorial .v67-match>div{display:grid;gap:10px}
+#miEditorial .v67-match>div>div{font-size:11px;min-height:36px;padding:9px 8px;border:1px solid #d5e5dd;background:#f9fdf7;border-radius:8px}
+#miEditorial .v67-illustrated-rail{display:flex;justify-content:flex-end;background:linear-gradient(100deg,transparent,#eef5dc);max-height:155px;overflow:hidden;border-radius:16px}
+#miEditorial .v67-illustrated-rail img{height:158px;width:auto;max-width:50%;object-fit:contain;
+ -webkit-mask-image:linear-gradient(90deg,transparent,#000 25%,#000 76%,transparent);
+ mask-image:linear-gradient(90deg,transparent,#000 25%,#000 76%,transparent)}
+#miEditorial .v67-wordgrid{margin:10px auto}
+#miEditorial .v67-wordgrid td{width:23px;height:23px}
+#miEditorial .v67-short-reflect .v66-lines div{height:18px}
+#miEditorial .v67-draw-space{border:2px dashed #b8d8bd;min-height:110px;text-align:center;padding:12px;background:#fffef8;border-radius:12px}
+#miEditorial .v67-draw-space div{font-size:22px;margin-top:18px;color:#5c8d68}
+#miEditorial .v67-closing{position:relative;display:grid;gap:10px}
+#miEditorial .v67-closing>.v66-card{max-width:79%;margin-bottom:0}
+#miEditorial .v67-final-illustration{position:absolute;width:190px;max-width:31%;right:0;bottom:0;z-index:0;
+ background:radial-gradient(ellipse at center,#eff3db 5%,transparent 70%);pointer-events:none}
+#miEditorial .v67-final-illustration img{max-width:100%;height:235px;max-height:235px;object-fit:contain;
+ -webkit-mask-image:radial-gradient(ellipse 85% 70% at center,#000 50%,transparent 98%);
+ mask-image:radial-gradient(ellipse 85% 70% at center,#000 50%,transparent 98%)}
+@media(max-width:620px){#miEditorial .v67-content-with-scene{grid-template-columns:minmax(0,1fr) 93px;gap:6px}
+#miEditorial .v67-context-art img{height:225px}
+#miEditorial .v67-cover-art,#miEditorial .v67-eden-hero{height:290px}
+#miEditorial .v67-cover-container{min-height:0}
+#miEditorial .v67-closing>.v66-card{max-width:85%}
+#miEditorial .v67-final-illustration{width:140px}
+#miEditorial .v67-wordgrid td{width:18px;height:18px}}
+@media print{
+ body.v66-ready #miEditorial .v67-cover-art,body.v66-ready #miEditorial .v67-eden-hero{height:120mm!important;max-height:120mm!important}
+ body.v66-ready #miEditorial .v67-cover-container{min-height:0!important}
+ body.v66-ready #miEditorial .v67-context-art img{height:90mm!important}
+ body.v66-ready #miEditorial .v67-content-with-scene{grid-template-columns:minmax(0,1fr) 33mm!important}
+ body.v66-ready #miEditorial .v67-exercise{padding:7px 9px!important;margin-bottom:5px!important}
+ body.v66-ready #miEditorial .v67-wordgrid td{height:5mm!important;width:5mm!important;font-size:9pt!important}
+ body.v66-ready #miEditorial .v67-closing>.v66-card{max-width:78%!important}
+ body.v66-ready #miEditorial .v67-final-illustration img{height:48mm!important}
+}
