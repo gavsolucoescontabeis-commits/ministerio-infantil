@@ -1,0 +1,88 @@
+/* Estudos V70 — roteiro do professor sem caderno infantil automático.
+   Banco de Atividades independente, catálogo com aprovação explícita. */
+body.mi-teacher-only #miEditorial,
+body.mi-teacher-only #readyLessonSheet,
+body.mi-teacher-only #readyWorksheetSheet,
+body.mi-teacher-only #readyWeeklySheet,
+body.mi-teacher-only #readyAnswersSection,
+body.mi-teacher-only .worksheet-preview-heading,
+body.mi-teacher-only .mi-student-legacy,
+body.mi-teacher-only .weekly-control {display:none!important}
+.mi-student-legacy[hidden],#miReadyPackageOffer[hidden],#miPreparedPackageCard[hidden]{display:none!important}
+.mi-teacher-document{max-width:880px;margin:0 auto 22px;background:#fff;border:1px solid #d4e3e7;
+ border-radius:15px;box-shadow:0 8px 29px #244c6022;color:#233c46;overflow:hidden}
+.mi-teacher-dochead{padding:25px 32px 18px;border-bottom:3px solid #1b8b88;
+ background:linear-gradient(110deg,#f7fcf9,#e7f4ef)}
+.mi-teacher-eyebrow{font:800 10px/1.5 Arial,sans-serif;color:#277b7b;text-transform:uppercase;letter-spacing:.11em}
+.mi-teacher-dochead h2{font-size:27px;line-height:1.2;color:#194b5b;margin:8px 0;overflow-wrap:break-word}
+.mi-teacher-meta{display:flex;flex-wrap:wrap;gap:7px}
+.mi-teacher-meta span{background:#fff;border:1px solid #cbdeda;border-radius:99px;padding:6px 10px;font-size:11px;color:#315b60;font-weight:700}
+.mi-teacher-intro{margin:0;padding:15px 32px;font-size:12px;color:#526975;background:#fbfefa}
+.mi-teacher-sections{padding:22px 28px 27px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mi-teacher-section{min-width:0;border:1px solid #e1e9e8;background:#fff;border-radius:10px;padding:13px 15px;break-inside:avoid-page}
+.mi-teacher-section h3{font-size:13px;color:#146f65;margin:0 0 8px;padding-bottom:7px;border-bottom:1px solid #e4eae9}
+.mi-teacher-section p{margin:0;color:#273a47;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.59}
+.mi-teacher-section.mi-teacher-story{grid-column:1/-1;background:#fffef9}
+.mi-teacher-section.mi-teacher-story p{columns:2;column-gap:20px;column-rule:1px solid #e7ecec;white-space:pre-wrap}
+.mi-teacher-section.mi-teacher-story p:empty{display:none}
+.mi-teacher-notice{font-size:10.5px;border-top:1px solid #dbe7e4;padding:12px 30px;color:#687f84;background:#f9fcfa}
+#miReadyPackageOffer,#miPreparedPackageCard{background:#f3faf5;border:1px solid #c9e3d6;padding:15px;margin:15px auto;border-radius:12px;max-width:880px}
+.mi-bank-toolbar{display:flex;flex-direction:column;gap:9px;margin:0 0 15px;padding:19px}
+.mi-bank-toolbar label{font-weight:800;color:#255f5c}
+.mi-bank-toolbar input{font-size:14px;width:100%;border:1px solid #b8d6d2;border-radius:9px;padding:12px}
+#miBankCount{font-size:11px;color:#5a7775}
+.mi-bank-list{display:grid;gap:14px}
+.mi-bank-entry{display:flex;gap:13px;align-items:flex-start;background:white;border:1px solid #d4e4df;
+ border-radius:14px;padding:14px;box-shadow:0 5px 15px #375f6110;min-width:0}
+.mi-bank-image{width:94px;min-height:98px;max-height:128px;object-fit:cover;border-radius:9px;flex:none}
+.mi-bank-entry-content{flex:1;min-width:0}
+.mi-bank-title{font-weight:900;color:#245c58;font-size:15px}
+.mi-bank-description,.mi-bank-offer-copy{font-size:12px;color:#526d6c;line-height:1.5;margin:7px 0 12px}
+.mi-bank-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.mi-bank-link{display:inline-flex;align-items:center;justify-content:center;background:#147c67;color:#fff;
+ text-decoration:none;border-radius:9px;font-size:12px;font-weight:850;padding:10px 12px}
+.mi-bank-link.secondary{background:#916138}
+.mi-bank-empty{padding:28px 22px;text-align:center;background:#f4f9f8;color:#5b7376;font-size:14px;
+ line-height:1.6;border:1px dashed #b8d5cf;border-radius:14px}
+.mi-bank-note{margin:19px 0;padding:15px 19px;border-left:3px solid #92c8b8;background:#f8faf7;
+ border-radius:7px;color:#466765;font-size:12px;line-height:1.6}
+.mi-bank-offer-heading{color:#23614f;font-size:14px}
+@media(max-width:720px){
+ .mi-teacher-sections{display:flex;flex-direction:column;padding:16px}
+ .mi-teacher-section.mi-teacher-story p{columns:1}
+ .mi-teacher-dochead{padding:20px 18px}
+ .mi-teacher-intro{padding:12px 18px}
+ .mi-bank-entry{gap:9px}
+ .mi-bank-image{width:75px}
+}
+@page{size:A4 portrait;margin:12mm}
+@media print{
+ body.mi-teacher-only,body.mi-teacher-only .main-area,body.mi-teacher-only .main-content{
+   background:white!important;color:black!important;margin:0!important;padding:0!important;
+   width:100%!important;max-width:none!important;overflow:visible!important
+ }
+ body.mi-teacher-only .sidebar,body.mi-teacher-only .topbar,body.mi-teacher-only .footer,
+ body.mi-teacher-only .page,body.mi-teacher-only .ready-actions,
+ body.mi-teacher-only .ready-screen-heading,body.mi-teacher-only #miReadyPackageOffer,
+ body.mi-teacher-only #miEditorial,body.mi-teacher-only #readyLessonSheet,
+ body.mi-teacher-only #readyWorksheetSheet,body.mi-teacher-only #readyWeeklySheet,
+ body.mi-teacher-only .worksheet-preview-heading{display:none!important}
+ body.mi-teacher-only #view-aula-pronta.page{display:block!important;max-width:none!important;width:100%!important;padding:0!important}
+ body.mi-teacher-only #miTeacherOnly.mi-teacher-document{display:block!important;background:white!important;
+   border:0!important;box-shadow:none!important;max-width:none!important;width:100%!important;
+   border-radius:0!important;overflow:visible!important;margin:0!important}
+ body.mi-teacher-only .mi-teacher-dochead{background:white!important;padding:0 0 8mm!important;border-bottom:2px solid #888!important}
+ body.mi-teacher-only .mi-teacher-dochead h2{font-size:20pt!important;color:#111!important}
+ body.mi-teacher-only .mi-teacher-meta span{font-size:8pt!important;border:1px solid #bbb!important}
+ body.mi-teacher-only .mi-teacher-intro{padding:3mm 0!important;font-size:9pt!important}
+ body.mi-teacher-only .mi-teacher-sections{display:grid!important;grid-template-columns:1fr 1fr!important;
+  gap:3mm!important;padding:0!important}
+ body.mi-teacher-only .mi-teacher-section{border:1px solid #ddd!important;border-radius:0!important;
+  padding:3mm!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ body.mi-teacher-only .mi-teacher-section h3{font-size:11pt!important;margin:0 0 2mm!important}
+ body.mi-teacher-only .mi-teacher-section p{font-size:9.5pt!important;line-height:1.38!important}
+ body.mi-teacher-only .mi-teacher-section.mi-teacher-story{grid-column:1/-1!important}
+ body.mi-teacher-only .mi-teacher-section.mi-teacher-story p{columns:2!important;
+  column-gap:5mm!important;column-rule:1px solid #ddd!important}
+ body.mi-teacher-only .mi-teacher-notice{padding:3mm 0!important;font-size:8pt!important}
+}
