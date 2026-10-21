@@ -347,3 +347,17 @@
  body[data-mi-print="student"] .worksheet-exercises .worksheet-match-entry{font-size:9pt!important}
  body[data-mi-print="student"] .worksheet-exercises .worksheet-choice{min-height:27px!important;padding:5px!important;font-size:9pt!important}
 }
+
+/* Labirintos: espaços em branco para a criança traçar o caminho. */
+.worksheet-maze-grid{width:225px;max-width:100%;aspect-ratio:1;display:grid;gap:0;margin:11px auto;border-radius:8px;background:#fffef8;padding:6px;box-shadow:inset 0 0 0 1px #e1e4bd}
+.worksheet-maze-cell{display:grid;place-items:center;font-size:13px;font-weight:900;color:#4a8b9f;min-width:0;min-height:0;line-height:1}
+.worksheet-maze-cell.maze-start{background:#d4f4c7;color:#26834f}
+.worksheet-maze-cell.maze-end{background:#fff0c0;color:#b57a17}
+.worksheet-maze-caption{font-size:10px;text-align:center;font-weight:800;color:#62808e;margin:5px 0 1px}
+.worksheet-sheet[data-style="economy"] .worksheet-maze-cell{color:#333}
+.worksheet-sheet[data-style="economy"] .worksheet-maze-cell.maze-start,.worksheet-sheet[data-style="economy"] .worksheet-maze-cell.maze-end{background:#eee!important;color:#222}
+@media print{
+ body[data-mi-print="student"] .worksheet-maze-grid{width:170px!important;padding:3px!important;margin:5px auto!important;box-shadow:none!important;background:#fff!important}
+ body[data-mi-print="student"] .worksheet-maze-cell{font-size:10px!important}
+ body[data-mi-print="student"] .worksheet-maze-caption{font-size:8pt!important;margin:2px 0!important}
+}
