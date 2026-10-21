@@ -86,3 +86,12 @@ body.mi-teacher-only .weekly-control {display:none!important}
   column-gap:5mm!important;column-rule:1px solid #ddd!important}
  body.mi-teacher-only .mi-teacher-notice{padding:3mm 0!important;font-size:8pt!important}
 }
+/* Roteiros extensos não ficam presos a uma página nem são cortados. */
+@media print{
+ body.mi-teacher-only .mi-teacher-section.mi-teacher-story{
+  break-inside:auto!important;page-break-inside:auto!important;
+ }
+ body.mi-teacher-only .mi-teacher-section.mi-teacher-story p{
+  break-inside:auto!important;orphans:3;widows:3;
+ }
+}
