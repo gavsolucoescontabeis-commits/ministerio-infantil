@@ -103,7 +103,7 @@ const seededShuffle=(arr,seed)=>{let a=[...arr],v=seed>>>0;for(let i=a.length-1;
 const hash=s=>{let n=2166136261;for(const c of String(s)){n^=c.charCodeAt(0);n=Math.imul(n,16777619);}return n>>>0};
 const cellWords=(words,seed)=>{
  const sorted=[...new Set(words.map(w=>norm(w).replace(/\s/g,'')).filter(w=>w.length>=3&&w.length<=10))].slice(0,5);
- const N=11,grid=Array.from({length:N},()=>Array(N).fill('')),placed=[];
+ const N=11,grid=Array.from({length:N},()=>Array(N).fill('')),placed=[],locations=[];
  let v=seed>>>0;const roll=m=>{v=(Math.imul(v,1664525)+1013904223)>>>0;return v%m};
  for(const word of sorted){
   let found=false;
@@ -113,12 +113,14 @@ const cellWords=(words,seed)=>{
    const row=roll(N-(vertical?word.length:0)),col=roll(N-(vertical?0:word.length));
    if([...chars].every((c,i)=>{const rr=row+(vertical?i:0),cc=col+(vertical?0:i);return !grid[rr][cc]||grid[rr][cc]===c})){
     [...chars].forEach((c,i)=>{grid[row+(vertical?i:0)][col+(vertical?0:i)]=c});
-    placed.push(word);found=true;
+    placed.push(word);
+    locations.push(word+': linha '+(row+1)+', coluna '+(col+1)+' ('+(vertical?(reverse?'para cima ↑':'para baixo ↓'):(reverse?'para a esquerda ←':'para a direita →'))+').');
+    found=true;
    }
   }
  }
  const letters='AEIOUBCDFGLMNPRSTV';for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(!grid[r][c])grid[r][c]=letters[roll(letters.length)];
- return {grid,words:placed,answer:'Palavras: '+placed.join(', ')+'. Encontrá-las na horizontal ou vertical, nas duas direções.'};
+ return {grid,words:placed,answer:'Solução do Caça-Palavras: '+locations.join(' ')};
 };
 function activitySheet(data){
  const item=choose(data);
