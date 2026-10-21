@@ -145,19 +145,21 @@ function renderRecentRows(rows,documents=null){
  recentList.replaceChildren();
  if(!rows.length){recentList.textContent='Nenhum cadastro concluído ainda.';return}
  for(const app of rows){
+  const oldAccountDisabled=String(app.activation_email_error||'').startsWith('Acesso antigo desativado:');
   const card=document.createElement('div');card.className='mi-recent-card';
   const title=document.createElement('strong');
-  title.textContent=(app.status==='imported'?'✅ ':'⛔ ')+escText(app.full_name);
+  title.textContent=(oldAccountDisabled?'⛔ ':app.status==='imported'?'✅ ':'⛔ ')+escText(app.full_name);
   const meta=document.createElement('div');meta.className='mi-recent-meta';
   const entries=[
-   ['Situação',app.status==='imported'?'Aprovado e importado':'Descartado'],
+   ['Situação',oldAccountDisabled?'Acesso antigo desativado — novo cadastro necessário':app.status==='imported'?'Aprovado e importado':'Descartado'],
    ['CPF',fmtCpf(app.cpf)],['WhatsApp',app.phone||'—'],['E-mail',app.email||'—'],
    ['Área informada',areaLabel(app.area)],['Atuação informada',roleLabel(app.declared_role)],
    ['Concluído em',fmtDateTime(app.reviewed_at||app.created_at)]
   ];
   for(const [k,v] of entries){const d=document.createElement('div'),b=document.createElement('b');b.textContent=k+': ';d.append(b,document.createTextNode(escText(v)));meta.appendChild(d)}
   const mail=document.createElement('p');mail.className='small';
-  if(app.status==='imported'){
+  if(oldAccountDisabled) mail.textContent='⚠️ Conta antiga desativada por endereço de e-mail incorreto. O CPF foi liberado para novo pré-cadastro; não reenvie o link anterior.';
+  else if(app.status==='imported'){
    if(app.activation_email_sent_at) mail.textContent='✉️ E-mail para criação da senha enviado em '+fmtDateTime(app.activation_email_sent_at)+'.';
    else if(app.account_user_id) mail.textContent='🟡 Acesso criado, mas o envio automático do e-mail ainda não foi confirmado.';
    else mail.textContent='Cadastro concluído antes da automação do e-mail; os dados permanecem disponíveis aqui.';
@@ -182,7 +184,7 @@ function renderRecentRows(rows,documents=null){
     card.append(review);
    }
   }
-  if(app.status==='imported'&&app.account_user_id){
+  if(app.status==='imported'&&app.account_user_id&&!oldAccountDisabled){
     const resend=document.createElement('button');resend.type='button';resend.className='soft';resend.textContent='✉️ Reenviar e-mail de criação da senha';
     const feedback=document.createElement('span');feedback.className='small';feedback.style.marginLeft='8px';
     resend.addEventListener('click',()=>resendActivation(app,resend,feedback));
