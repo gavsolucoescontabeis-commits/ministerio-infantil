@@ -146,7 +146,7 @@ function generic(d,age){
  const companion=primary==='lia'?'maya':primary==='pipo'?'lia':'pipo';
  const topic=norm(d.title),eden=/adao|eva|jardim do eden/.test(topic)&&/genesis\s*[23]/.test(norm(d.reference));
  const lessonRef=esc(d.reference),lessonTitle=esc(d.title);
- const illustration=eden?'<div class="v67-eden-hero"><img class="v67-eden-illustration" src="./assets/estudos/adao_eva_exploradores.webp" alt="Exploradores diante de uma paisagem exuberante, como ilustração temática" loading="eager"></div>':
+ const illustration=eden?'<div class="v67-eden-hero">'+image('lia','v67-eden-first','Investigadora em ambiente de descoberta')+image('maya','v67-eden-second','Personagem refletindo com fé')+'</div>':
  '<div class="v67-cover-art v67-cover-art-'+primary+'">'+image(primary,'v67-cover-character','Mascote em aventura de aprendizado')+'</div>';
  const cover=sheet('child',d.title.toUpperCase(),
   '<div class="v67-cover-container">'+illustration+
@@ -232,7 +232,7 @@ function mount(d){
  // Sem pacote de arte bíblica revisado para outros temas, preservamos o editor V65.
  // Não publicar uma falsa aula ilustrada apenas reaproveitando mascotes.
  usingPrevious=false;
- book=creation?buildCreation(d,getAge(d)):generic(d,getAge(d));
+ book=creation&&getAge(d)===9?buildCreation(d,getAge(d)):generic(d,getAge(d));
  student=book.student;teachers=teacherPages(d,book);keys=answerPages(d,book);
  view='child';page=0;printing=false;document.body.classList.add('mi-editorial-ready','v66-ready');
  render();return true;
@@ -243,5 +243,5 @@ function beforePrint(kind){
  if(kind==='teacher'&&keys.length){const target=$('miEditorial .v66-stage')||document.querySelector('#miEditorial .v66-stage');if(target)target.insertAdjacentHTML('beforeend',keys.map((p,i)=>wrap(p,i,keys.length,current)).join(''))}
 }
 function afterPrint(){if(usingPrevious)return previousEditor?.afterPrint?.();if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'67.0',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'67.1',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
 })();
