@@ -139,6 +139,27 @@ collections.push(
  }
 );
 
+
+/* Atividades contextualizadas: Gênesis 2 e 3 não são intercambiáveis. */
+collections.unshift(
+ {id:'adao-eva3',test:/ADAO|EVA|JARDIM DO EDEN|DESOBEDIENCIA/,references:[/^GENESIS 3/],theme:'Escolhas e Consequências',
+  words:['DEUS','EVA','ADAO','JARDIM','SERPENTE'],
+  choice:{q:'Quem conversou com a mulher sobre o fruto proibido?',options:['A serpente','Noé','Abraão'],answer:0,ref:'Gênesis 3:1-5'},
+  fill:{text:'Adão e Eva se esconderam entre as árvores do ______.',answers:['JARDIM'],ref:'Gênesis 3:8'},
+  match:{q:'Relacione cada pessoa ou elemento ao relato.',pairs:[['A serpente','Conversou com a mulher'],['A mulher','Comeu do fruto e deu ao homem'],['O homem','Também comeu do fruto']],ref:'Gênesis 3:1-6'},
+  order:{q:'Numere os fatos segundo Gênesis 3.',items:['A serpente conversou com a mulher.','A mulher e o homem comeram do fruto.','Eles ouviram a voz do Senhor e se esconderam.','Deus perguntou o que havia acontecido.'],ref:'Gênesis 3:1-13'},
+  talk:'Quando tomamos uma decisão errada, como podemos reconhecer o erro e dizer a verdade?'
+ },
+ {id:'adao-eva2',test:/ADAO|EVA|JARDIM DO EDEN|CRIACAO DO HOMEM|CRIACAO DA MULHER/,references:[/^GENESIS 2/],theme:'Vida e Responsabilidade no Jardim',
+  words:['DEUS','JARDIM','HOMEM','MULHER','ARVORE'],
+  choice:{q:'Onde Deus colocou o homem para cultivar e guardar?',options:['No jardim do Éden','Na arca','Em Jericó'],answer:0,ref:'Gênesis 2:8,15'},
+  fill:{text:'Deus colocou o homem no jardim para o cultivar e o ______.',answers:['GUARDAR'],ref:'Gênesis 2:15'},
+  match:{q:'Ligue cada afirmação à referência correta.',pairs:[['Deus formou o homem','Gênesis 2:7'],['Deus colocou o homem no jardim','Gênesis 2:8'],['Deus fez a mulher','Gênesis 2:21-22']],ref:'Gênesis 2:7-22'},
+  order:{q:'Numere os acontecimentos descritos em Gênesis 2.',items:['Deus formou o homem do pó da terra.','Deus colocou o homem no jardim do Éden.','Deus deu ao homem a tarefa de cultivar e guardar o jardim.','Deus fez a mulher e a trouxe ao homem.'],ref:'Gênesis 2:7-22'},
+  talk:'Qual responsabilidade você pode exercer com cuidado nas atividades da sua casa ou da igreja?'
+ }
+);
+
 const choose=(data)=>{
  const title=norm(data.title),ref=norm(data.reference);
  return collections.find(x=>x.test.test(title)&&x.references.some(p=>p.test(ref)))||null;
