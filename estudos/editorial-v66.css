@@ -323,3 +323,26 @@ body.v66-ready .weekly-sheet{display:none!important}
 #miEditorial .v67-maze{border-collapse:collapse;margin:9px auto 2px}
 #miEditorial .v67-maze td{width:29px;height:29px;background:#fcfffc;text-align:center;vertical-align:middle;font-size:15px}
 @media print{body.v66-ready #miEditorial .v67-maze td{width:7mm!important;height:7mm!important}}
+
+
+/* V68: encerramento responsivo em duas colunas — mascote nunca encobre respostas. */
+#miEditorial .v67-closing{display:grid;grid-template-columns:minmax(0,1fr) 162px;column-gap:12px;row-gap:8px;align-items:start}
+#miEditorial .v67-closing>.v66-card{grid-column:1;max-width:none;position:relative;z-index:1}
+#miEditorial .v67-closing>.v67-final-illustration{
+ grid-column:2;grid-row:1 / span 3;align-self:end;justify-self:center;
+ position:relative;right:auto;bottom:auto;width:100%;max-width:162px;
+ height:auto;background:radial-gradient(ellipse at center,#f0f5e4 4%,transparent 77%);
+}
+#miEditorial .v67-closing>.v67-final-illustration img{max-width:100%;width:100%;height:auto;max-height:300px;object-fit:contain;object-position:center}
+@media(max-width:600px){
+ #miEditorial .v67-closing{grid-template-columns:minmax(0,1fr) 93px;column-gap:6px}
+ #miEditorial .v67-closing>.v67-final-illustration{max-width:93px}
+}
+@media print{
+ body.v66-ready #miEditorial .v67-closing{grid-template-columns:minmax(0,1fr) 36mm!important;column-gap:3mm!important;break-inside:avoid-page!important}
+ body.v66-ready #miEditorial .v67-closing>.v66-card{max-width:none!important}
+ body.v66-ready #miEditorial .v67-closing>.v67-final-illustration{grid-column:2!important;grid-row:1/span 3!important;right:auto!important;bottom:auto!important;position:relative!important;max-width:36mm!important}
+ body.v66-ready #miEditorial .v67-closing>.v67-final-illustration img{width:100%!important;height:auto!important;max-height:75mm!important}
+ body.v66-ready #miEditorial .v66-teacher .v66-card p{font-size:9.2pt!important;line-height:1.32!important}
+ body.v66-ready #miEditorial .v66-teacher .v66-card{padding:5px 7px!important;margin-bottom:4px!important}
+}
