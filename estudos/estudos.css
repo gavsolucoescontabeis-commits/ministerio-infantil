@@ -361,3 +361,115 @@
  body[data-mi-print="student"] .worksheet-maze-cell{font-size:10px!important}
  body[data-mi-print="student"] .worksheet-maze-caption{font-size:8pt!important;margin:2px 0!important}
 }
+
+/* Revista da Palavra: identidade gráfica própria, ilustração original e Tempo com Deus. */
+.weekly-control{font-size:12px!important;line-height:1.4!important;color:#356178!important;display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid #bfe2c9;border-radius:9px;background:#f2fbf5;max-width:255px;margin:4px 0 0}
+.weekly-control input{flex:none;width:17px;height:17px;accent-color:#279d7d}
+.worksheet-sheet{background:#fffcf6!important;border-color:#c9dfe4!important;overflow:hidden}
+.worksheet-sheet:before{background:radial-gradient(circle,#ffe9ac 0%,#ffefc665 55%,transparent 74%)}
+.worksheet-sheet:after{background:radial-gradient(circle,#bde9e689 0%,transparent 73%)}
+.worksheet-brand{align-items:center;border-bottom:3px solid #eba252}
+.worksheet-brand span{background:#f8c86d;color:#774d1a;border:0;letter-spacing:.075em}
+.worksheet-sheet h2{color:#9b602f;font-size:25px}
+.worksheet-tag{background:#e4f4c4;border-color:#c0d795;color:#587225}
+.worksheet-cover-scene{width:100%;border-radius:15px;margin:13px 0 9px;border:2px solid #e7dbbd;overflow:hidden;background:#e7f5ef}
+.magazine-scene{display:block;width:100%;height:auto;aspect-ratio:800/220}
+.worksheet-illustration.worksheet-coloring{display:none}
+.worksheet-sheet[data-style="economy"] .worksheet-cover-scene{display:none}
+.worksheet-sheet[data-style="economy"] .worksheet-coloring{display:block;border-color:#999}
+.worksheet-sheet[data-style="economy"] .worksheet-art{stroke:#222!important}
+.worksheet-exercises{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:12px}
+.worksheet-exercises .worksheet-challenge{border:1px solid #e6d8c0;background:#fff;border-radius:12px;margin:0;box-shadow:0 2px 0 #cbdfea}
+.worksheet-challenge:nth-child(2n){border-color:#cce5d3;box-shadow:0 2px 0 #d8e8d3}
+.worksheet-challenge:nth-child(3n){border-color:#e7d5c9;box-shadow:0 2px 0 #efddba}
+.worksheet-challenge-title h3{font-size:14px}
+.worksheet-choice-options{gap:6px}
+.worksheet-choice{font-size:11px;min-height:32px;padding:6px 9px}
+.worksheet-match-entry{font-size:10px;line-height:1.3;min-height:41px}
+.worksheet-order-item{font-size:11px;padding:7px 8px}
+.worksheet-wordsearch-grid{max-width:275px}
+.worksheet-letter{height:21px;font-size:11px}
+.worksheet-maze-grid{max-width:195px}
+.worksheet-drawing{padding:10px 14px;background:#fff9e8}
+.worksheet-drawing-space{min-height:76px}
+.worksheet-drawing p{margin-bottom:4px}
+.weekly-sheet{margin:19px auto 0;max-width:870px;background:#fffdf7!important;border:2px solid #edd6ad!important;border-radius:14px!important;padding:32px 38px!important;box-shadow:0 6px 24px rgba(125,85,38,.06)!important;overflow:hidden}
+.weekly-sheet[hidden]{display:none!important}
+.weekly-banner{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(110deg,#efa350,#f8bd66);color:#fff;padding:24px 27px;border-radius:20px;min-height:117px}
+.weekly-overline{font-size:10px;font-weight:850;letter-spacing:.09em;opacity:.94}
+.weekly-banner h2{font-size:27px;font-weight:950;margin:5px 0 2px;color:#fff}
+.weekly-banner p{font-size:12px;line-height:1.5;margin:0;opacity:.97}
+.weekly-banner-spark{border:4px solid rgba(255,255,255,.65);border-radius:50%;width:72px;height:72px;display:grid;place-items:center;font-size:42px;flex:none;color:#fff8d0}
+.weekly-intro{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:13px 0 5px}
+.weekly-intro strong{color:#996333;font-size:13px}
+.weekly-intro span{font-size:11px;background:#e5f3dc;color:#557542;border-radius:14px;padding:6px 11px;font-weight:750}
+.weekly-identity{border-bottom:1px dashed #bba992;padding:8px 0 11px;color:#6a665b;font-size:11px;font-weight:650}
+.weekly-days{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:13px}
+.weekly-day{position:relative;min-width:0;border:1px solid #e5e9eb;border-radius:13px;background:#f8fafb;overflow:hidden;padding:0 12px 10px;break-inside:avoid;page-break-inside:avoid}
+.weekly-day:nth-child(3n+1){background:#f5f6ed;border-color:#dce6c7}
+.weekly-day:nth-child(3n+2){background:#f2f7fb;border-color:#cddfeb}
+.weekly-day:nth-child(3n){background:#fff4ea;border-color:#edddce}
+.weekly-day-heading{margin:0 -12px 8px;display:flex;align-items:center;gap:8px;background:#d1e4c0;padding:6px 11px;min-height:34px}
+.weekly-day:nth-child(3n+2) .weekly-day-heading{background:#d8e9f4}
+.weekly-day:nth-child(3n) .weekly-day-heading{background:#f7dbbd}
+.weekly-day-badge{font-weight:950;font-size:10px;color:#677d4a;border-radius:20px;background:#fff9;padding:4px 7px}
+.weekly-day-name{text-transform:capitalize;font-size:12px;color:#5f674f;font-weight:900}
+.weekly-day-body h3{margin:0 0 4px;color:#526a44;font-size:12px;font-weight:900}
+.weekly-day-lead,.weekly-day-task{font-size:11px;line-height:1.48;color:#4a5965;margin:0 0 5px}
+.weekly-day-task{font-weight:680}
+.weekly-day-line{border-bottom:1px solid #9db4a0;min-height:17px}
+.weekly-mission,.weekly-memory{border-radius:13px;padding:13px 16px;margin-top:13px;break-inside:avoid;page-break-inside:avoid}
+.weekly-mission{background:#e3f2d6;border:1px solid #c4dea9;color:#41683d}
+.weekly-memory{background:#fff0cf;border:1px solid #f0d294;color:#9a642b}
+.weekly-mission strong,.weekly-memory strong{font-size:15px;font-weight:900}
+.weekly-mission p,.weekly-memory p{font-size:11px;line-height:1.4;color:#4e6650;margin:5px 0}
+.weekly-mission div,.weekly-memory div{font-size:11px;margin-top:8px;color:#4d5961}
+.weekly-sheet .worksheet-footer{margin-top:11px}
+@media(max-width:610px){
+ .weekly-sheet{padding:21px 15px!important}
+ .weekly-banner{padding:18px 16px;min-height:95px}
+ .weekly-banner h2{font-size:21px}
+ .weekly-banner-spark{width:46px;height:46px;font-size:26px}
+ .weekly-days{grid-template-columns:1fr}
+ .worksheet-exercises{grid-template-columns:1fr}
+ .worksheet-cover-scene{margin-top:12px}
+}
+@page{size:A4 portrait;margin:12mm}
+@media print{
+ body[data-mi-print="teacher"] .weekly-sheet{display:none!important}
+ body[data-mi-print="student"] #readyWeeklySheet:not([hidden]){display:block!important;break-before:page!important;page-break-before:always!important}
+ body[data-mi-print="student"] #readyWeeklySheet[hidden]{display:none!important}
+ body[data-mi-print="student"] .weekly-sheet{width:100%!important;max-width:none!important;overflow:visible!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important}
+ body[data-mi-print="student"] .weekly-banner{min-height:80px!important;padding:14px 19px!important;border-radius:12px!important}
+ body[data-mi-print="student"] .weekly-banner h2{font-size:20pt!important}
+ body[data-mi-print="student"] .weekly-banner p{font-size:10pt!important}
+ body[data-mi-print="student"] .weekly-banner-spark{width:50px!important;height:50px!important;font-size:28px!important}
+ body[data-mi-print="student"] .weekly-identity{padding:7px 0!important}
+ body[data-mi-print="student"] .weekly-days{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-top:11px!important}
+ body[data-mi-print="student"] .weekly-day{padding:0 9px 7px!important;border-radius:9px!important}
+ body[data-mi-print="student"] .weekly-day-heading{margin:0 -9px 5px!important;padding:4px 9px!important;min-height:25px!important}
+ body[data-mi-print="student"] .weekly-day-name{font-size:10pt!important}
+ body[data-mi-print="student"] .weekly-day-body h3{font-size:10pt!important;margin-bottom:2px!important}
+ body[data-mi-print="student"] .weekly-day-lead,body[data-mi-print="student"] .weekly-day-task{font-size:9pt!important;margin-bottom:3px!important}
+ body[data-mi-print="student"] .weekly-day-line{min-height:14px!important}
+ body[data-mi-print="student"] .weekly-mission,body[data-mi-print="student"] .weekly-memory{margin-top:9px!important;padding:10px 14px!important}
+ body[data-mi-print="student"] .worksheet-cover-scene{margin:7px auto!important;border-radius:11px!important}
+ body[data-mi-print="student"] .magazine-scene{height:112px!important;width:100%!important;aspect-ratio:auto!important}
+ body[data-mi-print="student"] .worksheet-illustration.worksheet-coloring{display:none!important}
+ body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"] .worksheet-cover-scene{display:none!important}
+ body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"] .worksheet-coloring{display:block!important;max-width:280px!important;padding:2px!important;margin:7px auto!important}
+ body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"] .worksheet-art{width:220px!important;height:102px!important}
+ body[data-mi-print="student"] .worksheet-brand{padding-bottom:4px!important}
+ body[data-mi-print="student"] .worksheet-tag{margin:6px auto 2px!important;padding:4px 12px!important}
+ body[data-mi-print="student"] .worksheet-reference{margin-bottom:8px!important}
+ body[data-mi-print="student"] .worksheet-identification{padding:4px 0 9px!important}
+ body[data-mi-print="student"] .worksheet-exercises{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ body[data-mi-print="student"] .worksheet-challenge{break-inside:avoid!important;page-break-inside:avoid!important}
+ body[data-mi-print="student"] .worksheet-drawing{margin-top:7px!important;padding:7px!important}
+ body[data-mi-print="student"] .worksheet-drawing-space{min-height:62px!important}
+ body[data-mi-print="student"] #readyWorksheetSheet[data-style="economy"]{background:#fff!important}
+ body[data-mi-print="student"][data-mi-worksheet-style="economy"] .weekly-sheet *{background-color:transparent!important;color:#222!important;box-shadow:none!important;border-color:#aaa!important}
+ body[data-mi-print="student"][data-mi-worksheet-style="economy"] .weekly-banner{border:1px solid #555!important;color:#222!important}
+ body[data-mi-print="student"][data-mi-worksheet-style="economy"] .weekly-banner *{color:#222!important}
+ body[data-mi-print="student"][data-mi-worksheet-style="color"] .weekly-sheet{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
+}
