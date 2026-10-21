@@ -1,0 +1,68 @@
+{
+  "version": "66.1",
+  "status": "aguardando_arquivos_artisticos",
+  "lesson": "A Criação — Gênesis 1:1–2:3",
+  "requiredAssets": [
+    {
+      "file": "lia_investigadora.webp",
+      "role": "Mascote investigadora nas pistas",
+      "source": "prancha aprovada Lia",
+      "minWidth": 450
+    },
+    {
+      "file": "pipo_aventureiro.webp",
+      "role": "Mascote aventureiro para temas de coragem",
+      "source": "prancha aprovada Pipo",
+      "minWidth": 450
+    },
+    {
+      "file": "maya_fe.webp",
+      "role": "Mascote de fé/reflexão",
+      "source": "prancha aprovada do trio",
+      "minWidth": 350
+    },
+    {
+      "file": "criacao_capa.webp",
+      "role": "Capa contextual dos dias da criação",
+      "source": "arte editorial A Criação",
+      "minWidth": 1000
+    },
+    {
+      "file": "criacao_natureza.webp",
+      "role": "Paisagem dia 3/natureza",
+      "source": "arte editorial A Criação",
+      "minWidth": 650
+    },
+    {
+      "file": "criacao_animais.webp",
+      "role": "Animais e seres humanos conforme Gênesis 1",
+      "source": "arte editorial A Criação",
+      "minWidth": 650
+    },
+    {
+      "file": "criacao_peixes.webp",
+      "role": "Seres aquáticos e aves dia 5",
+      "source": "arte editorial A Criação",
+      "minWidth": 650
+    },
+    {
+      "file": "pipo_cuidado.webp",
+      "role": "Dilema contemporâneo de cuidado ambiental",
+      "source": "Pipo, cena nova contextual",
+      "minWidth": 650
+    },
+    {
+      "file": "maya_gratidao.webp",
+      "role": "Reflexão de fé e gratidão",
+      "source": "Maya, cena nova contextual",
+      "minWidth": 650
+    }
+  ],
+  "rules": [
+    "Não ativar o V66 antes de confirmar que as 9 imagens existem e carregam pelo GitHub Pages.",
+    "Não reutilizar o mesmo rosto para outros personagens humanos, animais, Jesus ou anjos.",
+    "Imprimir com texto real e imagens separadas, nunca texto desenhado dentro de imagens.",
+    "Não misturar folhas legadas ou gabarito no caderno infantil.",
+    "Outros temas precisam de seus próprios pacotes de cenas revisadas, além dos mascotes contextuais."
+  ]
+}
