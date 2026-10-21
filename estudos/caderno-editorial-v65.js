@@ -109,7 +109,7 @@ function creationWorkbook(d,age){
 }
 function generalWorkbook(d,age){
  const creative=window.MI_CREATIVE_WORKSHEETS?.activitySheet?.(d);
- const studentPrompts=txt(d.questions).split(/\\n+/).map(x=>x.trim().replace(/^(?:[-•*]\\s*|\\d+[.)]\\s*)/,'')).filter(x=>x.length>12).slice(0,6);
+ const studentPrompts=txt(d.questions).split(/\n+/).map(x=>x.trim().replace(/^(?:[-•*]\s*|\d+[.)]\s*)/,'')).filter(x=>x.length>12).slice(0,6);
  const pages=[
  page(d.title,d.reference,box=>{box.append(panel('Nossa passagem',d.reference));box.append(p(txt(d.goal)||'Vamos aprender com uma leitura cuidadosa da Palavra de Deus.'))},'capa'),
  page('Lendo a Palavra','Compreensão do texto',box=>{
@@ -148,7 +148,7 @@ function generalWorkbook(d,age){
   },'investigacao'));
   answers.push('Perguntas selecionadas pelo professor: confira as respostas na passagem '+d.reference+'.');
  }
- const mission=(txt(d.application).split('\\n')[0]||'Converse em casa sobre a lição e pratique uma atitude relacionada ao ensino bíblico.').slice(0,260);
+ const mission=(txt(d.application).split('\n')[0]||'Converse em casa sobre a lição e pratique uma atitude relacionada ao ensino bíblico.').slice(0,260);
  pages.push(page('Missão para casa','Uma única missão prática',box=>{box.append(panel('Sua missão',mission));box.append(item('Compartilhe na próxima aula','O que você aprendeu e praticou?',2))},'fe'));
  if(txt(d.answers))answers.push('Gabarito informado pelo professor: '+d.answers);
  return{pages,answers,curated:!!creative?.curated,teacher:[
@@ -184,7 +184,7 @@ function groupSections(rows,limit){
  for(const [title,raw] of rows){
   const content=txt(raw);
   if(content.length<=limit){expanded.push([title,content]);continue}
-  const paragraphs=content.split(/\\n\\s*\\n|\\n(?=(?:DIA |[0-9]+[.)]|•))/).filter(Boolean);
+  const paragraphs=content.split(/\n\s*\n|\n(?=(?:DIA |[0-9]+[.)]|•))/).filter(Boolean);
   const pieces=[];
   for(const paragraph of paragraphs){
    if(paragraph.length<=limit){pieces.push(paragraph);continue}
@@ -199,7 +199,7 @@ function groupSections(rows,limit){
   let piece='';
   for(const part of pieces){
    if(piece&&(piece.length+part.length)>limit){expanded.push([title+(expanded.some(x=>x[0]===title)?' (continuação)':''),piece]);piece=''}
-   piece+=(piece?'\\n\\n':'')+part;
+   piece+=(piece?'\n\n':'')+part;
   }
   if(piece)expanded.push([title+(expanded.some(x=>x[0]===title)?' (continuação)':''),piece]);
  }
