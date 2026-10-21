@@ -102,7 +102,7 @@ function buildCreation(d,age){
  const cleanRiddle=riddle.content.split('<div class="v66-two-images">')[0];
  const investigationAndRiddles=sheet('child','INVESTIGAÇÃO E ENIGMAS',
   '<div class="v664-investigation">'+investigation.content+'</div>'+
-  (small?'':'<div class="v664-riddles">'+cleanRiddle+'</div>'),
+  (small?'':'<div class="v664-riddles"><h3 class="v664-section-title">ENIGMAS DA CRIAÇÃO</h3>'+cleanRiddle+'</div>'),
   {theme:'jade',subtitle:'Investigue, organize e descubra'});
  const challenges=sheet('child','DESAFIOS E REFLEXÃO',life.content,
   {theme:'pink',subtitle:'Coragem, sabedoria, fé e cuidado'});
