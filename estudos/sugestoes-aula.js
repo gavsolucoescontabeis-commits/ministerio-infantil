@@ -112,10 +112,7 @@ function generate({title,reference,age,verses,firstVerse=1,lastVerse=999}){
   '\nDiferencie a explicação do professor das palavras originais da Bíblia.';
  const story1=narrated?.script||fallbackStoryScript({reference:ref,age,verses:list,firstVerse,lastVerse});
  const story2=interactive?.script||fallbackStoryScript({reference:ref,age,verses:list,firstVerse,lastVerse,interactive:true});
- const ageQuestion=isLittle?'O que aconteceu? Quem aparece na história?':
-   isEarly?'Que parte da história chamou sua atenção? Como você contaria essa parte a um amigo?':
-   isTeen?'Que evidências do texto apoiam a mensagem central? Que interpretações não são autorizadas pela passagem?':
-    'O que aconteceu primeiro e depois? Que decisões os personagens tomaram? O que aprendemos sobre Deus?';
+ const qa=window.MI_PRINTABLE_ACTIVITIES?.makeQuestionSets({title,reference:ref,age,verses:list,firstVerse,lastVerse})||{questions:['1. O que o texto bíblico diz?','1. Onde podemos encontrar a passagem?'],answerKey:['Conferir diretamente '+ref+'.','Ler '+ref+' na Bíblia Livre.']};
  const activity1=isLittle?
    'Desenhe um acontecimento da história ou organize três figuras simples em ordem. O professor confere cada cena com o texto bíblico.':
    isEarly?'Em grupo, organize cartões com os acontecimentos principais. Cada cartão precisa corresponder à passagem estudada.':
@@ -142,12 +139,8 @@ function generate({title,reference,age,verses,firstVerse=1,lastVerse=999}){
    'Vamos pensar no nosso dia a dia: '+analogy+
    '\n\nPergunte: “O que a Bíblia ensina? Como nossa escolha de hoje pode demonstrar que compreendemos?”'
   ],
-  questions:[
-   '1. '+ageQuestion+'\n2. Qual ensinamento da passagem devemos guardar?'+(profile?'\n3. '+profile.question:'')+
-   '\n4. Como podemos praticá-lo hoje?',
-   isLittle?'1. Quem você conheceu nessa história?\n2. Do que você gostou mais?\n3. O que podemos fazer de bom hoje?':
-   '1. Qual é o contexto de '+ref+'?\n2. O que está claramente escrito no texto?\n3. Que parte é apenas uma comparação moderna?\n4. Qual ensinamento você colocará em prática?'
-  ],
+  questions:qa.questions,
+  answerKey:qa.answerKey,
   activity:[activity1,activity2],
   prayer:[
    prayer1,
