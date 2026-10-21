@@ -346,3 +346,16 @@ body.v66-ready .weekly-sheet{display:none!important}
  body.v66-ready #miEditorial .v66-teacher .v66-card p{font-size:9.2pt!important;line-height:1.32!important}
  body.v66-ready #miEditorial .v66-teacher .v66-card{padding:5px 7px!important;margin-bottom:4px!important}
 }
+
+
+/* V68.1: títulos completos e legíveis em diferentes larguras de tela e impressão. */
+#miEditorial .v66-pagehead h2,#miEditorial .v67-cover-copy h3{
+ white-space:normal!important;text-overflow:clip!important;overflow:visible!important;
+ overflow-wrap:break-word;word-break:normal;max-width:100%;line-height:1.18
+}
+#miEditorial .v66-pagehead p{overflow-wrap:anywhere}
+@media(max-width:570px){#miEditorial .v66-pagehead h2{font-size:20px!important}}
+@media print{
+ body.v66-ready #miEditorial .v66-pagehead h2{font-size:17pt!important;line-height:1.15!important}
+ body.v66-ready #miEditorial .v67-cover-copy h3{font-size:20pt!important}
+}
