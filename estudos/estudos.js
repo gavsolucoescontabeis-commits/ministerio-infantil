@@ -579,6 +579,24 @@ function renderWorksheetChallenge(challenge,index){
  }
  card.append(content);return card;
 }
+function renderWeeklyWorkbook(plan){
+ const sheet=$('readyWeeklySheet');
+ sheet.hidden=!plan||!$('worksheetIncludeWeek').checked;
+ const container=$('weeklyDays');container.replaceChildren();
+ if(!plan)return;
+ $('weeklyTitle').textContent='Minha Semana com '+String(plan.reference||'a Bíblia');
+ $('weeklyRef').textContent='Passagem: '+plan.reference;
+ $('weeklyMission').textContent=plan.mission;
+ for(const [i,day] of plan.days.entries()){
+  const card=worksheetNode('section','weekly-day');
+  const heading=worksheetNode('div','weekly-day-heading');
+  heading.append(worksheetNode('span','weekly-day-badge',String(i+1).padStart(2,'0')),worksheetNode('strong','weekly-day-name',day.day));
+  const task=worksheetNode('div','weekly-day-body');
+  task.append(worksheetNode('h3','',day.label),worksheetNode('p','weekly-day-lead',day.lead),worksheetNode('p','weekly-day-task',day.task));
+  card.append(heading,task,worksheetNode('div','weekly-day-line',''));
+  container.append(card);
+ }
+}
 function renderPrintableWorksheet(data){
  const generator=window.MI_PRINTABLE_ACTIVITIES;
  if(!generator||typeof generator.worksheetFor!=='function'){toast('As atividades ilustradas não foram carregadas. Atualize a página.');return}
@@ -587,8 +605,11 @@ function renderPrintableWorksheet(data){
  $('worksheetTitle').textContent=worksheet.title;
  $('worksheetReference').textContent='Passagem Bíblica: '+worksheet.reference+' • '+worksheet.age;
  $('worksheetThemeTag').textContent=creative?.theme||'Exploradores da Palavra';
- // Somente figuras vetoriais locais, nunca HTML recebido de um campo do usuário.
+ // Somente SVGs locais e fixos, nunca HTML recebido do usuário.
  $('worksheetArt').innerHTML=worksheet.artwork.svg;
+ const magazine=window.MI_MAGAZINE_ART;
+ $('worksheetScene').innerHTML=magazine?.svgFor(data)||'';
+ renderWeeklyWorkbook(magazine?.weeklyPlan(data)||null);
  $('worksheetTasks').replaceChildren();
  const challenges=$('worksheetExercises');challenges.replaceChildren();
  if(creative?.exercises?.length){
@@ -631,6 +652,7 @@ function printReadyLesson(kind='teacher'){
  if(state.view!=='aula-pronta'){toast('Abra primeiro a visualização da aula pronta.');return}
  document.body.dataset.miPrint=kind==='student'?'student':'teacher';
  document.body.dataset.miWorksheetStyle=$('worksheetPrintMode').value;
+ $('readyWeeklySheet').hidden=!$('worksheetIncludeWeek').checked;
  const done=()=>{if(document.body.dataset.miPrint===kind)delete document.body.dataset.miPrint};
  window.addEventListener('afterprint',done,{once:true});
  try{window.print()}catch(e){done();toast('Não foi possível abrir a impressão neste navegador.')}
@@ -709,6 +731,7 @@ function init(){
  $('readyPrintWorksheet').addEventListener('click',()=>printReadyLesson('student'));
  $('readyPrintWorksheetBottom').addEventListener('click',()=>printReadyLesson('student'));
  $('worksheetPrintMode').addEventListener('change',e=>{$('readyWorksheetSheet').dataset.style=e.target.value;document.body.dataset.miWorksheetStyle=e.target.value;});
+ $('worksheetIncludeWeek').addEventListener('change',e=>{$('readyWeeklySheet').hidden=!e.target.checked;});
  $('fillEmptyLessonFields').addEventListener('click',fillEmptyLessonFields);
  $('lessonForm').addEventListener('submit',saveLesson);$('newLesson').addEventListener('click',()=>{if(confirm('Iniciar uma preparação em branco? As alterações ainda não salvas serão descartadas.'))putLessonForm(null)});
  $('copyMasterPrompt').addEventListener('click',()=>{const prompt=lessonPrompt();if(prompt)copy(prompt)});
