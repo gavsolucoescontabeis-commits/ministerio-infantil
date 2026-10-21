@@ -87,7 +87,7 @@ function buildCreation(d,age){
  ['Dinâmica de 2 minutos',d.activity||'“Criado ou construído?”: compare árvore, peixe, estrela com casa, papel e livro. Explique a diferença.'],
  ['Aplicação prática',d.application||'Demonstre gratidão a Deus e responsabilidade ao cuidar da criação. A situação da praça é aplicação atual, não faz parte da narrativa bíblica.'],
  ['Missão única para casa','Observe algo da criação, pratique um gesto de cuidado e relate o aprendizado na próxima aula.'],
- ['Oração',d.prayer||'Agradeça a Deus por sua criação e peça sabedoria para cuidar dela.']
+ ['Orientação para conclusão','Retome o ensinamento central e deixe as crianças compartilharem a descoberta da atividade.']
  ].filter(a=>a[1]);
  const answers=[
  ['Ordem da criação','Na ordem impressa: 5, 1, 6, 4, 3, 2.'],
@@ -163,7 +163,7 @@ function generic(d,age){
  const group=age<7?'little':age<9?'early':age<10?'middle':age<13?'older':'teen';
  const mood=norm(d.title+' '+d.goal+' '+d.application);
  const primary=/corag|desafio|davi|vitoria|persever|luta/.test(mood)?'pipo':/fe|orac|confi|grat|esper|obedien/.test(mood)?'maya':'lia';
- const companion=primary==='lia'?'maya':primary==='pipo'?'lia':'pipo';
+ const companion=primary==='lia'?'pipo':primary==='pipo'?'pipo':'maya';
  const topic=norm(d.title),eden=/adao|eva|jardim do eden/.test(topic)&&/genesis\s*[23]/.test(norm(d.reference));
  const lessonRef=esc(d.reference),lessonTitle=esc(d.title);
  const illustration=eden?'<div class="v67-eden-hero">'+image('lia','v67-eden-first','Investigadora em ambiente de descoberta')+image('maya','v67-eden-second','Personagem refletindo com fé')+'</div>':
@@ -190,7 +190,7 @@ function generic(d,age){
  else if(deep.length)p3Content=deep.slice(0,2).map(x=>renderEducationalExercise(x,age)).join('');
  else p3Content=renderEducationalExercise({type:'reflect',title:'O que aprendi?',prompt:prompts[1]||'O que a passagem bíblica nos ensina?'},age);
  if(deep.length&&games.length) p3Content+='<div class="v67-short-reflect">'+renderEducationalExercise(deep[0],age)+'</div>';
- p3Content+='<div class="v67-illustrated-rail">'+image(companion,'','Refletindo sobre o ensinamento')+'</div>';
+ p3Content+='<div class="v67-illustrated-rail">'+image(companion,'','Apoio visual à atividade temática')+'</div>';
  const page3=sheet('child',age<8?'VAMOS BRINCAR E APRENDER':'DESAFIOS E DESCOBERTAS',p3Content,
   {theme:'orange',subtitle:'Jogos e pensamentos ligados à Palavra'});
  const mission=String(d.application||'Pratique uma atitude que combine com o ensinamento bíblico.').split(/\n/)[0].replace(/^COMPARAÇÃO ATUAL.*:/i,'').slice(0,210);
@@ -199,13 +199,13 @@ function generic(d,age){
   '<div class="v67-closing">'+card('MINHA DESCOBERTA',reflection||'<p>O que aprendi hoje?</p>'+lines(age<8?2:3))+
   card('UMA MISSÃO PARA CASA',para(mission))+
   card('TEMPO COM DEUS','<p>Leia ou relembre '+lessonRef+' e agradeça a Deus pelo que aprendeu.</p><p><b>Minha oração:</b></p>'+lines(2))+
-  '<div class="v67-final-illustration">'+image(companion,'','Apoio visual à reflexão')+'</div></div>',
+  '<div class="v67-final-illustration">'+image('maya','','Apoio visual à reflexão')+'</div></div>',
   {theme:'pink',subtitle:'Uma missão prática, sem tarefas por dias da semana'});
  const teacher=[['Objetivo',d.goal||'Ler e compreender '+d.reference],['Contexto bíblico',d.context||'Consulte o texto bíblico completo.'],
  ['Roteiro da aula',d.story||'Leia '+d.reference+' com a turma e explique os acontecimentos ou ensinamentos registrados no texto.'],
  ['Perguntas para conversar',d.questions||'O que aprendemos com este texto?'],['Dinâmica',d.activity||'Compartilhe uma descoberta da leitura.'],
  ['Aplicação',d.application||'Converse sobre uma atitude coerente com a passagem.'],
- ['Missão para casa',mission],['Oração',d.prayer||'Agradeça a Deus por Sua Palavra.']];
+ ['Missão para casa',mission]];
  const answers=answerRows.concat(d.answers?[['Gabarito preparado pelo professor',d.answers]]:[]);
  if(!answers.length)answers.push(['Questões abertas','Confira as respostas conforme o texto bíblico '+d.reference+'.']);
  return {student:[cover,page2,page3,page4],teacher,answers,curated:!!creative?.curated,theme:group};
@@ -263,5 +263,5 @@ function beforePrint(kind){
  if(kind==='teacher'&&keys.length){const target=$('miEditorial .v66-stage')||document.querySelector('#miEditorial .v66-stage');if(target)target.insertAdjacentHTML('beforeend',keys.map((p,i)=>wrap(p,i,keys.length,current)).join(''))}
 }
 function afterPrint(){if(usingPrevious)return previousEditor?.afterPrint?.();if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'67.2',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'68.0',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
 })();
