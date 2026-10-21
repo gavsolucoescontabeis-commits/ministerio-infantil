@@ -20,7 +20,7 @@ const assets={
  capa:'criacao_capa.webp',paisagem:'criacao_natureza.webp',animais:'criacao_animais.webp',
  peixes:'criacao_peixes.webp',cuidado:'pipo_cuidado.webp',gratidão:'maya_gratidao.webp'
 };
-const image=(key,cls='',alt='Ilustração editorial da lição')=>assets[key]?'<img class="v66-art '+cls+'" src="'+AS+assets[key]+'" loading="lazy" alt="'+esc(alt)+'">':'';
+const image=(key,cls='',alt='Ilustração editorial da lição')=>assets[key]?'<img class="v66-art '+cls+'" src="'+AS+assets[key]+'" loading="eager" alt="'+esc(alt)+'">':'';
 const tag=(s)=>'<span class="v66-tag">'+esc(s)+'</span>';
 const lines=(n=2)=>'<div class="v66-lines">'+Array.from({length:n},()=>'<div></div>').join('')+'</div>';
 const card=(title,body,cls='')=>'<section class="v66-card '+cls+'"><h3>'+title+'</h3>'+body+'</section>';
@@ -81,8 +81,8 @@ function buildCreation(d,age){
  const teacher=[
  ['Objetivo',d.goal||goal],['Versículo-chave','Gênesis 1:1 — “No princípio, criou Deus os céus e a terra.”'],
  ['Contexto bíblico',d.context||'Gênesis abre a Bíblia apresentando Deus como Criador; o relato descreve a criação e a responsabilidade dada aos seres humanos.'],
- ['Roteiro bíblico conferido',daysStory],
- ['Roteiro adicional selecionado pelo professor',d.story||''],
+ ['Roteiro para ensinar',d.story||daysStory],
+ ['Sequência bíblica de apoio',d.story?'':daysStory],
  ['Perguntas para conversar',d.questions||'O que foi criado no primeiro dia? Em qual dia surgiram as plantas? O que significa ser criado à imagem de Deus?'],
  ['Dinâmica de 2 minutos',d.activity||'“Criado ou construído?”: compare árvore, peixe, estrela com casa, papel e livro. Explique a diferença.'],
  ['Aplicação prática',d.application||'Demonstre gratidão a Deus e responsabilidade ao cuidar da criação. A situação da praça é aplicação atual, não faz parte da narrativa bíblica.'],
@@ -97,7 +97,21 @@ function buildCreation(d,age){
  ['Reflexão','Respostas pessoais coerentes com a passagem bíblica.'],
  ['Caça-palavras',WORDS.join(', ')+'.']
  ];
- if(small){student.splice(3,1);teacher.push(['Adaptação pedagógica','Para crianças menores, faça leitura guiada e respostas orais. Não exigir análise longa por escrito.'])}
+ // V66.4: versão compacta, somente atividades após a capa.
+ const cover=student[0],investigation=student[2],riddle=student[3],life=student[4],mission=student[5];
+ const cleanRiddle=riddle.content.split('<div class="v66-two-images">')[0];
+ const investigationAndRiddles=sheet('child','INVESTIGAÇÃO E ENIGMAS',
+  '<div class="v664-investigation">'+investigation.content+'</div>'+
+  (small?'':'<div class="v664-riddles">'+cleanRiddle+'</div>'),
+  {theme:'jade',subtitle:'Investigue, organize e descubra'});
+ const challenges=sheet('child','DESAFIOS E REFLEXÃO',life.content,
+  {theme:'pink',subtitle:'Coragem, sabedoria, fé e cuidado'});
+ const devot=card('TEMPO COM DEUS','<p>Leia Gênesis 1:1 e pense em algo pelo qual deseja agradecer a Deus.</p><p><b>Minha oração ou gratidão:</b></p>'+lines(2),'v664-devotional');
+ const cleanedMission=mission.content.replace(image('gratidão','v66-mission-photo','Momento de gratidão diante da natureza'),'');
+ const closing=sheet('child','MISSÃO CONCLUÍDA','<div class="v664-closing">'+cleanedMission+devot+'</div>',
+  {theme:'sun',subtitle:'Caça-palavras, missão e versículo'});
+ student.splice(0,student.length,cover,investigationAndRiddles,challenges,closing);
+ if(small)teacher.push(['Adaptação pedagógica','Para crianças menores, faça leitura guiada e respostas orais. Não exigir análise longa por escrito.']);
  return {student,teacher,answers,curated:true};
 }
 function generic(d,age){
@@ -131,7 +145,7 @@ function generic(d,age){
  return{student,teacher,answers,curated:!!collected?.curated};
 }
 function teacherPages(d,book){
- const units=[],threshold=1350;for(const [label,body0]of book.teacher){
+ const units=[],threshold=2700;for(const [label,body0]of book.teacher){
   const body=String(body0||'').trim();if(!body)continue;
   if(body.length<900){units.push([label,body]);continue}
   let p=body.split(/\n\s*\n/).filter(Boolean),buf='';
@@ -144,7 +158,7 @@ function teacherPages(d,book){
  }
  const packets=[];let packet=[],weight=0;
  for(const unit of units){let n=unit[1].length+unit[0].length;
- if(packet.length&&(weight+n>threshold||packet.length>=4)){packets.push(packet);packet=[];weight=0}
+ if(packet.length&&(weight+n>threshold||packet.length>=8)){packets.push(packet);packet=[];weight=0}
  packet.push(unit);weight+=n}
  if(packet.length)packets.push(packet);
  return packets.map((rows,i)=>sheet('teacher',i===0?'AULA DO PROFESSOR':'ROTEIRO DA AULA',rows.map(([name,value])=>card(esc(name),para(value))).join(''),{subtitle:d.reference+' · parte '+(i+1)+'/'+packets.length}));
@@ -184,5 +198,5 @@ function beforePrint(kind){
  if(kind==='teacher'&&keys.length){const target=$('miEditorial .v66-stage')||document.querySelector('#miEditorial .v66-stage');if(target)target.insertAdjacentHTML('beforeend',keys.map((p,i)=>wrap(p,i,keys.length,current)).join(''))}
 }
 function afterPrint(){if(usingPrevious)return previousEditor?.afterPrint?.();if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'66.3',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'66.4',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
 })();
