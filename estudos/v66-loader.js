@@ -14,14 +14,14 @@ async function load(){
     if(manifest.status!==flag){mark('aguardando_arte','Nova versão ainda não aprovada para uso');return}
     if(!Array.isArray(manifest.requiredAssets)||manifest.requiredAssets.length<9)
       throw new Error('Biblioteca ilustrada incompleta');
-    const results=await Promise.all(manifest.requiredAssets.map(async ({file})=>{
+    const results=await Promise.all(manifest.requiredAssets.map(async ({file,minWidth=300})=>{
       if(!/^[a-z0-9_-]+\.webp$/.test(file||''))return file||'(arquivo inválido)';
       try{
         const img=new Image();
         img.decoding='async';
         img.src=base+file+'?ver=66.1';
         await img.decode();
-        if(img.naturalWidth<300||img.naturalHeight<200)return file;
+        if(img.naturalWidth<Math.max(200,Number(minWidth)||300)||img.naturalHeight<200)return file;
         return null;
       }catch{return file}
     }));
