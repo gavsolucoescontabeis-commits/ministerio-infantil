@@ -514,7 +514,8 @@ function renderReadyLesson(data){
  const key=String(data.answers||'').trim();
  $('readyAnswersSection').hidden=!key;
  $('readyAnswersText').textContent=key;
- renderPrintableWorksheet(data);
+ if(window.MI_ESTUDOS_EDITORIAL?.mount){window.MI_ESTUDOS_EDITORIAL.mount(data)}
+ else renderPrintableWorksheet(data);
 }
 function worksheetNode(tag,cls,txt){
  const node=document.createElement(tag);
@@ -675,8 +676,9 @@ function printReadyLesson(kind='teacher'){
  if(state.view!=='aula-pronta'){toast('Abra primeiro a visualização da aula pronta.');return}
  document.body.dataset.miPrint=kind==='student'?'student':'teacher';
  document.body.dataset.miWorksheetStyle=$('worksheetPrintMode').value;
- $('readyWeeklySheet').hidden=!$('worksheetIncludeWeek').checked;
- const done=()=>{if(document.body.dataset.miPrint===kind)delete document.body.dataset.miPrint};
+ if(!window.MI_ESTUDOS_EDITORIAL) $('readyWeeklySheet').hidden=!$('worksheetIncludeWeek').checked;
+ window.MI_ESTUDOS_EDITORIAL?.beforePrint(kind);
+ const done=()=>{delete document.body.dataset.miPrint;window.MI_ESTUDOS_EDITORIAL?.afterPrint()};
  window.addEventListener('afterprint',done,{once:true});
  try{window.print()}catch(e){done();toast('Não foi possível abrir a impressão neste navegador.')}
 }
