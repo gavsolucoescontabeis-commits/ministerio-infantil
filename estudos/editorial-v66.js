@@ -154,7 +154,8 @@ function answerPages(d,book){
  const pages=[];for(let i=0;i<rows.length;i+=6)pages.push(sheet('key','GABARITO DO PROFESSOR',rows.slice(i,i+6).join(''),{subtitle:'Uso exclusivo do professor · '+d.reference}));
  return pages;
 }
-let current=null,book=null,student=[],teachers=[],keys=[],view='child',page=0,printing=false,restore=null;
+const previousEditor=window.MI_ESTUDOS_EDITORIAL || null;
+let current=null,book=null,student=[],teachers=[],keys=[],view='child',page=0,printing=false,restore=null,usingPrevious=false;
 function getAge(d){const t=String(d.age||'9'),n=Number(t.match(/\d+/)?.[0]||9);return /adolesc/i.test(t)?14:n;}
 function render(){
  const host=$('miEditorial');if(!host||!book)return;
@@ -168,15 +169,20 @@ function render(){
 function mount(d){
  if(!d||!$('miEditorial'))return false;
  current=d;const creation=/criacao|deus criou|principio/.test(norm(d.title))&&/genesis\s*1/.test(norm(d.reference));
- book=creation?buildCreation(d,getAge(d)):generic(d,getAge(d));
+ // Sem pacote de arte bíblica revisado para outros temas, preservamos o editor V65.
+ // Não publicar uma falsa aula ilustrada apenas reaproveitando mascotes.
+ if(!creation){usingPrevious=true;return !!previousEditor?.mount?.(d)}
+ usingPrevious=false;
+ book=buildCreation(d,getAge(d));
  student=book.student;teachers=teacherPages(d,book);keys=answerPages(d,book);
  view='child';page=0;printing=false;document.body.classList.add('mi-editorial-ready','v66-ready');
  render();return true;
 }
 function beforePrint(kind){
+ if(usingPrevious)return previousEditor?.beforePrint?.(kind);
  if(!book)return;restore={view,page};view=kind==='teacher'?'teacher':'child';page=0;printing=true;render();
  if(kind==='teacher'&&keys.length){const target=$('miEditorial .v66-stage')||document.querySelector('#miEditorial .v66-stage');if(target)target.insertAdjacentHTML('beforeend',keys.map((p,i)=>wrap(p,i,keys.length,current)).join(''))}
 }
-function afterPrint(){if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'66.1',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
+function afterPrint(){if(usingPrevious)return previousEditor?.afterPrint?.();if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'66.2',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
 })();
