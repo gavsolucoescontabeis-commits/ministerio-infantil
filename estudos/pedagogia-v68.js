@@ -346,11 +346,17 @@ function create({title,reference,age}){
  // Evita perguntas de versículos que estejam fora do recorte bíblico escolhido.
  const selected=(String(reference).match(/:(\d+)(?:\s*[-–]\s*(\d+))?/)||[]);
  const first=Number(selected[1]||1),last=Number(selected[2]||selected[1]||999);
+ const requestedChapter=Number((String(reference).match(/\b(\d+)\s*:\s*\d+/)||[])[1]||0);
  const scope=entry.questions.filter(([q,answer])=>{
+  const text=String(answer);
+  if(requestedChapter){
+   const mentions=[...text.matchAll(/\b(\d+)\s*:\s*\d+/g)];
+   if(mentions.some(m=>Number(m[1])!==requestedChapter))return false;
+  }
   if(!selected.length)return true;
-  const range=String(answer).match(/:(\d+)\s*[-–]\s*(\d+)/);
+  const range=text.match(/:(\d+)\s*[-–]\s*(\d+)/);
   if(range)return Number(range[1])>=first&&Number(range[2])<=last;
-  const single=String(answer).match(/:(\d+)(?![\d-])/);
+  const single=text.match(/:(\d+)(?![\d-])/);
   return !single||(Number(single[1])>=first&&Number(single[1])<=last);
  });
  if(!scope.length)return null;
