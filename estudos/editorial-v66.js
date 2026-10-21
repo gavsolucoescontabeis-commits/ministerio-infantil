@@ -171,7 +171,7 @@ function mount(d){
  current=d;const creation=/criacao|deus criou|principio/.test(norm(d.title))&&/genesis\s*1/.test(norm(d.reference));
  // Sem pacote de arte bíblica revisado para outros temas, preservamos o editor V65.
  // Não publicar uma falsa aula ilustrada apenas reaproveitando mascotes.
- if(!creation){usingPrevious=true;return !!previousEditor?.mount?.(d)}
+ if(!creation){usingPrevious=true;document.body.classList.remove('v66-ready');return !!previousEditor?.mount?.(d)}
  usingPrevious=false;
  book=buildCreation(d,getAge(d));
  student=book.student;teachers=teacherPages(d,book);keys=answerPages(d,book);
@@ -184,5 +184,5 @@ function beforePrint(kind){
  if(kind==='teacher'&&keys.length){const target=$('miEditorial .v66-stage')||document.querySelector('#miEditorial .v66-stage');if(target)target.insertAdjacentHTML('beforeend',keys.map((p,i)=>wrap(p,i,keys.length,current)).join(''))}
 }
 function afterPrint(){if(usingPrevious)return previousEditor?.afterPrint?.();if(!restore)return;({view,page}=restore);restore=null;printing=false;render()}
-window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'66.2',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
+window.MI_ESTUDOS_EDITORIAL=Object.freeze({mount,beforePrint,afterPrint,version:'66.3',getPageCount:()=>({child:student.length,teacher:teachers.length,key:keys.length})});
 })();
