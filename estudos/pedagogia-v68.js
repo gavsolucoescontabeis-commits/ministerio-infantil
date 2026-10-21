@@ -343,7 +343,22 @@ function create({title,reference,age}){
  const entry=story&&catalog[story.id];
  if(!entry)return null;
  const group=window.MI_LESSON_STORYTELLING?.ageGroup(age)||'middle',idx=groups[group]??2;
- const questions=entry.questions.slice(0,group==='little'?2:group==='early'?3:4);
+ // Evita perguntas de versículos que estejam fora do recorte bíblico escolhido.
+ const selected=(String(reference).match(/:(\d+)(?:\s*[-–]\s*(\d+))?/)||[]);
+ const first=Number(selected[1]||1),last=Number(selected[2]||selected[1]||999);
+ const scope=entry.questions.filter(([q,answer])=>{
+  if(!selected.length)return true;
+  const range=String(answer).match(/:(\d+)\s*[-–]\s*(\d+)/);
+  if(range)return Number(range[1])>=first&&Number(range[2])<=last;
+  const single=String(answer).match(/:(\d+)(?![\d-])/);
+  return !single||(Number(single[1])>=first&&Number(single[1])<=last);
+ });
+ if(!scope.length)return null;
+ const ranked=group==='little'||group==='early'?[...scope].sort((a,b)=>{
+  const score=x=>(/^(por que|como|qual a diferença)/i.test(x[0])?80:0)+x[0].length;
+  return score(a)-score(b)
+ }):scope;
+ const questions=ranked.slice(0,group==='little'?2:group==='early'?3:4);
  const action=entry.actions[Math.min(idx===4?2:Math.floor(idx/2),2)];
  const dynamic=idx<2?'Dinâmica rápida (cerca de 2 minutos): '+action:
   idx===2?'Desafio investigativo (cerca de 2 minutos): '+action:
