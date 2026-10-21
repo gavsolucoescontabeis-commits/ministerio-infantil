@@ -9,6 +9,7 @@
   <link rel="icon" type="image/svg+xml" href="./logo-ministerio.svg">
   <link rel="stylesheet" href="./estudos.css?v=21">
   <link rel="stylesheet" href="./caderno-editorial-v65.css?v=2">
+  <link rel="stylesheet" href="./roteiro-professor-v70.css?v=1">
   <script src="./temas.js?v=2" defer></script>
   <script src="./historia-roteiros.js?v=4" defer></script>
   <script src="./atividades-infantis.js?v=3" defer></script>
@@ -17,7 +18,7 @@
   <script src="./pedagogia-v68.js?v=1" defer></script>
   <script src="./sugestoes-aula.js?v=7" defer></script>
   <script src="./caderno-editorial-v65.js?v=2" defer></script>
-  <script src="./pacotes-prontos.js?v=1" defer></script>
+  <script src="./pacotes-prontos.js?v=2" defer></script>
   <script src="./v66-loader.js?v=8" defer></script><script src="./estudos.js?v=21" defer></script>
 </head>
 <body>
@@ -32,6 +33,7 @@
         <button type="button" class="menu-item" data-view="biblia"><span>▣</span> Bíblia On-line</button>
         <button type="button" class="menu-item" data-view="aulas"><span>✎</span> Preparar Aula</button>
         <button type="button" class="menu-item" data-view="acervo"><span>▤</span> Minhas Aulas</button>
+        <button type="button" class="menu-item" data-view="banco"><span>✦</span> Banco de Atividades</button>
       </nav>
       <div class="side-bottom">
         <div class="side-storage-note"><strong>Suas Preparações</strong><p>Os materiais são salvos neste navegador. Utilize a opção de backup em Minhas Aulas.</p></div>
@@ -111,7 +113,7 @@
         </section>
 
         <section class="page" id="view-aulas">
-          <div class="page-title"><div><div class="eyebrow">PLANEJAMENTO DE AULAS</div><h1>Preparar Uma Aula</h1><p>Organize a mensagem bíblica, a explicação e as atividades adequadas às crianças.</p></div><button type="button" class="outline-btn" id="newLesson">＋ Nova Preparação</button></div>
+          <div class="page-title"><div><div class="eyebrow">PLANEJAMENTO DE AULAS</div><h1>Preparar Uma Aula</h1><p>Prepare a história bíblica e o roteiro do professor. Os cadernos ilustrados ficam no Banco de Atividades e são opcionais.</p></div><button type="button" class="outline-btn" id="newLesson">＋ Nova Preparação</button></div>
           <div class="planner-layout">
             <form class="card lesson-form" id="lessonForm">
               <div class="form-part"><h3>01. Informações da Aula</h3><p>Comece definindo o assunto e a passagem que será ensinada.</p>
@@ -122,7 +124,7 @@
                   <div><label for="lessonAge">Faixa Etária</label><select id="lessonAge"><option>9 anos</option><option>4 a 6 anos</option><option>7 a 8 anos</option><option>10 a 12 anos</option><option>Adolescentes</option><option>Outra faixa etária</option></select><div id="customLessonAgeWrap" hidden><label for="lessonAgeCustom">Idade Informada</label><input id="lessonAgeCustom" maxlength="40" placeholder="Ex.: 3 anos ou 13 a 15 anos"></div></div>
                   <div class="span-2"><label for="lessonReference">Passagem Bíblica Principal *</label><input id="lessonReference" required maxlength="90" placeholder="Ex.: Marcos 10:13-16"><p class="topic-reference-help">Ao reconhecer um tema, sugerimos referências conferíveis. Você pode escolher outra passagem ou digitar manualmente.</p></div>
                 </div>
-                <div class="early-suggestion-action"><button type="button" id="generateLessonSuggestions" class="primary-btn">✦ Sugerir Aula</button><span>Informe tema, idade e passagem; depois escolha as sugestões para preparar a aula.</span></div>
+                <div class="early-suggestion-action"><button type="button" id="generateLessonSuggestions" class="primary-btn">✦ Sugerir Aula</button><span>Informe tema, idade e passagem para receber somente o roteiro do professor.</span><button type="button" class="soft-btn" data-open="banco">Consultar Banco de Atividades</button></div>
                 <div id="miPreparedPackageCard" hidden aria-live="polite" aria-label="Material ilustrado pronto para este tema"></div>
               </div>
               <div class="form-part"><h3>02. Mensagem e Contexto</h3><p>A preparação deve permanecer fiel ao texto bíblico e à sua sequência.</p>
@@ -132,12 +134,12 @@
               </div>
               <div class="form-part"><h3>03. Aplicação e Participação</h3>
                 <label for="lessonApplication">Aplicação Prática para as Crianças</label><textarea id="lessonApplication" rows="3" placeholder="Como essa passagem se relaciona com o dia a dia das crianças?"></textarea>
-                <label for="lessonQuestions">Perguntas para Conversar</label><textarea id="lessonQuestions" rows="3" placeholder="Perguntas relacionadas aos fatos e ao ensino da passagem."></textarea><label for="lessonAnswers">Gabarito do Professor — Respostas e Referências Bíblicas</label><textarea id="lessonAnswers" rows="4" placeholder="Respostas das perguntas, com referências para conferência. O gabarito não aparece na atividade da criança."></textarea><p class="answer-key-note">Ao escolher uma opção de perguntas, o gabarito correspondente será preenchido automaticamente. Se editar as perguntas manualmente, confira e atualize as respostas.</p>
-                <label for="lessonActivity">Atividade / Dinâmica / Ilustração</label><textarea id="lessonActivity" rows="3" placeholder="Sugestões para ajudar a compreender e lembrar da lição."></textarea>
+                <label for="lessonQuestions">Perguntas para Conversar</label><textarea id="lessonQuestions" rows="3" placeholder="Perguntas relacionadas aos fatos e ao ensino da passagem."></textarea><label for="lessonAnswers">Referências e respostas para orientar o professor (opcional)</label><textarea id="lessonAnswers" rows="4" placeholder="Respostas das perguntas, com referências para conferência. Estas orientações são exclusivas para quem ensina."></textarea><p class="answer-key-note">Ao escolher uma opção de perguntas, o gabarito correspondente será preenchido automaticamente. Se editar as perguntas manualmente, confira e atualize as respostas.</p>
+                <textarea id="lessonActivity" rows="3" hidden aria-hidden="true" tabindex="-1"></textarea>
                 <input id="lessonPrayer" type="hidden" value="">
               </div>
               <div class="lesson-buttons"><button type="button" id="assembleLesson" class="primary-btn">✓ Montar Aula e Visualizar</button><button type="submit" class="soft-btn">Salvar Rascunho</button><button type="button" id="printLesson" class="soft-btn">Visualizar Aula</button><button type="button" id="copyMasterPrompt" class="outline-btn">Copiar Pedido para IA ↗</button></div>
-              <p class="tiny">“Sugerir Aula” oferece alternativas editoriais baseadas no texto bíblico, para você conferir e escolher. “Copiar Pedido para IA” permite solicitar uma preparação mais detalhada no ChatGPT.</p>
+              <p class="tiny">“Sugerir Aula” prepara somente o roteiro do professor. Atividades ilustradas prontas são oferecidas separadamente, quando houver um pacote aprovado para o tema e a idade.</p>
               <section id="lessonSuggestionPanel" class="lesson-suggestion-panel" hidden aria-live="polite"><div class="lesson-suggestion-heading"><div><strong>Escolha as Sugestões da Aula</strong><p>Selecione uma opção em cada parte. Ao terminar, clique em <strong>Montar Aula e Visualizar</strong>.</p><p id="storyAgeNotice" class="story-age-notice"></p></div><button type="button" id="fillEmptyLessonFields" class="soft-btn">Preencher Campos Vazios</button></div><div id="lessonSuggestionOptions"></div><div class="suggestion-finish"><strong id="lessonChoicesStatus">Nenhuma opção selecionada.</strong><button type="button" class="primary-btn" id="finishSuggestedLesson">✓ Montar Aula e Visualizar</button></div></section>
               <div id="lessonFeedback" class="feedback" aria-live="polite"></div>
               <p class="lesson-license">Citações Bíblicas: Bíblia Livre (BLIVRE), edição 2017. Diego Santos, Mario Sérgio e Marco Teles. Licença Creative Commons CC BY 3.0 Brasil • <a href="https://creativecommons.org/licenses/by/3.0/br/" target="_blank" rel="noopener noreferrer">Ver Licença</a>.</p>
@@ -155,9 +157,9 @@
           <div class="ready-actions">
             <button type="button" class="outline-btn" id="readyEditLesson">← Voltar e Editar</button>
             <button type="button" class="soft-btn" id="readySavedLessons">Minhas Aulas</button>
-            <button type="button" class="soft-btn" id="readyPrintWorksheet">Imprimir Caderno da Criança</button><button type="button" class="primary-btn" id="readyPrintLesson">Imprimir Aula e Gabarito</button>
+            <button type="button" class="soft-btn mi-student-legacy" id="readyPrintWorksheet" hidden>Imprimir Caderno da Criança (legado)</button><button type="button" class="primary-btn" id="readyPrintLesson">Imprimir Roteiro do Professor</button>
           </div>
-          <div id="miEditorial" aria-label="Aula navegável: caderno, roteiro e gabarito"></div>
+          <div id="miTeacherOnly" class="mi-teacher-document" aria-label="Roteiro exclusivo do professor"></div><div id="miReadyPackageOffer" hidden aria-live="polite"></div><div id="miEditorial" hidden aria-hidden="true"></div>
           <article class="ready-sheet card" id="readyLessonSheet" aria-label="Aula formatada para impressão">
             <div class="ready-logo"><img src="./logo-ministerio.svg" alt="Ministério Infantil – 4ª IEQ Curitiba"></div>
             <div class="ready-head"><div class="eyebrow">MINISTÉRIO INFANTIL • 4ª IEQ CURITIBA</div><h2 id="readyLessonTitle"></h2><div class="ready-meta" id="readyLessonMeta"></div></div>
@@ -187,7 +189,7 @@
             <div class="weekly-memory"><strong>Na Ponta da Língua</strong><p>Leia a passagem bíblica da aula e escolha um versículo para guardar no coração.</p><div>Minha referência: _________________________________________________</div></div>
             <footer class="worksheet-footer">Bíblia Livre (BLIVRE) • Material pedagógico original • CC BY 3.0 Brasil para o texto bíblico.</footer>
           </article>
-          <div class="ready-actions ready-bottom-actions"><button type="button" class="outline-btn" id="readyEditLessonBottom">Editar Aula</button><button type="button" class="soft-btn" id="readyPrintWorksheetBottom">Imprimir Caderno da Criança</button><button type="button" class="primary-btn" id="readyPrintLessonBottom">Imprimir Aula e Gabarito</button></div>
+          <div class="ready-actions ready-bottom-actions"><button type="button" class="outline-btn" id="readyEditLessonBottom">Editar Aula</button><button type="button" class="soft-btn mi-student-legacy" id="readyPrintWorksheetBottom" hidden>Imprimir Caderno da Criança (legado)</button><button type="button" class="primary-btn" id="readyPrintLessonBottom">Imprimir Roteiro do Professor</button></div>
         </section>
 
         <section class="page" id="view-acervo">
@@ -196,6 +198,12 @@
           <div id="archiveList" class="archive-grid"></div>
           <div class="card" id="archiveEmpty"><h3>Ainda não há aulas salvas</h3><p>Você pode começar com um tema, uma passagem bíblica ou o devocional que chamou sua atenção.</p><button type="button" class="primary-btn" data-open="aulas">Preparar a primeira aula →</button></div>
           <p class="tiny">A importação de backup acrescenta aulas que ainda não existem por identificador; não substitui nem apaga as atuais.</p>
+        </section>
+        <section class="page" id="view-banco">
+          <div class="page-title"><div><div class="eyebrow">BIBLIOTECA COMPARTILHADA</div><h1>Banco de Atividades</h1><p>Cadernos ilustrados preparados e aprovados para cada tema bíblico e faixa etária. Materiais opcionais: nunca alteram o roteiro do professor.</p></div><button type="button" class="outline-btn" data-open="aulas">Preparar uma Aula</button></div>
+          <div class="card mi-bank-toolbar"><label for="miBankSearch">Pesquisar atividade bíblica aprovada</label><input id="miBankSearch" type="search" placeholder="Ex.: criação do mundo, Davi e Golias, Jonas" autocomplete="off"><strong id="miBankCount">Verificando banco de atividades...</strong></div>
+          <div id="miBankList" class="mi-bank-list" aria-live="polite"></div>
+          <div class="mi-bank-note"><strong>Como funciona?</strong> O professor pode preparar o roteiro de qualquer passagem e, se houver um caderno aprovado correspondente ao tema e à idade, escolher livremente se deseja utilizá-lo. Materiais em revisão não aparecem para a equipe.</div>
         </section>
       </main>
       <footer class="footer">Ministério Infantil • 4ª Igreja do Evangelho Quadrangular — Curitiba <span>Projeto experimental de Estudos • Independente do sistema principal</span></footer>
