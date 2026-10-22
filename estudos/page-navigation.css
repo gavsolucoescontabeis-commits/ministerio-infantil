@@ -1,0 +1,29 @@
+/* V71 - controles externos: a arte interna do caderno e intocada. */
+.mi-document-tabs,.mi-page-controls{box-sizing:border-box;font-family:Arial,sans-serif;max-width:870px;margin:12px auto;padding:10px 12px;background:#fff;border-radius:12px;box-shadow:0 2px 10px #00000014}
+.mi-document-tabs{display:flex;flex-wrap:wrap;gap:8px}
+.mi-document-tabs a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#176250;background:#edf5f2;border:1px solid #bcd3cb;border-radius:9px;padding:10px 14px;font-size:13px;font-weight:800}
+.mi-document-tabs a.mi-active{background:#146e59;color:#fff;border-color:#146e59}
+.mi-page-controls{display:grid;gap:8px}
+.mi-pager{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.mi-pager button,.mi-print-actions button{background:#176e59;color:#fff;border:0;border-radius:8px;padding:10px 12px;cursor:pointer;font-weight:800}
+.mi-pager button:disabled,.mi-print-actions button:disabled{opacity:.45;cursor:not-allowed}
+.mi-page-status{font-size:13px;text-align:center}
+.mi-page-selection{margin:0;border:1px solid #bfd9ce;border-radius:10px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:8px}
+.mi-page-selection legend{font-size:12px;font-weight:800;color:#315e51;padding:0 5px}
+.mi-page-checkbox{display:flex;gap:4px;align-items:center;background:#f0f8f3;border:1px solid #d5e7da;border-radius:7px;padding:7px;font-size:12px;cursor:pointer}
+.mi-page-checkbox input{accent-color:#176e59;width:16px;height:16px}
+.mi-print-actions{display:flex;gap:8px;flex-wrap:wrap}
+.mi-print-actions .mi-secondary{background:#43637a}
+body.mi-pageview .sheet:not(.mi-current-page){display:none}
+@media screen and (max-width:850px){
+ body>nav,.mi-document-tabs,.mi-page-controls{min-width:0!important;max-width:calc(100vw - 16px);margin:8px!important}
+ .mi-pager button{padding:9px;font-size:12px}
+ .mi-page-status{order:-1;flex-basis:100%}
+ body.mi-pageview .sheet{zoom:calc((100vw - 20px) / 794px);transform:none}
+}
+@media print{
+ .mi-document-tabs,.mi-page-controls{display:none!important}
+ body.mi-pageview .sheet{display:block!important;zoom:1!important;transform:none!important}
+ body.mi-pageview.mi-print-selected .sheet[data-mi-selected="false"]{display:none!important}
+ body.mi-pageview .sheet.mi-last-print{break-after:auto!important;page-break-after:auto!important}
+}
