@@ -54,14 +54,14 @@ async function loadCatalog(){
   }
  }
  const clean=items.filter(p=>
-  p&&typeof p.title==='string'&&typeof p.id==='string'&&/^[a-z0-9-]+$/.test(p.id)&&
-  ['approved','review','draft'].includes(p.status)&&
-  Number.isInteger(p.age)&&p.age>=2&&p.age<=17&&
-  Array.isArray(p.aliases)&&Array.isArray(p.books)&&
-  (p.student==='./pacotes/A_Criacao.html' || /^\\.\\/pacotes\\/[a-z0-9_-]+\\.html(?:\\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'') || /^\\.\\/pacotes\\/[a-z0-9_-]+\\/[a-z0-9_-]+\\.html$/.test(p.student||''))&&
-  (!p.teacher || /^\\.\\/pacotes\\/[a-z0-9_-]+\\.html(?:\\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.teacher))&&
-  /^\\.\\/assets\\/estudos\\/[a-z0-9_-]+\\.webp$/.test(p.cover||'')
- );
+   p&&typeof p.title==='string'&&typeof p.id==='string'&&/^[a-z0-9-]+$/.test(p.id)&&
+   ['approved','review','draft'].includes(p.status)&&
+   Number.isInteger(p.age)&&p.age>=2&&p.age<=17&&
+   Array.isArray(p.aliases)&&Array.isArray(p.books)&&
+   (p.student==='./pacotes/A_Criacao.html' || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'') || /^\.\/pacotes\/[a-z0-9_-]+\/[a-z0-9_-]+\.html$/.test(p.student||''))&&
+   (!p.teacher || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.teacher))&&
+   /^\.\/assets\/estudos\/[a-z0-9_-]+\.webp$/.test(p.cover||'')
+  );
  entries.splice(0,entries.length,...clean);
  catalogError='';
  renderBank();renderSuggest();
