@@ -1,0 +1,16 @@
+/* Ministério Infantil — cards de prévia para conferência V73. */
+.mi-creation-preview{margin:14px 0 18px;border:2px solid #bcded8!important;background:#fafdff}
+.mi-creation-preview-head h2{font-size:21px;color:#176b62;margin:7px 0}
+.mi-creation-preview-head p{font-size:13px;line-height:1.45;margin:5px 0 14px;color:#435d66}
+.mi-creation-preview-label{display:inline-block;border-radius:20px;background:#e4f3ec;color:#146548;font-size:11px;font-weight:900;letter-spacing:.035em;padding:6px 10px}
+.mi-creation-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.mi-creation-preview-card{border:1px solid #bcd6e2;border-radius:15px;background:white;overflow:hidden;display:flex;gap:12px;min-width:0;box-shadow:0 3px 11px #1a5b8210}
+.mi-creation-preview-card img{width:125px;min-height:180px;max-height:240px;object-fit:cover;flex:none}
+.mi-creation-preview-card>div{padding:12px 11px 12px 0;display:flex;flex-direction:column;gap:7px;min-width:0}
+.mi-creation-preview-card h3{font-size:18px;margin:0;color:#165784}
+.mi-creation-preview-card p{font-size:12px;margin:0;line-height:1.5;color:#50616c}
+.mi-creation-preview-open{display:inline-block;align-self:start;margin-top:auto;padding:11px 13px;text-decoration:none;background:#0b796a;color:white!important;border-radius:9px;font-weight:900;font-size:12px;white-space:normal}
+.mi-creation-preview-open:hover{background:#095e53}
+.mi-creation-preview-open:focus-visible{outline:3px solid #efb630;outline-offset:2px}
+@media(max-width:800px){.mi-creation-preview-grid{grid-template-columns:1fr}.mi-creation-preview-card img{width:100px;min-height:165px}.mi-creation-preview-card h3{font-size:16px}}
+@media(max-width:390px){.mi-creation-preview-card{display:block}.mi-creation-preview-card img{width:100%;height:125px;min-height:0;max-height:none}.mi-creation-preview-card>div{padding:12px}}
