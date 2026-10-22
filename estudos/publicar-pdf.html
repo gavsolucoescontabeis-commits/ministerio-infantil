@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Publicar caderno • Ministério Infantil</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#243b53;background:#f4f8fc}*{box-sizing:border-box}
+body{margin:0}header{background:#104e81;color:#fff;padding:22px 18px}header>div,main{max-width:850px;margin:auto}
+h1{margin:0 0 5px;font-size:clamp(23px,4vw,32px)}header p{margin:0;line-height:1.5}
+main{padding:20px 16px}.card{background:#fff;border:1px solid #d4e0e9;border-radius:15px;padding:22px;margin:0 0 14px;box-shadow:0 4px 14px #183e5e0b}
+h2{font-size:20px;margin:0 0 13px}.hint{font-size:13px;color:#4c6173;line-height:1.55}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:700}
+input,select{padding:11px;border:1px solid #a8bbc8;border-radius:9px;background:white;font:inherit;width:100%;color:#243b53}
+.full{grid-column:1/-1}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button,.btn{background:#0a7c70;color:white;border:0;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700;cursor:pointer;display:inline-block}
+button:disabled{opacity:.55;cursor:not-allowed}.btn{background:#e9f2fa;color:#164977}
+#status{font-size:14px;line-height:1.6;white-space:pre-wrap}#status[data-kind="error"]{color:#9f242b}#status[data-kind="success"]{color:#126d4f}
+#published{display:none;margin-top:12px}#published.show{display:block}
+@media(max-width:580px){.grid{grid-template-columns:1fr}.card{padding:15px}}
+</style></head><body>
+<header><div><h1>Publicar caderno de atividades</h1><p>Envio direto ao armazenamento do Ministério Infantil. Uso exclusivo da administração.</p></div></header>
+<main>
+ <div class="actions" style="margin:0 0 15px"><a href="./index.html" class="btn">← Voltar ao Banco de Atividades</a></div>
+ <section class="card"><h2>1. Identificar o material</h2>
+  <p class="hint">Para a segunda versão de “A Criação”, selecione o registro de 5 e 6 anos. Para temas futuros, escolha “Novo caderno”. O título e a idade ficam no catálogo, sem alterar a arte aprovada do PDF.</p>
+  <div class="grid">
+   <label class="full">Material cadastrado <select id="entry"><option value="new">Novo caderno</option></select></label>
+   <label class="full">Tema bíblico <input id="theme" maxlength="160" value="A Criação" required></label>
+   <label class="full">Referência bíblica <input id="reference" maxlength="100" value="Gênesis 1:1–2:3" required></label>
+   <label>Idade mínima <input id="minAge" type="number" min="2" max="17" value="5" required></label>
+   <label>Idade máxima <input id="maxAge" type="number" min="2" max="17" value="6" required></label>
+   <label>Páginas <input id="pages" type="number" min="1" max="150" value="7" required></label>
+   <label class="full">Outros nomes do tema (opcional, separados por vírgulas)
+    <input id="aliases" maxlength="700" value="criação, criação do mundo, dias da criação">
+   </label>
+  </div>
+ </section>
+ <section class="card"><h2>2. Enviar o PDF aprovado</h2>
+  <label>Arquivo PDF (até 50 MB)<input id="pdf" type="file" accept=".pdf,application/pdf"></label>
+  <p class="hint">O original será guardado sem reinterpretação ou perda de qualidade. A publicação só será liberada depois do envio e da verificação do arquivo. Professores não têm permissão para publicar ou substituir cadernos.</p>
+  <div class="actions"><button id="publish" type="button" disabled>Enviar e publicar no Banco</button><span id="progress" class="hint"></span></div>
+  <p id="status" role="status" aria-live="polite">Verificando sua autorização…</p>
+  <div id="published"><a id="publishedLink" class="btn" target="_blank" rel="noopener noreferrer">Abrir PDF publicado ↗</a><a class="btn" href="./index.html">Voltar aos Estudos</a></div>
+ </section>
+</main>
+<script src="./publicar-pdf.js?v=77" defer></script>
+</body></html>
