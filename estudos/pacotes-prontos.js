@@ -10,7 +10,7 @@ const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLo
 const ageNumber=raw=>{
  const value=String(raw||'').trim();
  if(/^\d{1,2}\s*anos?$/i.test(value))return Number(value.match(/\d+/)?.[0]||0);
- if(/^\d{1,2}\s*(?:a|até|[-–])\s*\d{1,2}\s*anos?$/i.test(value))return Number(value.match(/\d+/)?.[0]||0);
+ if(/^\d{1,2}\s*(?:a|e|até|[-–])\s*\d{1,2}\s*anos?$/i.test(value))return Number(value.match(/\d+/)?.[0]||0);
  return 0; // idade não reconhecida não sugere caderno automaticamente
 };
 function matchesTheme(p,title,reference){
