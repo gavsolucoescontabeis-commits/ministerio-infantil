@@ -29,13 +29,14 @@
       "references": [
         "Gênesis 1:1–2:3"
       ],
-      "summary": "Caderno ilustrado A Criação com capa e 9 atividades, reunidas em um PDF único de 10 páginas. Material complementar opcional.",
-      "student": "./pacotes/criacao-pdf-v74/abrir.html",
+      "summary": "Caderno A Criação com 10 páginas ilustradas (capa e nove atividades). PDF único, opcional, sem modificar o roteiro preparado pelo professor.",
+      "student": "./pacotes/A_Criacao.html",
       "cover": "./assets/estudos/criacao_capa.webp",
       "pages": 10,
       "ageMin": 7,
       "ageMax": 9,
-      "format": "pdf"
+      "format": "pdf",
+      "teacher": ""
     },
     {
       "title": "A Criação",
