@@ -252,11 +252,12 @@ function checkbox(name,label,checked){
  const l=document.createElement('label'),i=document.createElement('input'),span=document.createElement('span');
  i.type='checkbox';i.dataset.perm=name;i.checked=!!checked;span.textContent=label;l.append(i,span);return l;
 }
-function permissionsFor(role,container){
+function permissionsFor(role,container,area){
  container.replaceChildren();
+ const isEbd=area==='ebd',isNet=area==='net';
  const defs=role==='teacher'
-  ?[['tal','Talentos',true],['fin','Financeiro',false],['rep','Relatórios',false],['kids','Cadastrar crianças',false]]
-  :[['ebd','EBD',true],['net','Rede de Crianças',true],['tal','Talentos',false],['fin','Financeiro',false],['repEbd','Relatórios EBD',true],['repNet','Relatórios Rede',true],['importKids','Importar cadastros',false],['addCoords','Cadastrar coordenadores',false]];
+  ?[['net','Rede de Crianças / check-in',isNet],['tal','Talentos EBD',isEbd],['fin','Financeiro',false],['rep','Relatórios',false],['kids','Cadastrar crianças',false]]
+  :[['ebd','EBD',isEbd],['net','Rede de Crianças / check-in',isNet],['tal','Talentos',false],['fin','Financeiro',false],['repEbd','Relatórios EBD',isEbd],['repNet','Relatórios Rede',isNet],['importKids','Importar cadastros',false],['addCoords','Cadastrar coordenadores',false]];
  for(const [k,l,c] of defs)container.appendChild(checkbox(k,l,c));
 }
 function selectedPermissions(container){
@@ -370,8 +371,8 @@ function renderCard(app){
   roomWrap.style.display=need?'block':'none';room.required=need;
   roomNote.textContent=app.area==='both'?'A pessoa informou atuação nas duas áreas; escolha aqui a área principal para este acesso.':'';
  };
- const rebuildPerms=()=>{permissionsFor(role.value,perms);syncRoom()};
- role.addEventListener('change',rebuildPerms);area.addEventListener('change',syncRoom);
+ const rebuildPerms=()=>{permissionsFor(role.value,perms,area.value);syncRoom()};
+ role.addEventListener('change',rebuildPerms);area.addEventListener('change',rebuildPerms);
  rebuildPerms();
 
  approve.addEventListener('click',async()=>{
