@@ -94,6 +94,7 @@ async function publish(){
   const id=saved?$('entry').value:slug(title)+'-'+min+'-'+max;
   if(!/^[a-z0-9-]+$/.test(id))throw Error('Não foi possível criar identificador para a atividade.');
   if(!saved&&originals.has(id))throw Error('Já existe material para o tema e a faixa. Selecione o registro existente.');
+  if(!saved&&Array.from(originals.values()).some(p=>norm(p.title)===norm(title)&&Number(p.ageMin||p.age)===min&&Number(p.ageMax||p.age)===max))throw Error('Já existe um caderno deste tema e idade. Escolha o material cadastrado.');
   const token=getToken();if(!token)throw Error('Sessão encerrada. Entre novamente no aplicativo.');
   const path=id+'/'+crypto.randomUUID()+'.pdf';
   const url=BASE+'/storage/v1/object/public/'+BUCKET+'/'+path;
