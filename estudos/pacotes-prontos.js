@@ -132,6 +132,7 @@ function revealPublisher(){
  if(!link)return;
  try{link.hidden=!(window.parent!==window && window.parent.miAuthRoleV58==='developer' && !!window.parent.miAuthTokenV58)}
  catch(e){link.hidden=true}
+ link.style.display=link.hidden?'none':'inline-flex';
 }
 function init(){
  revealPublisher();
