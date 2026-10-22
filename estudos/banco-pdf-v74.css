@@ -1,0 +1,10 @@
+/* V74 — identificação neutra do PDF aprovado no Banco de Atividades.
+   Não altera a aparência nem as funções do roteiro do professor. */
+.mi-bank-pdf-preview{
+ display:flex;align-items:center;justify-content:center;text-align:center;
+ background:linear-gradient(150deg,#0d5490,#0f8275);color:white;
+ border-radius:10px;padding:10px;font-size:14px;font-weight:900;
+ line-height:1.35;letter-spacing:.03em;white-space:normal;
+ border:2px solid #cfebdf
+}
+@media(max-width:500px){.mi-bank-pdf-preview{font-size:12px;min-width:78px}}
