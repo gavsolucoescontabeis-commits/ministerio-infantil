@@ -69,7 +69,7 @@ function updatePage(){
 }
 function render(){
  $('agePicker').value=age;
- $('currentAge').textContent=pack().label;
+ const ageLabel=$('currentAge');if(ageLabel)ageLabel.textContent=pack().label;
  for(const [key,title] of Object.entries(tabNames)){
   const btn=$('tab-'+key);btn.textContent=title;btn.setAttribute('aria-selected',String(tab===key));
   btn.tabIndex=tab===key?0:-1;

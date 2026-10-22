@@ -9,6 +9,7 @@
   <link rel="icon" type="image/svg+xml" href="./logo-ministerio.svg">
   <link rel="stylesheet" href="./estudos.css?v=21">
   <link rel="stylesheet" href="./roteiro-professor-v70.css?v=1">
+  <link rel="stylesheet" href="./criacao-banco-v73.css?v=73">
   <script src="./temas.js?v=2" defer></script>
   <script src="./historia-roteiros.js?v=4" defer></script>
   <script src="./atividades-infantis.js?v=3" defer></script>
@@ -200,6 +201,25 @@
         <section class="page" id="view-banco">
           <div class="page-title"><div><div class="eyebrow">BIBLIOTECA COMPARTILHADA</div><h1>Banco de Atividades</h1><p>Cadernos ilustrados preparados e aprovados para cada tema bíblico e faixa etária. Materiais opcionais: nunca alteram o roteiro do professor.</p></div><button type="button" class="outline-btn" data-open="aulas">Preparar uma Aula</button></div>
           <div class="card mi-bank-toolbar"><label for="miBankSearch">Pesquisar atividade bíblica aprovada</label><input id="miBankSearch" type="search" placeholder="Ex.: criação do mundo, Davi e Golias, Jonas" autocomplete="off"><strong id="miBankCount">Verificando banco de atividades...</strong></div>
+          <section class="card mi-creation-preview" aria-labelledby="miCreationPreviewHeading">
+            <div class="mi-creation-preview-head">
+              <span class="mi-creation-preview-label">PRÉVIAS PARA CONFERÊNCIA</span>
+              <h2 id="miCreationPreviewHeading">A Criação — novas aulas por idade</h2>
+              <p>Escolha a idade para abrir as páginas da criança, o roteiro do professor e o gabarito. As prévias ainda não estão liberadas como atividades aprovadas para os professores.</p>
+            </div>
+            <div class="mi-creation-preview-grid">
+              <article class="mi-creation-preview-card">
+                <img src="./assets/estudos/criacao_capa.webp" alt="Paisagem colorida da criação" loading="lazy">
+                <div><h3>5 e 6 anos</h3><p>7 páginas de atividades com imagens, ligação, desenhos e respostas simples. Inclui orientações e gabarito.</p>
+                <a class="mi-creation-preview-open" href="./pacotes/criacao-faixas-v72.html?idade=5-6&amp;aba=child&amp;v=73">Abrir aula de 5 e 6 anos →</a></div>
+              </article>
+              <article class="mi-creation-preview-card">
+                <img src="./assets/estudos/criacao_animais.webp" alt="Ilustração da criação dos animais" loading="lazy">
+                <div><h3>10, 11 e 12 anos</h3><p>8 páginas de investigação bíblica e interpretação, com perguntas elaboradas, orientações e gabarito.</p>
+                <a class="mi-creation-preview-open" href="./pacotes/criacao-faixas-v72.html?idade=10-12&amp;aba=child&amp;v=73">Abrir aula de 10 a 12 anos →</a></div>
+              </article>
+            </div>
+          </section>
           <div id="miBankList" class="mi-bank-list" aria-live="polite"></div>
           <div class="mi-bank-note"><strong>Como funciona?</strong> O professor pode preparar o roteiro de qualquer passagem e, se houver um caderno aprovado correspondente ao tema e à idade, escolher livremente se deseja utilizá-lo. Materiais em revisão não aparecem para a equipe.</div>
         </section>
