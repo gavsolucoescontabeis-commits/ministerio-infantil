@@ -15,7 +15,7 @@ label{display:block;font-size:13px;font-weight:800;color:#526571;margin:14px 0 6
 input{width:100%;padding:12px;border:1px solid #cfdbe2;border-radius:11px;font-size:16px}
 button,a.action{display:block;width:100%;border:0;border-radius:13px;padding:14px 18px;font-size:16px;font-weight:800;text-align:center;text-decoration:none;margin-top:16px}
 button{background:var(--green);color:#fff;cursor:pointer}a.action{background:var(--blue);color:#fff}
-#formBox[hidden],#successBox[hidden]{display:none!important}#status{margin-top:12px;font-weight:700}.err{color:var(--red)}.ok{color:#176b39}
+#formBox[hidden],#successBox[hidden],#backToLogin[hidden]{display:none!important}#status{margin-top:12px;font-weight:700}.err{color:var(--red)}.ok{color:#176b39}
 </style>
 </head>
 <body>
@@ -39,12 +39,18 @@ button{background:var(--green);color:#fff;cursor:pointer}a.action{background:var
   <a class="action" href="../">Abrir o aplicativo</a>
 </div>
 <p id="status" role="status" aria-live="polite"></p>
+<a id="backToLogin" class="action" href="../" hidden>Voltar ao aplicativo e solicitar novo link</a>
 </div></main>
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm";
 const supabase=createClient("https://jthxnjvqmvtydyfuqcct.supabase.co","sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs",{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 const intro=document.getElementById("intro"),box=document.getElementById("formBox"),success=document.getElementById("successBox"),status=document.getElementById("status"),form=document.getElementById("passwordForm");
-function fail(msg){intro.textContent="Não foi possível validar este link.";box.hidden=true;status.className="err";status.textContent=msg+" Se o link expirou, peça à coordenação para reenviar o e-mail de criação da senha."}
+function fail(msg){
+ intro.textContent="Não foi possível validar este link.";
+ box.hidden=true;status.className="err";
+ status.textContent=msg+" Se o link expirou, volte ao aplicativo e use Primeiro acesso ou esqueci minha senha para solicitar outro e-mail. Não é necessário refazer o cadastro.";
+ document.getElementById('backToLogin').hidden=false;
+}
 let authReady=false;
 function showForm(){authReady=true;intro.textContent="";box.hidden=false;status.textContent="";status.className=""}
 async function showIfSession(){
