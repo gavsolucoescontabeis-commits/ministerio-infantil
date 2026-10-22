@@ -73,3 +73,10 @@ button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,a:focus-visi
 
 @media screen{#pageHost .sheet:not(.is-current){display:none!important}}
 @media print{#pageHost .sheet{display:block!important}body.mi-printing #pageHost .sheet[data-print="no"]{display:none!important}}
+
+/* Elementos visuais já aprovados reaproveitados, sem redesenhar mascotes. */
+.sheet.child:not(:has(.cover-hero))::before{content:"";position:absolute;left:0;right:0;bottom:10mm;height:34mm;background:url("./assets/estudos/criacao_natureza.webp") center 59%/cover no-repeat;opacity:.13;mask-image:linear-gradient(to bottom,transparent,#000 65%);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 65%);pointer-events:none}
+.sheet.child .section{box-shadow:0 2px 9px #29709c0c}
+.sheet.child .section:nth-of-type(3n){background:linear-gradient(124deg,#fffdfa,#fff8e4)}
+.sheet.teacher .section{border-left:4px solid #62bfad}
+.sheet.answer .section{border-left:4px solid #e6ba65}
