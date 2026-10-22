@@ -1,0 +1,72 @@
+/* Ministério Infantil — A Criação, adaptação por faixa V72 */
+:root{--night:#123b78;--sky:#1686d0;--gold:#f9cb4e;--forest:#087864;--ink:#244050;--cream:#fffcf2;--paper:#fffefd}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(120deg,#e9f5ff,#fdf3da);font-family:Arial,"Trebuchet MS",sans-serif;color:var(--ink)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;z-index:99;background:white;padding:9px}
+.top{position:sticky;z-index:10;top:0;background:linear-gradient(112deg,#063c80,#1274b5);color:#fff;box-shadow:0 3px 15px #032e6470;padding:12px max(16px,calc((100vw - 1060px)/2))}
+.top strong{font-weight:900;font-size:18px;display:block}.top p{font-size:12px;opacity:.85;margin:4px 0}
+.top-control{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px}
+button,.navlink,select{font-family:inherit;border:0;border-radius:10px;font-weight:800;cursor:pointer}
+button,.navlink{background:#e6f4ff;padding:10px 12px;color:#173d70}
+button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #eea812;outline-offset:2px}
+.top select{background:#fff;padding:10px}
+.navlink{text-decoration:none}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 0}.tabs button{background:#e2edf9;color:#173f6a}
+.tabs button[aria-selected="true"]{background:var(--gold);color:#352d15}
+.toolbar{max-width:950px;margin:14px auto;padding:12px 14px;background:#fff;border:1px solid #d0e0e9;border-radius:12px;box-shadow:0 3px 15px #0001}
+.toolbar-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.toolbar-row span{font-weight:bold;font-size:14px}.toolbar-row button{background:#155f9c;color:#fff}
+.toolbar summary{font-weight:800;font-size:13px;cursor:pointer;padding:9px 0}
+.toolbar details{margin-top:7px;border-top:1px dashed #c2d8e7}
+.page-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:7px;margin:8px 0}
+.page-choices label{display:flex;align-items:center;gap:7px;padding:10px;background:#f2f9fa;border-radius:9px;font-size:12px;font-weight:700}
+.page-choices input{width:18px;height:18px;accent-color:var(--forest)}
+.print-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+.print-actions button{background:#11826f;color:white}.print-actions button.secondary{background:#456b82}
+#pageInfo{font-weight:900;background:#f3f8ff;padding:8px 10px;border-radius:7px}
+#pageHost{margin-bottom:18px}
+.sheet{width:210mm;min-height:297mm;background:var(--paper);margin:0 auto 20px;position:relative;padding:12mm 12mm 17mm;overflow:hidden;box-shadow:0 12px 30px #2343642e;border-radius:6px;border-top:9px solid var(--sky)}
+.sheet.teacher{border-top-color:#13816d}.sheet.answer{border-top-color:#ad7024}
+.sheet .banner{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:15px;background:linear-gradient(100deg,#114c98,#169dc5);color:#fff;margin-bottom:10px}
+.sheet.teacher .banner{background:linear-gradient(100deg,#096653,#36a48c)}
+.sheet.answer .banner{background:linear-gradient(100deg,#8a4b1f,#c99031)}
+.banner h1{font-weight:900;font-size:23px;line-height:1.15;margin:2px 0 4px}.banner small{font-size:10px;font-weight:bold}.banner p{font-size:11px;margin:4px 0}.banner .age{background:#ffe18d;color:#61400a;border-radius:8px;padding:8px;font-size:12px;font-weight:900;min-width:84px;text-align:center}
+.cover-hero{position:relative;overflow:hidden;border-radius:20px;min-height:157mm;background:#aee0f5;border:6px solid #f9ce68;box-shadow:0 8px 24px #bd8c4d36}
+.cover-hero img{width:100%;height:157mm;object-fit:cover;object-position:center;display:block}
+.cover-hero .overlay{position:absolute;left:14px;right:14px;bottom:13px;background:linear-gradient(90deg,#fffbe8ee,#fff1b5f2);border-radius:12px;padding:11px;text-align:center;color:#593a14;box-shadow:0 3px 14px #401b1833;font-weight:900;font-size:19px}
+.cover-verse{padding:13px 14px;border-radius:12px;text-align:center;background:#ecf8e9;border:2px solid #98d7b6;margin:12px 0 8px;font-size:16px;font-weight:900}
+.cover-verse small{font-size:12px;font-weight:600}
+.writename{display:flex;gap:12px;justify-content:space-between;margin-top:12px;font-size:12px;font-weight:700}
+.scene{display:flex;align-items:center;gap:14px;padding:9px 12px;border-radius:16px;background:linear-gradient(108deg,#ebf8ff,#fff4da);margin:10px 0 14px}
+.scene img{width:39%;height:100px;object-fit:cover;border-radius:13px}.scene p{font-size:13px;line-height:1.42;font-weight:700;margin:0}
+.section{background:#fff;border:1px solid #d7e4eb;border-radius:14px;margin:10px 0;padding:13px 15px;break-inside:avoid}
+.section h2{font-size:16px;color:#156d98;margin:0 0 9px}.teacher .section h2{color:#187963}.answer .section h2{color:#a36b20}
+.section p{font-size:13px;line-height:1.52;margin:6px 0}.section li{font-size:13px;line-height:1.52;margin:6px 0}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tile{min-height:101px;background:linear-gradient(120deg,#e9f8ff,#fff5d8);border:1px solid #c9e1ed;border-radius:12px;padding:7px;display:flex;align-items:center;gap:9px}
+.tile img{width:110px;height:88px;object-fit:cover;border-radius:9px;flex:none}
+.tile b{color:#176d9d;font-size:15px}.tile p{font-weight:bold;font-size:12px;margin:5px 0}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.match-item{padding:11px;background:#eef7ff;border-radius:8px;margin:6px 0;font-size:13px;font-weight:bold;min-height:42px}
+.match-item.right{background:#fdf1dc}
+.line{height:24px;border-bottom:1px solid #aabfcb}
+.choices{display:grid;gap:7px}
+.choice{padding:9px 10px;background:#f0f9fb;border-radius:9px;display:flex;gap:8px;align-items:center;font-size:13px;font-weight:700}
+.square{width:19px;height:19px;min-width:19px;border:2px solid #6b9ebb;border-radius:5px;background:white;display:inline-block}
+.order{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.order .tile{display:block;text-align:center}.order .tile img{width:100%;height:72px}.order .tile b{display:block}
+.prompt{margin:7px 0 13px}.prompt b{display:block;font-size:13px;line-height:1.42}
+.lines{padding-bottom:6px}.lines .line{height:22px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tchart{border-collapse:collapse;width:100%;font-size:12px}
+.tchart th{background:#155991;color:#fff}.tchart td,.tchart th{border:1px solid #aacad4;padding:8px;text-align:left}.tchart tr:nth-child(even){background:#f0f8ff}.tchart td.blank{height:38px;background:#fff}
+.truth{padding:7px 0;border-bottom:1px dashed #bfd5db;display:flex;gap:9px;align-items:start;font-size:13px;line-height:1.5}
+.truth b{min-width:42px;color:#0f6899}
+.memory{background:#fdf0c7;border:2px solid #f4ce77;border-radius:14px;text-align:center;padding:17px;font-weight:900;font-size:18px}
+.memory small{display:block;font-size:12px;margin:7px 0}
+.draw{height:145px;border:2px dashed #95b5b9;border-radius:12px;background:#fcfefb;margin-top:10px;padding:10px;color:#789;font-size:12px}
+.teachpoint{padding:9px 12px;border-left:5px solid #19a088;background:#eef8f1;font-size:13px;line-height:1.5;margin:8px 0}
+.foot{position:absolute;bottom:7mm;left:12mm;right:12mm;border-top:1px solid #c4d7d3;padding-top:6px;display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:#668086}
+.sheet:last-child{break-after:auto}
+@media screen and (max-width:850px){.sheet{zoom:calc((100vw - 20px) / 794px);border-radius:4px}.top{position:static}.toolbar{margin:8px}.cover-hero img{object-position:center}}
+@page{size:A4;margin:0}
+@media print{body{background:#fff}.top,.toolbar,.skip{display:none!important}.sheet{margin:0;border-radius:0;box-shadow:none;width:210mm;height:297mm;min-height:297mm;zoom:1!important;break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}#pageHost .sheet:not([data-print="yes"]){display:none!important}#pageHost .sheet[data-last="yes"]{break-after:auto!important;page-break-after:auto!important}}
