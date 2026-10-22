@@ -1366,7 +1366,7 @@ accessForm?.addEventListener('submit',async event=>{
  const email=document.getElementById('miSelfServiceEmail').value.trim().toLowerCase();
  const feedback=document.getElementById('miSelfServiceStatus');
  const send=document.getElementById('miSelfServiceSend');
- if(!/^\\S+@\\S+\\.\\S+$/.test(email)){feedback.textContent='Informe seu e-mail válido.';return}
+ if(!email.includes('@')||!email.includes('.')){feedback.textContent='Informe seu e-mail válido.';return}
  send.disabled=true;feedback.textContent='Solicitando e-mail de criação de senha...';
  try{
   const redirect='https://gavsolucoescontabeis-commits.github.io/ministerio-infantil/ativar-acesso/';
