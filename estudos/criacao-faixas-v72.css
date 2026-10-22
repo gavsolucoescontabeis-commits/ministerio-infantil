@@ -69,7 +69,7 @@ button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,a:focus-visi
 .sheet:last-child{break-after:auto}
 @media screen and (max-width:850px){.sheet{zoom:calc((100vw - 20px) / 794px);border-radius:4px}.top{position:static}.toolbar{margin:8px}.cover-hero img{object-position:center}}
 @page{size:A4;margin:0}
-@media print{body{background:#fff}.top,.toolbar,.skip{display:none!important}.sheet{margin:0;border-radius:0;box-shadow:none;width:210mm;height:297mm;min-height:297mm;zoom:1!important;break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}#pageHost .sheet:not([data-print="yes"]){display:none!important}#pageHost .sheet[data-last="yes"]{break-after:auto!important;page-break-after:auto!important}}
+@media print{body{background:#fff}.top,.toolbar,.skip{display:none!important}.sheet{margin:0;border-radius:0;box-shadow:none;width:210mm;height:297mm;min-height:297mm;zoom:1!important;break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}body.mi-printing #pageHost .sheet[data-print="no"]{display:none!important}#pageHost .sheet[data-last="yes"]{break-after:auto!important;page-break-after:auto!important}}
 
 @media screen{#pageHost .sheet:not(.is-current){display:none!important}}
 @media print{#pageHost .sheet{display:block!important}body.mi-printing #pageHost .sheet[data-print="no"]{display:none!important}}
