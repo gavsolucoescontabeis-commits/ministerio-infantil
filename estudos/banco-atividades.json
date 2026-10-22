@@ -34,6 +34,66 @@
       "teacher": "./pacotes/criacao-9-professor.html",
       "cover": "./assets/estudos/criacao_capa.webp",
       "pages": 4
+    },
+    {
+      "title": "A Criação",
+      "aliases": [
+        "a criação",
+        "criação",
+        "criação do mundo",
+        "o começo do mundo",
+        "início do mundo",
+        "deus criou todas as coisas",
+        "gênesis 1",
+        "dias da criação"
+      ],
+      "books": [
+        "genesis 1"
+      ],
+      "references": [
+        "Gênesis 1:1–2:3"
+      ],
+      "status": "review",
+      "cover": "./assets/estudos/criacao_capa.webp",
+      "id": "criacao-5-6",
+      "age": 5,
+      "ageMin": 5,
+      "ageMax": 6,
+      "ageLabel": "5 e 6 anos",
+      "summary": "Prévia editorial ilustrada para 5–6 anos: descobertas com imagens, associação, desenho e missão.",
+      "student": "./pacotes/criacao-faixas-v72.html?idade=5-6&aba=child",
+      "teacher": "./pacotes/criacao-faixas-v72.html?idade=5-6&aba=teacher",
+      "pages": 7
+    },
+    {
+      "title": "A Criação",
+      "aliases": [
+        "a criação",
+        "criação",
+        "criação do mundo",
+        "o começo do mundo",
+        "início do mundo",
+        "deus criou todas as coisas",
+        "gênesis 1",
+        "dias da criação"
+      ],
+      "books": [
+        "genesis 1"
+      ],
+      "references": [
+        "Gênesis 1:1–2:3"
+      ],
+      "status": "review",
+      "cover": "./assets/estudos/criacao_capa.webp",
+      "id": "criacao-10-12",
+      "age": 10,
+      "ageMin": 10,
+      "ageMax": 12,
+      "ageLabel": "10 a 12 anos",
+      "summary": "Prévia editorial ilustrada para 10–12 anos: investigação bíblica, interpretação, evidências e aplicação.",
+      "student": "./pacotes/criacao-faixas-v72.html?idade=10-12&aba=child",
+      "teacher": "./pacotes/criacao-faixas-v72.html?idade=10-12&aba=teacher",
+      "pages": 8
     }
   ]
 }

@@ -10,7 +10,8 @@ const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLo
 const ageNumber=raw=>{
  const value=String(raw||'').trim();
  if(/^\d{1,2}\s*anos?$/i.test(value))return Number(value.match(/\d+/)?.[0]||0);
- return 0; // faixas amplas não recebem cadernos com idade específica automaticamente
+ if(/^\d{1,2}\s*(?:a|até|[-–])\s*\d{1,2}\s*anos?$/i.test(value))return Number(value.match(/\d+/)?.[0]||0);
+ return 0; // idade não reconhecida não sugere caderno automaticamente
 };
 function matchesTheme(p,title,reference){
  const name=norm(title),r=norm(reference);
@@ -31,8 +32,8 @@ async function loadCatalog(){
    ['approved','review','draft'].includes(p.status)&&
    Number.isInteger(p.age)&&p.age>=2&&p.age<=17&&
    Array.isArray(p.aliases)&&Array.isArray(p.books)&&
-   /^\.\/pacotes\/[a-z0-9_-]+\.html$/.test(p.student||'')&&
-   /^\.\/pacotes\/[a-z0-9_-]+\.html$/.test(p.teacher||'')&&
+   /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'')&&
+   /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.teacher||'')&&
    /^\.\/assets\/estudos\/[a-z0-9_-]+\.webp$/.test(p.cover||'')
   );
   entries.splice(0,entries.length,...clean);
@@ -45,9 +46,9 @@ function allApproved(){return entries.filter(p=>p.status==='approved')}
 function find(title,reference,age){
  const selectedAge=ageNumber(age);
  if(String(age||'').trim()&&!selectedAge)return [];
- return allApproved().filter(p=>matchesTheme(p,title,reference)&&(!selectedAge||p.age===selectedAge));
+ return allApproved().filter(p=>matchesTheme(p,title,reference)&&(!selectedAge||(selectedAge>=(p.ageMin||p.age)&&selectedAge<=(p.ageMax||p.age))));
 }
-function pick(title,reference,age){return find(title,reference,age).find(p=>p.age===ageNumber(age))||null}
+function pick(title,reference,age){return find(title,reference,age).find(p=>ageNumber(age)>=(p.ageMin||p.age)&&ageNumber(age)<=(p.ageMax||p.age))||null}
 function el(tag,cls,text){const node=document.createElement(tag);if(cls)node.className=cls;if(text!=null)node.textContent=text;return node}
 function link(label,url,cls=''){const a=el('a','mi-bank-link '+cls,label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';return a}
 function card(p){
