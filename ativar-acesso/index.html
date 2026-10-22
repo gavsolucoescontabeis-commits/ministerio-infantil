@@ -73,6 +73,11 @@ async function startRecovery(){
   if(error){fail("Não foi possível validar o código de acesso.");return}
   if(data.session){showForm();return}
  }
+ if(fragment.get("access_token")&&fragment.get("refresh_token")){
+  const {data,error}=await supabase.auth.setSession({access_token:fragment.get("access_token"),refresh_token:fragment.get("refresh_token")});
+  if(error){fail("Não foi possível validar a sessão de recuperação.");return}
+  if(data.session){showForm();return}
+ }
  if(await showIfSession())return;
  await new Promise(resolve=>setTimeout(resolve,1800));
  if(!authReady&&!(await showIfSession()))fail("Não foi encontrada uma sessão de recuperação válida.");
