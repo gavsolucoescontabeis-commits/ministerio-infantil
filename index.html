@@ -1705,11 +1705,27 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
     if(!window.miAuthTokenV58 || (window.miAuthRoleV58!=='developer' && window.miLiveAccessV58?.permissions?.check!==true)){message('Entre com um perfil autorizado para usar o leitor.');return}
     if(!window.isSecureContext){message('Para usar a câmera, abra o aplicativo em HTTPS ou localhost.');return}
     if(!navigator.mediaDevices?.getUserMedia){message('Este navegador não permite acesso à câmera. Utilize a opção Localizar Criança.');return}
-    if(!('BarcodeDetector' in window)){message('Leitura automática indisponível neste navegador. Utilize Localizar Criança.');return}
     try{
-      const formats=await BarcodeDetector.getSupportedFormats();
-      if(!formats.includes('qr_code')){message('Leitura de QR Code não disponível neste navegador.');return}
-      const detector=new BarcodeDetector({formats:['qr_code']});
+      let detector=null, useFallback=false;
+      if('BarcodeDetector' in window){
+        try{
+          const formats=await BarcodeDetector.getSupportedFormats();
+          if(formats.includes('qr_code'))detector=new BarcodeDetector({formats:['qr_code']});
+        }catch(_){}
+      }
+      if(!detector){
+        useFallback=true;
+        if(!window.jsQR){
+          await new Promise((resolve,reject)=>{
+            const script=document.createElement('script');
+            script.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+            script.onload=resolve;script.onerror=()=>reject(new Error('Leitor de QR indisponível'));
+            document.head.appendChild(script);
+          });
+        }
+      }
+      const qrCanvas=useFallback?document.createElement('canvas'):null;
+      const qrContext=qrCanvas?.getContext('2d',{willReadFrequently:true});
       stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
       if(!window.miAuthTokenV58 || (window.miAuthRoleV58!=='developer' && window.miLiveAccessV58?.permissions?.check!==true)){stop();message('Sessão encerrada.');return}
       const video=byId('miQrVideo');video.srcObject=stream;video.hidden=false;
@@ -1719,11 +1735,24 @@ $('personCertForm').addEventListener('submit',async e=>{e.preventDefault();if(!s
       timer=setInterval(async()=>{
         if(busy||!stream||video.readyState<2)return;
         busy=true;
-        try{const codes=await detector.detect(video);if(codes.length)accept(codes[0].rawValue)}
+        try{
+          if(useFallback){
+            qrCanvas.width=video.videoWidth;qrCanvas.height=video.videoHeight;
+            if(qrContext&&qrCanvas.width&&qrCanvas.height){
+              qrContext.drawImage(video,0,0);
+              const frame=qrContext.getImageData(0,0,qrCanvas.width,qrCanvas.height);
+              const code=window.jsQR(frame.data,frame.width,frame.height,{inversionAttempts:'dontInvert'});
+              if(code?.data)accept(code.data);
+            }
+          }else{
+            const codes=await detector.detect(video);
+            if(codes.length)accept(codes[0].rawValue);
+          }
+        }
         catch(e){message('Não foi possível ler a imagem. Tente novamente ou use Localizar Criança.')}
         finally{busy=false}
       },450)
-    }catch(e){stop();message(e?.name==='NotAllowedError'?'Permissão da câmera negada.':'Não foi possível abrir a câmera. Utilize Localizar Criança.')}
+    }catch(e){stop();message(e?.name==='NotAllowedError'?'Permissão da câmera negada. No iPhone, abra Ajustes > Safari > Câmera e permita o acesso para este site.':'Não foi possível abrir a câmera ou carregar o leitor. Utilize Localizar Criança.')}
   }
   function init(){
     const search=byId('search');if(!search||byId('miQrPanel'))return;
