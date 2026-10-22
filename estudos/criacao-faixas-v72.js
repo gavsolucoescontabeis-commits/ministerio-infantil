@@ -40,7 +40,7 @@ function writeUrl(){const url=new URL(location.href);url.searchParams.set('idade
 function sheet(p,i){
  const cssClass=tab==='teacher'?'teacher':tab==='answer'?'answer':'child';
  const item=document.createElement('article');
- item.className='sheet '+cssClass+(i===page?' is-current':'');
+ item.className='sheet '+cssClass+' '+(age==='5-6'?'age-easy':'age-older')+(i===page?' is-current':'');
  item.dataset.index=String(i);item.dataset.print='no';
  item.setAttribute('aria-label',tabNames[tab]+': '+p.title+', página '+(i+1));
  const intro='<header class="banner"><div><small>MINISTÉRIO INFANTIL · 4ª IEQ CURITIBA · GÊNESIS 1:1–2:3</small><h1>'+escapeHtml(p.title)+'</h1><p>'+escapeHtml(p.subtitle)+'</p></div><span class="age">'+escapeHtml(pack().label)+'</span></header>';
