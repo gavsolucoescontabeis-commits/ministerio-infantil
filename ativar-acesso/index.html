@@ -42,7 +42,7 @@ button{background:var(--green);color:#fff;cursor:pointer}a.action{background:var
 </div></main>
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm";
-const supabase=createClient("https://jthxnjvqmvtydyfuqcct.supabase.co","sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs",{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:true}});
+const supabase=createClient("https://jthxnjvqmvtydyfuqcct.supabase.co","sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs",{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 const intro=document.getElementById("intro"),box=document.getElementById("formBox"),success=document.getElementById("successBox"),status=document.getElementById("status"),form=document.getElementById("passwordForm");
 function fail(msg){intro.textContent="Não foi possível validar este link.";box.hidden=true;status.className="err";status.textContent=msg+" Se o link expirou, peça à coordenação para reenviar o e-mail de criação da senha."}
 let authReady=false;
