@@ -17,13 +17,14 @@ function matchesTheme(p,title,reference){
  const name=norm(title),r=norm(reference);
  if(!name&&!r)return false;
  if(p.id==='criacao-9'&&/\badao\b|\beva\b/.test(name))return false;
+ if(p.id==='criacao-9'&&/\bcriacao\b/.test(name))return true;
  const byName=p.aliases.some(alias=>{const value=norm(alias);return name===value||(value.length>=13&&name.includes(value))});
  const byRef=p.books.some(b=>r===b||r.startsWith(b+' '));
  return byName||(!name&&byRef);
 }
 async function loadCatalog(){
  try{
-  const response=await fetch('./banco-atividades.json?v=70',{cache:'no-store'});
+  const response=await fetch('./banco-atividades.json?v=74',{cache:'no-store'});
   if(!response.ok)throw Error('Código '+response.status);
   const data=await response.json();
   if(data?.schemaVersion!==1||!Array.isArray(data.items))throw Error('Formato de banco não reconhecido');
@@ -32,8 +33,8 @@ async function loadCatalog(){
    ['approved','review','draft'].includes(p.status)&&
    Number.isInteger(p.age)&&p.age>=2&&p.age<=17&&
    Array.isArray(p.aliases)&&Array.isArray(p.books)&&
-   /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'')&&
-   /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.teacher||'')&&
+   (/^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'') || /^\.\/pacotes\/[a-z0-9_-]+\/[a-z0-9_-]+\.html$/.test(p.student||''))&&
+   (!p.teacher || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.teacher))&&
    /^\.\/assets\/estudos\/[a-z0-9_-]+\.webp$/.test(p.cover||'')
   );
   entries.splice(0,entries.length,...clean);
@@ -53,12 +54,14 @@ function el(tag,cls,text){const node=document.createElement(tag);if(cls)node.cla
 function link(label,url,cls=''){const a=el('a','mi-bank-link '+cls,label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';return a}
 function card(p){
  const c=el('article','mi-bank-entry');
- const image=el('img','mi-bank-image');image.src=p.cover;image.alt='Capa de '+p.title;image.loading='lazy';
+ const image=p.format==='pdf' ? el('div','mi-bank-image mi-bank-pdf-preview','PDF · '+p.pages+' páginas') : el('img','mi-bank-image');
+ if(p.format!=='pdf'){image.src=p.cover;image.alt='Capa de '+p.title;image.loading='lazy'}
  const body=el('div','mi-bank-entry-content');
  body.append(el('strong','mi-bank-title',p.title+' · '+p.ageLabel));
  body.append(el('p','mi-bank-description',p.summary));
  const links=el('div','mi-bank-buttons');
- links.append(link('Abrir caderno infantil',p.student),link('Material do professor',p.teacher,'secondary'));
+ links.append(link(p.format==='pdf'?'Abrir atividades em PDF':'Abrir caderno infantil',p.student));
+ if(p.teacher)links.append(link('Material do professor',p.teacher,'secondary'));
  body.append(links);c.append(image,body);return c;
 }
 function lessonAge(){const x=document.getElementById('lessonAge')?.value||'';

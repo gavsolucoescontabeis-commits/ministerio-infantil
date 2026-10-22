@@ -2,14 +2,14 @@
   "schemaVersion": 1,
   "name": "Banco de Atividades Bíblicas — Ministério Infantil 4ª IEQ",
   "storage": "Arquivos estáticos compartilhados via GitHub Pages, sem custo de API ou servidor adicional",
-  "approvalRule": "Apenas registros com status approved aparecem para professores. Materiais em review ou draft não são sugeridos.",
+  "approvalRule": "Materiais com status approved são sugeridos pelo tema e idade; atividades em review/draft não aparecem como sugestões automáticas.",
   "items": [
     {
       "id": "criacao-9",
       "title": "A Criação",
       "age": 9,
-      "ageLabel": "9 anos",
-      "status": "review",
+      "ageLabel": "7 a 9 anos",
+      "status": "approved",
       "aliases": [
         "a criação",
         "criação",
@@ -29,11 +29,13 @@
       "references": [
         "Gênesis 1:1–2:3"
       ],
-      "summary": "Caderno ilustrado de A Criação; a revisão visual ainda não foi aprovada.",
-      "student": "./pacotes/criacao-9-anos.html",
-      "teacher": "./pacotes/criacao-9-professor.html",
+      "summary": "Caderno ilustrado A Criação com capa e 9 atividades, reunidas em um PDF único de 10 páginas. Material complementar opcional.",
+      "student": "./pacotes/criacao-pdf-v74/abrir.html",
       "cover": "./assets/estudos/criacao_capa.webp",
-      "pages": 4
+      "pages": 10,
+      "ageMin": 7,
+      "ageMax": 9,
+      "format": "pdf"
     },
     {
       "title": "A Criação",
