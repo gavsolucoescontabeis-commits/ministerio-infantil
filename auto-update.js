@@ -36,9 +36,9 @@
     notice = document.createElement('div');
     notice.id = 'mi-update-available';
     notice.setAttribute('role', 'status');
-    notice.style.cssText = 'position:fixed;bottom:12px;left:12px;right:12px;max-width:480px;margin:auto;z-index:2147483000;padding:14px;border-radius:12px;background:#263343;color:#fff;box-shadow:0 4px 18px #0005;font:14px Arial,sans-serif;display:flex;align-items:center;gap:10px;justify-content:space-between';
+    notice.style.cssText = 'position:fixed;top:8px;right:8px;left:auto;bottom:auto;max-width:min(300px,calc(100vw - 16px));z-index:2147483000;padding:8px;border-radius:9px;background:#263343;color:#fff;box-shadow:0 3px 12px #0003;font:12px Arial,sans-serif;display:flex;align-items:center;gap:6px';
     const message = document.createElement('span');
-    message.textContent = 'Nova versão disponível. Salve o que estiver fazendo e atualize.';
+    message.textContent = 'Atualização disponível';
     const button = document.createElement('button');
     button.type = 'button';
     button.textContent = 'Atualizar';
@@ -47,18 +47,25 @@
       if (inUse() && !confirm('Atualizar agora? Dados ainda não salvos neste formulário podem ser perdidos.')) return;
       reloadWith(buildId);
     });
-    notice.append(message, button);
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.textContent = '×';
+    close.setAttribute('aria-label', 'Dispensar aviso');
+    close.style.cssText = 'border:0;background:transparent;color:#fff;font-size:20px;padding:2px 6px';
+    close.addEventListener('click', () => {
+      try { sessionStorage.setItem('mi-update-dismissed-' + buildId, '1'); } catch (_) {}
+      notice.remove(); notice = null;
+    });
+    notice.append(message, button, close);
     document.body.appendChild(notice);
   }
 
   function applyUpdate(buildId) {
-    if (inUse()) { showNotice(buildId); return; }
-    const key = 'mi-upgrade-attempt-' + buildId;
-    let previous = 0;
-    try { previous = Number(sessionStorage.getItem(key)) || 0; } catch (_) {}
-    if (Date.now() - previous < 120000) { showNotice(buildId); return; }
-    try { sessionStorage.setItem(key, String(Date.now())); } catch (_) {}
-    reloadWith(buildId);
+    // Nunca recarrega automaticamente: evita interromper o uso em celulares.
+    // Não insiste na mesma versão durante a sessão.
+    const key = 'mi-update-dismissed-' + buildId;
+    try { if (sessionStorage.getItem(key) === '1') return; } catch (_) {}
+    showNotice(buildId);
   }
 
   async function checkUpdate() {
@@ -89,6 +96,6 @@
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') checkUpdate();
   });
-  setInterval(checkUpdate, 3 * 60 * 1000);
+  setInterval(checkUpdate, 30 * 60 * 1000);
   setTimeout(checkUpdate, 5000);
 })();
