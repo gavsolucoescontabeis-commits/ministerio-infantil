@@ -156,7 +156,8 @@ async function loadRecentDocuments(){
  const fields='person_key,issued_on,due_on,verified_manually,created_at';
  return await request('/rest/v1/v58_staff_documents?select='+encodeURIComponent(fields)+'&order=issued_on.desc');
 }
-function renderRecentRows(rows,documents=null){
+function renderRecentRows(rows,documents=null,accessStatus=[]){
+ const statuses=new Map((Array.isArray(accessStatus)?accessStatus:[]).map(x=>[x.applicationId,x]));
  if(!recentList)return;
  recentList.replaceChildren();
  if(!rows.length){recentList.textContent='Nenhum cadastro concluído ainda.';return}
@@ -181,6 +182,15 @@ function renderRecentRows(rows,documents=null){
    else mail.textContent='Cadastro concluído antes da automação do e-mail; os dados permanecem disponíveis aqui.';
   }else mail.textContent='Pré-cadastro descartado; nenhum acesso foi criado.';
   card.append(title,meta,mail);
+  const access=statuses.get(app.id);
+  if(app.status==='imported'&&!oldAccountDisabled){
+   const state=document.createElement('p');state.className='small';state.style.cssText='font-weight:700;padding:8px;border-radius:8px;background:#eef6fa';
+   state.textContent=!access?'🔎 Situação do primeiro login indisponível nesta consulta.'
+    :!access.hasAccount?'⚠️ Conta de acesso não encontrada.'
+    :!access.active?'⛔ Conta de acesso desativada.'
+    :access.hasLogin?'✅ Primeiro login registrado.':'🟠 Primeiro login ainda não registrado. A pessoa pode solicitar o link em “Primeiro acesso” na tela de login.';
+   card.appendChild(state);
+  }
   if(app.status==='imported'&&app.imported_person_key){
    const docs=documents?.filter(d=>d.person_key===app.imported_person_key)||[];
    const latest=docs.sort((a,b)=>String(b.issued_on||'').localeCompare(String(a.issued_on||''))||String(b.created_at||'').localeCompare(String(a.created_at||'')))[0];
@@ -218,7 +228,13 @@ async function refreshRecent(silent=false){
  if(recentRefreshing)return;
  recentRefreshing=true;
  if(!silent)recentList.textContent='Carregando cadastros concluídos...';
- try{const rows=await loadRecentRows();let docs=null;try{docs=await loadRecentDocuments()}catch(_){/*Exibe os cadastros mesmo se o histórico documental estiver indisponível.*/}renderRecentRows(rows,docs)}
+ try{
+  const rows=await loadRecentRows();
+  let docs=null,accessStatus=[];
+  try{docs=await loadRecentDocuments()}catch(_){/* Mantém os cadastros disponíveis. */}
+  try{accessStatus=await request('/rest/v1/rpc/v60_staff_activation_status',{method:'POST',body:'{}'})}catch(_){/* Sem bloquear a consulta. */}
+  renderRecentRows(rows,docs,accessStatus);
+ }
  catch(e){if(!silent)recentList.textContent=e.message||'Não foi possível consultar os cadastros concluídos.'}
  finally{recentRefreshing=false}
 }
