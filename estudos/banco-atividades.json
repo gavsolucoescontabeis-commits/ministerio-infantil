@@ -63,10 +63,17 @@
       "ageMin": 5,
       "ageMax": 6,
       "ageLabel": "5 e 6 anos",
-      "summary": "Prévia editorial ilustrada para 5–6 anos: descobertas com imagens, associação, desenho e missão.",
+      "summary": "Caderno ilustrado aprovado com 7 páginas (capa e seis atividades). O PDF original está arquivado; publicação no app aguardando hospedagem do arquivo.",
       "student": "./pacotes/criacao-faixas-v72.html?idade=5-6&aba=child",
-      "teacher": "./pacotes/criacao-faixas-v72.html?idade=5-6&aba=teacher",
-      "pages": 7
+      "teacher": "",
+      "pages": 7,
+      "format": "pdf",
+      "pdfFilename": "A_Criacao_Caderno_5_a_6_anos_7_paginas.pdf",
+      "pdfSha256": "cf493871c9d99e6b0f87042e06698ff39d2c7af08a3657dd2d8601cb7284e78a",
+      "editorialApproved": true,
+      "published": false,
+      "approvedCover": "A Criação — O início de tudo (versão 5–6 sem idade na capa)",
+      "catalogNote": "O status deve permanecer review até o PDF aprovado estar acessível por URL pública e verificado; não usar a prévia V72 como substituto do PDF."
     },
     {
       "title": "A Criação",

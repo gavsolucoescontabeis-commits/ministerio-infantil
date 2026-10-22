@@ -10,7 +10,7 @@ const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLo
 const ageNumber=raw=>{
  const value=String(raw||'').trim();
  if(/^\d{1,2}\s*anos?$/i.test(value))return Number(value.match(/\d+/)?.[0]||0);
- if(/^\d{1,2}\s*(?:a|até|[-–])\s*\d{1,2}\s*anos?$/i.test(value))return Number(value.match(/\d+/)?.[0]||0);
+ if(/^\d{1,2}\s*(?:a|e|até|[-–])\s*\d{1,2}\s*anos?$/i.test(value))return Number(value.match(/\d+/)?.[0]||0);
  return 0; // idade não reconhecida não sugere caderno automaticamente
 };
 function matchesTheme(p,title,reference){
@@ -58,7 +58,7 @@ async function loadCatalog(){
    ['approved','review','draft'].includes(p.status)&&
    Number.isInteger(p.age)&&p.age>=2&&p.age<=17&&
    Array.isArray(p.aliases)&&Array.isArray(p.books)&&
-   (p.student==='./pacotes/A_Criacao.html' || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'') || /^\.\/pacotes\/[a-z0-9_-]+\/[a-z0-9_-]+\.html$/.test(p.student||''))&&
+   (p.student==='./pacotes/A_Criacao.html' ||  /^\.\/pacotes\/[a-zA-Z0-9_-]+\.pdf$/.test(p.student||'') || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'') || /^\.\/pacotes\/[a-z0-9_-]+\/[a-z0-9_-]+\.html$/.test(p.student||''))&&
    (!p.teacher || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.teacher))&&
    /^\.\/assets\/estudos\/[a-z0-9_-]+\.webp$/.test(p.cover||'')
   );
