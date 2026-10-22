@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A Criação — Caderno de Atividades | Ministério Infantil</title>
+<meta name="description" content="Caderno de A Criação, 10 páginas ilustradas em PDF, Ministério Infantil — 4ª IEQ.">
+<style>
+  :root{color-scheme:light;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+  *{box-sizing:border-box}body{margin:0;background:#f1f7fb;color:#183e63}
+  header{padding:16px 20px;background:#0a4d91;color:white}
+  .inner{max-width:1030px;margin:0 auto}h1{font-size:clamp(20px,3vw,29px);margin:0 0 5px}
+  p{margin:5px 0;line-height:1.5}small{opacity:.9}.toolbar{padding:12px 20px;background:white;border-bottom:1px solid #d5e5eb}
+  .buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .action{display:inline-block;background:#106c5b;color:white;padding:10px 14px;border-radius:9px;text-decoration:none;font-weight:750}
+  .action.secondary{background:#e4effa;color:#164a81}
+  .action[hidden]{display:none}
+  #status{font-size:14px;padding:10px 0;color:#315b6e}
+  #visualizacao{display:none;width:100%;height:calc(100dvh - 185px);min-height:510px;border:0;background:white}
+  #visualizacao.ready{display:block}
+  @media(max-width:650px){header{padding:13px 14px}.toolbar{padding:10px 14px}#visualizacao{height:calc(100dvh - 220px);min-height:460px}}
+</style>
+</head>
+<body>
+<header><div class="inner"><h1>A Criação — Caderno da Criança</h1><small>Gênesis 1:1–2:3 · 7 a 9 anos · 10 páginas ilustradas · PDF único</small></div></header>
+<section class="toolbar"><div class="inner">
+<p>Material complementar da aula. O roteiro do professor permanece na preparação de Estudos.</p>
+<div class="buttons">
+<a class="action secondary" href="../../index.html">← Voltar aos Estudos</a>
+<a class="action" id="baixar" hidden download="A_Criacao_Caderno_de_Atividades_7_a_9_anos.pdf">Baixar PDF completo</a>
+<a class="action secondary" id="abrir" hidden target="_blank" rel="noopener noreferrer">Abrir PDF em outra aba</a>
+</div>
+<div id="status" role="status" aria-live="polite">Carregando o caderno de atividades...</div>
+</div></section>
+<iframe id="visualizacao" title="PDF do caderno A Criação, 10 páginas"></iframe>
+<script>
+(()=>{'use strict';
+  const status=document.getElementById('status');
+  const arquivo=document.getElementById('visualizacao');
+  const baixar=document.getElementById('baixar');
+  const abrir=document.getElementById('abrir');
+  const numberOfParts=11;
+  const expectedSize=5047377;
+  const expectedSha256='b490267b987fe53e3a33475b36310802871a04e53d46b8d6eaabec1fc20f90b5';
+  let pdfUrl=null;
+  async function carregar(){
+    try{
+      const pedacos=await Promise.all(Array.from({length:numberOfParts},async(_,i)=>{
+        const filename='parte-'+String(i+1).padStart(2,'0')+'.b64';
+        const res=await fetch('./'+filename,{cache:'force-cache'});
+        if(!res.ok)throw new Error('Falha ao buscar '+filename);
+        return (await res.text()).replace(/\s/g,'');
+      }));
+      const bytesText=atob(pedacos.join(''));
+      if(bytesText.length!==expectedSize)throw new Error('Arquivo incompleto');
+      const bytes=new Uint8Array(bytesText.length);
+      for(let i=0;i<bytes.length;i++)bytes[i]=bytesText.charCodeAt(i);
+      if(globalThis.crypto?.subtle){
+        const digest=await crypto.subtle.digest('SHA-256',bytes);
+        const hex=Array.from(new Uint8Array(digest),x=>x.toString(16).padStart(2,'0')).join('');
+        if(hex!==expectedSha256)throw new Error('Verificação do PDF falhou');
+      }
+      pdfUrl=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+      baixar.href=pdfUrl;abrir.href=pdfUrl;baixar.hidden=false;abrir.hidden=false;
+      arquivo.src=pdfUrl+'#view=FitH';arquivo.classList.add('ready');
+      status.textContent='Caderno disponível: 10 páginas. Use os botões acima para baixar ou abrir em outra aba.';
+    }catch(error){
+      status.textContent='Não foi possível abrir o PDF agora. Atualize esta página e tente novamente.';
+      console.error('Falha ao carregar PDF de A Criação:',error);
+    }
+  }
+  window.addEventListener('pagehide',()=>{if(pdfUrl)URL.revokeObjectURL(pdfUrl)});
+  carregar();
+})();
+</script>
+</body>
+</html>
