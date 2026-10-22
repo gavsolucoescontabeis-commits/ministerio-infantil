@@ -41,7 +41,9 @@ Deno.serve(async req=>{
   const {data:lifecycle}=await admin.from("v58_staff_lifecycle").select("deleted").eq("staff_id",target.id).maybeSingle();
   if(lifecycle?.deleted)return reply({error:"Conta excluída"},403);
   if(!user.email)return reply({error:"Administrador sem e-mail válido"},400);
-  const {error:proofError}=await admin.auth.signInWithPassword({email:user.email,password});
+  // A prova de senha usa outro cliente, para não substituir o contexto service_role.
+  const proof=createClient(base,Deno.env.get("SUPABASE_ANON_KEY")!,{auth:{autoRefreshToken:false,persistSession:false}});
+  const {error:proofError}=await proof.auth.signInWithPassword({email:user.email,password});
   if(proofError)return reply({error:"Confirmação da senha administrativa não reconhecida"},401);
   const fifteen=new Date(Date.now()-15*60*1000).toISOString();
   const {count,error:countError}=await admin.from("v67_master_access_audit").select("id",{count:"exact",head:true}).eq("admin_id",user.id).gte("started_at",fifteen);
