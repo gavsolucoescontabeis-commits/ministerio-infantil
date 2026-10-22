@@ -493,7 +493,7 @@ function miV59CanOpen(id){
  const p=a.permissions;
  if(id==='home'||id==='estudos')return true;
  if(id==='children')return miV59CanRegisterKids();
- if(id==='ebd')return role==='teacher'?(p.tal===true||p.fin===true):role==='coordinator'&&(p.tal===true||p.fin===true||p.ebd===true);
+ if(id==='ebd')return p.ebd===true || (role==='teacher'&&a.area==='ebd'&&p.tal===true);
  if(id==='network')return p.check===true||(role==='coordinator'&&p.fin===true);
  if(id==='people')return false;
  if(id==='reports')return role==='teacher'?p.rep===true:role==='coordinator'&&(p.repEbd===true||p.repNet===true);
