@@ -4,6 +4,7 @@
  */
 (()=>{'use strict';
 const entries=[];
+const publicPdfPath=/^https:\/\/jthxnjvqmvtydyfuqcct[.]supabase[.]co\/storage\/v1\/object\/public\/mi-estudos-atividades\/[a-z0-9-]+\/[0-9a-f-]{36}[.]pdf$/;
 let catalogError='';
 let lastReadyLesson=null;
 const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
@@ -58,9 +59,9 @@ async function loadCatalog(){
    ['approved','review','draft'].includes(p.status)&&
    Number.isInteger(p.age)&&p.age>=2&&p.age<=17&&
    Array.isArray(p.aliases)&&Array.isArray(p.books)&&
-   (p.student==='./pacotes/A_Criacao.html' ||  /^\.\/pacotes\/[a-zA-Z0-9_-]+\.pdf$/.test(p.student||'') || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'') || /^\.\/pacotes\/[a-z0-9_-]+\/[a-z0-9_-]+\.html$/.test(p.student||''))&&
+   (p.student==='./pacotes/A_Criacao.html' ||  /^\.\/pacotes\/[a-zA-Z0-9_-]+\.pdf$/.test(p.student||'') || publicPdfPath.test(p.student||'') || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'') || /^\.\/pacotes\/[a-z0-9_-]+\/[a-z0-9_-]+\.html$/.test(p.student||''))&&
    (!p.teacher || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.teacher))&&
-   /^\.\/assets\/estudos\/[a-z0-9_-]+\.webp$/.test(p.cover||'')
+   (p.format==='pdf'&&p.cover==='' || /^\.\/assets\/estudos\/[a-z0-9_-]+\.webp$/.test(p.cover||''))
   );
  entries.splice(0,entries.length,...clean);
  catalogError='';
@@ -126,7 +127,16 @@ function renderBank(){
  }
  for(const p of approved)box.append(card(p));
 }
+function revealPublisher(){
+ const link=document.getElementById('miBankPublish');
+ if(!link)return;
+ try{link.hidden=!(window.parent!==window && window.parent.miAuthRoleV58==='developer' && !!window.parent.miAuthTokenV58)}
+ catch(e){link.hidden=true}
+}
 function init(){
+ revealPublisher();
+ document.querySelector('[data-view="banco"]')?.addEventListener('click',revealPublisher);
+ window.addEventListener('focus',revealPublisher);
  for(const id of ['lessonTitle','lessonReference','lessonAge','lessonAgeCustom']){
   const input=document.getElementById(id);
   input?.addEventListener('input',renderSuggest);input?.addEventListener('change',renderSuggest);
