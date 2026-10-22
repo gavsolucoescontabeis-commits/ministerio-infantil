@@ -26,7 +26,7 @@ function block(b){
  case 'match':body='<p>Ligue cada item à resposta correta:</p><div class="match"><div>'+b.left.map(x=>'<div class="match-item">'+escapeHtml(x)+' ●</div>').join('')+'</div><div>'+b.right.map(x=>'<div class="match-item right">● '+escapeHtml(x)+'</div>').join('')+'</div></div>';break;
  case 'check':body='<div class="two-col">'+b.items.map(v=>'<div class="choice"><span class="square"></span>'+escapeHtml(v)+'</div>').join('')+'</div>';break;
  case 'truefalse':body=b.items.map((x,i)=>'<div class="truth"><b>( V / F )</b><div>'+escapeHtml(x)+'</div></div>').join('');break;
- case 'table':body='<table class="tchart"><thead><tr>'+b.headers.map(x=>'<th>'+escapeHtml(x)+'</th>').join('')+'</tr></thead><tbody>'+b.rows.map(row=>'<tr>'+row.map((x,i)=>'<td'+(!x?' class="blank"':'')+'>'+escapeHtml(x)||'&nbsp;'+'</td>').join('')+'</tr>').join('')+'</tbody></table>';break;
+ case 'table':body='<table class="tchart"><thead><tr>'+b.headers.map(x=>'<th>'+escapeHtml(x)+'</th>').join('')+'</tr></thead><tbody>'+b.rows.map(row=>'<tr>'+row.map((x,i)=>'<td'+(!x?' class="blank"':'')+'>'+(x?escapeHtml(x):'&nbsp;')+'</td>').join('')+'</tr>').join('')+'</tbody></table>';break;
  case 'question':body=b.items.map((q,i)=>'<div class="prompt"><b>'+(i+1)+'. '+escapeHtml(q)+'</b>'+lines(b.lines||2)+'</div>').join('');break;
  case 'draw':body='<p>'+escapeHtml(b.prompt)+'</p><div class="draw">Meu desenho ou minhas ideias</div>';break;
  default:body='<p>Atividade em preparação.</p>';
@@ -83,6 +83,7 @@ function print(mode){
  const flags=selected();
  if(mode==='selected'&&!flags.some(Boolean))return;
  const included=[];
+ document.body.classList.add('mi-printing');
  document.querySelectorAll('#pageHost .sheet').forEach((elem,i)=>{
   const yes=mode==='all'||flags[i];elem.dataset.print=yes?'yes':'no';
   elem.dataset.last='no';if(yes)included.push(elem);
@@ -96,6 +97,6 @@ $('btnPrev').addEventListener('click',()=>{if(page>0){page--;updatePage();$('pag
 $('btnNext').addEventListener('click',()=>{if(page<pages().length-1){page++;updatePage();$('pageInfo').scrollIntoView({block:'nearest'})}});
 $('btnPrintSelection').addEventListener('click',()=>print('selected'));
 $('btnPrintAll').addEventListener('click',()=>print('all'));
-window.addEventListener('afterprint',()=>document.querySelectorAll('#pageHost .sheet').forEach(e=>{e.dataset.print='no';e.dataset.last='no'}));
+window.addEventListener('afterprint',()=>{document.body.classList.remove('mi-printing');document.querySelectorAll('#pageHost .sheet').forEach(e=>{e.dataset.print='no';e.dataset.last='no'});});
 render();
 })();
