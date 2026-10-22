@@ -80,3 +80,14 @@ button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,a:focus-visi
 .sheet.child .section:nth-of-type(3n){background:linear-gradient(124deg,#fffdfa,#fff8e4)}
 .sheet.teacher .section{border-left:4px solid #62bfad}
 .sheet.answer .section{border-left:4px solid #e6ba65}
+
+/* Leitura mais confortável e comandos simples para 5 e 6 anos. */
+.sheet.age-easy .section h2{font-size:19px}
+.sheet.age-easy .choice,.sheet.age-easy .prompt b,.sheet.age-easy .truth,.sheet.age-easy .tile p{font-size:15px}
+.sheet.age-easy .section p,.sheet.age-easy .section li{font-size:15px;line-height:1.48}
+.sheet.age-easy .tile b{font-size:17px}
+.sheet.age-easy .banner h1{font-size:26px}
+.sheet.age-easy .scene p{font-size:15px}
+.sheet.age-older .section{border-color:#d6d9ea}
+.sheet.age-older .banner{background:linear-gradient(105deg,#184b89,#5743a5)}
+.sheet.age-older .section h2{color:#40408c}
