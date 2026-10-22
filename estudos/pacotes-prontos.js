@@ -23,23 +23,47 @@ function matchesTheme(p,title,reference){
  return byName||(!name&&byRef);
 }
 async function loadCatalog(){
+ let items=null;
  try{
-  const response=await fetch('./banco-atividades.json?v=74',{cache:'no-store'});
-  if(!response.ok)throw Error('Código '+response.status);
-  const data=await response.json();
-  if(data?.schemaVersion!==1||!Array.isArray(data.items))throw Error('Formato de banco não reconhecido');
-  const clean=data.items.filter(p=>
-   p&&typeof p.title==='string'&&typeof p.id==='string'&&/^[a-z0-9-]+$/.test(p.id)&&
-   ['approved','review','draft'].includes(p.status)&&
-   Number.isInteger(p.age)&&p.age>=2&&p.age<=17&&
-   Array.isArray(p.aliases)&&Array.isArray(p.books)&&
-   (p.student==='./pacotes/A_Criacao.html' || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'') || /^\.\/pacotes\/[a-z0-9_-]+\/[a-z0-9_-]+\.html$/.test(p.student||''))&&
-   (!p.teacher || /^\.\/pacotes\/[a-z0-9_-]+\.html(?:\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.teacher))&&
-   /^\.\/assets\/estudos\/[a-z0-9_-]+\.webp$/.test(p.cover||'')
-  );
-  entries.splice(0,entries.length,...clean);
-  catalogError='';
- }catch(e){entries.splice(0);catalogError='O catálogo de atividades está temporariamente indisponível. Os roteiros do professor continuam funcionando normalmente.'}
+  // Apenas metadados editoriais publicos. A escrita do banco nao e permitida ao navegador.
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),5000);
+  try{
+   const response=await fetch('https://jthxnjvqmvtydyfuqcct.supabase.co/rest/v1/mi_study_activity_packages?select=payload&status=eq.approved&order=id.asc',{
+    cache:'no-store',signal:controller.signal,headers:{apikey:'sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs'}
+   });
+   if(!response.ok)throw Error('Banco online: '+response.status);
+   const records=await response.json();
+   if(!Array.isArray(records))throw Error('Formato do banco online nao reconhecido');
+   items=records.map(row=>row?.payload);
+  }finally{clearTimeout(timer)}
+ }catch(remoteError){
+  // GitHub Pages mantem o catalogo aprovado disponivel durante uma indisponibilidade do Supabase.
+  try{
+   const response=await fetch('./banco-atividades.json?v=75',{cache:'no-store'});
+   if(!response.ok)throw Error('Catalogo estatico: '+response.status);
+   const data=await response.json();
+   if(data?.schemaVersion!==1||!Array.isArray(data.items))throw Error('Formato de catalogo nao reconhecido');
+   items=data.items;
+  }catch(staticError){
+   entries.splice(0);
+   catalogError='O catalogo de atividades esta temporariamente indisponivel. Os roteiros do professor continuam funcionando normalmente.';
+   renderBank();renderSuggest();
+   if(lastReadyLesson)renderReady(lastReadyLesson);
+   return;
+  }
+ }
+ const clean=items.filter(p=>
+  p&&typeof p.title==='string'&&typeof p.id==='string'&&/^[a-z0-9-]+$/.test(p.id)&&
+  ['approved','review','draft'].includes(p.status)&&
+  Number.isInteger(p.age)&&p.age>=2&&p.age<=17&&
+  Array.isArray(p.aliases)&&Array.isArray(p.books)&&
+  (p.student==='./pacotes/A_Criacao.html' || /^\\.\\/pacotes\\/[a-z0-9_-]+\\.html(?:\\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.student||'') || /^\\.\\/pacotes\\/[a-z0-9_-]+\\/[a-z0-9_-]+\\.html$/.test(p.student||''))&&
+  (!p.teacher || /^\\.\\/pacotes\\/[a-z0-9_-]+\\.html(?:\\?idade=(?:5-6|10-12)&aba=(?:child|teacher|answer))?$/.test(p.teacher))&&
+  /^\\.\\/assets\\/estudos\\/[a-z0-9_-]+\\.webp$/.test(p.cover||'')
+ );
+ entries.splice(0,entries.length,...clean);
+ catalogError='';
  renderBank();renderSuggest();
  if(lastReadyLesson)renderReady(lastReadyLesson);
 }
