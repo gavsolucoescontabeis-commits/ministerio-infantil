@@ -45,6 +45,8 @@ Deno.serve(async req=>{
   const proof=createClient(base,Deno.env.get("SUPABASE_ANON_KEY")!,{auth:{autoRefreshToken:false,persistSession:false}});
   const {error:proofError}=await proof.auth.signInWithPassword({email:user.email,password});
   if(proofError)return reply({error:"Confirmação da senha administrativa não reconhecida"},401);
+  // A validação gerou uma sessão temporária: encerre-a sem tocar na sessão original.
+  await proof.auth.signOut({scope:"local"});
   const fifteen=new Date(Date.now()-15*60*1000).toISOString();
   const {count,error:countError}=await admin.from("v67_master_access_audit").select("id",{count:"exact",head:true}).eq("admin_id",user.id).gte("started_at",fifteen);
   if(countError)return reply({error:"Não foi possível validar o limite de acessos"},503);
