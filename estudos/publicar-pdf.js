@@ -35,7 +35,7 @@ async function init(){
   if(!token)throw Error('Abra Estudos pela sua conta dentro do aplicativo principal para publicar arquivos. O acesso direto em outra aba não autoriza envios.');
   const staff=await request('/rest/v1/rpc/current_staff_profile',{method:'POST',body:{},token});
   if(!Array.isArray(staff)||staff[0]?.staff_role!=='developer')throw Error('A publicação de materiais é exclusiva da conta administradora.');
-  const rows=await request('/rest/v1/mi_study_activity_packages?select=id,payload&order=id.asc',{token});
+  const rows=await request('/rest/v1/mi_study_activity_packages?select=id,payload,updated_at&order=updated_at.desc',{token});
   const select=$('entry');
   for(const row of rows){
    if(!row?.id||!row?.payload)continue;
@@ -45,7 +45,10 @@ async function init(){
    opt.textContent=p.title+' — '+(p.ageLabel||p.ageMin+' a '+p.ageMax+' anos')+(p.status==='approved'?' (publicado)':' (aguardando)');
    select.appendChild(opt);
   }
-  if(originals.has('criacao-5-6'))select.value='criacao-5-6';
+  // Prefere o material aprovado editorialmente mais recente que ainda espera o PDF.
+  const mostRecent=rows.find(row=>row?.payload?.status==='review'&&row?.payload?.pdfSha256);
+  if(mostRecent&&originals.has(mostRecent.id))select.value=mostRecent.id;
+  else if(originals.has('criacao-5-6'))select.value='criacao-5-6';
   selectExisting();
   select.addEventListener('change',selectExisting);
   authorized=true;$('publish').disabled=false;
@@ -95,7 +98,15 @@ async function publish(){
   if(!/^[a-z0-9-]+$/.test(id))throw Error('Não foi possível criar identificador para a atividade.');
   if(!saved&&originals.has(id))throw Error('Já existe material para o tema e a faixa. Selecione o registro existente.');
   if(!saved&&Array.from(originals.values()).some(p=>norm(p.title)===norm(title)&&Number(p.ageMin||p.age)===min&&Number(p.ageMax||p.age)===max))throw Error('Já existe um caderno deste tema e idade. Escolha o material cadastrado.');
-  const token=getToken();if(!token)throw Error('Sessão encerrada. Entre novamente no aplicativo.');
+  // Impede enviar versões antigas ou cadernos montados em baixa resolução.
+  // Para registros editoriais aprovados compara os bytes com o SHA-256 confirmado.
+  show('Conferindo se o PDF é exatamente o material aprovado…');
+  if(!crypto?.subtle?.digest)throw Error('Este navegador não oferece a verificação necessária para publicar o PDF. Atualize seu navegador.');
+  const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
+  const checksum=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+  if(saved?.pdfSha256&&checksum!==String(saved.pdfSha256).toLowerCase())
+    throw Error('Este PDF não corresponde ao arquivo aprovado. Selecione o caderno final correto, sem modificar ou renomear o conteúdo.');
+    const token=getToken();if(!token)throw Error('Sessão encerrada. Entre novamente no aplicativo.');
   const path=id+'/'+crypto.randomUUID()+'.pdf';
   const url=BASE+'/storage/v1/object/public/'+BUCKET+'/'+path;
   show('Enviando arquivo para o armazenamento oficial…');
@@ -112,7 +123,7 @@ async function publish(){
    references:[ref],status:'approved',
    summary:'Caderno ilustrado aprovado com '+pages+' páginas. PDF complementar ao roteiro do professor.',
    format:'pdf',pages,student:url,teacher:'',
-   cover:saved?.cover||'',published:true,editorialApproved:true,pdfFilename:file.name
+   cover:saved?.cover||'',published:true,editorialApproved:true,pdfFilename:file.name,pdfSha256:checksum
   };
   // Garante que a idade e a referência não sejam alteradas por engano num item já publicado.
   const row={status:'approved',payload,updated_at:new Date().toISOString()};
