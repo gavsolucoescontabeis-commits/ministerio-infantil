@@ -102,6 +102,8 @@ Deno.serve(async(req:Request)=>{
     }
 
 
+    if(app.source==="public-form-v60-password"&&permissions.identityConfirmed!==true)return json(409,{ok:false,error:"Confirme a identidade do professor antes de ativar a senha escolhida no cadastro."},origin);
+
     const cpf=String(app.cpf||"").replace(/\D/g,"");
     const email=String(app.email||"").trim().toLowerCase();
     const name=String(app.full_name||"").trim();
