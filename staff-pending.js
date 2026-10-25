@@ -139,7 +139,7 @@ function ensureRecentUI(){
 }
 
 async function loadRecentRows(){
- const fields='id,created_at,reviewed_at,full_name,cpf,phone,email,area,declared_role,current_room,status,imported_person_key,account_user_id,activation_email_sent_at,activation_email_error,birth_date,minor_guardian_confirmed_at,age_proof_file_name,age_proof_storage_path,age_proof_confirmed_at';
+ const fields='id,created_at,reviewed_at,full_name,cpf,phone,email,area,declared_role,current_room,status,source,imported_person_key,account_user_id,activation_email_sent_at,activation_email_error,birth_date,minor_guardian_confirmed_at,age_proof_file_name,age_proof_storage_path,age_proof_confirmed_at';
  return await request('/rest/v1/staff_applications_v60?select='+encodeURIComponent(fields)+'&status=in.(imported,rejected)&order=reviewed_at.desc.nullslast&limit=12');
 }
 
@@ -212,7 +212,8 @@ function renderRecentRows(rows,documents=null,accessStatus=[]){
   const mail=document.createElement('p');mail.className='small';
   if(oldAccountDisabled) mail.textContent='⚠️ Conta antiga desativada por endereço de e-mail incorreto. O CPF foi liberado para novo pré-cadastro; não reenvie o link anterior.';
   else if(app.status==='imported'){
-   if(app.activation_email_error) mail.textContent='⚠️ Problema no último envio do e-mail: '+String(app.activation_email_error).slice(0,180)+'. Se houver limite de envio, use a senha provisória administrativa em vez de repetir o envio agora.';
+   if(app.source==='public-form-v60-password')mail.textContent='🔐 Senha escolhida pelo professor no pré-cadastro. Acesso liberado após aprovação, sem necessidade de e-mail.';
+   else if(app.activation_email_error) mail.textContent='⚠️ Problema no último envio do e-mail: '+String(app.activation_email_error).slice(0,180)+'. Se houver limite de envio, use a senha provisória administrativa em vez de repetir o envio agora.';
    else if(app.activation_email_sent_at) mail.textContent='✉️ E-mail para criação da senha enviado em '+fmtDateTime(app.activation_email_sent_at)+'.';
    else if(app.account_user_id) mail.textContent='🟡 Acesso criado, mas o envio automático do e-mail ainda não foi confirmado.';
    else mail.textContent='Cadastro concluído antes da automação do e-mail; os dados permanecem disponíveis aqui.';
@@ -258,7 +259,8 @@ function renderRecentRows(rows,documents=null,accessStatus=[]){
     resend.addEventListener('click',()=>resendActivation(app,resend,feedback));
     const temporary=document.createElement('button');temporary.type='button';temporary.className='soft';temporary.textContent='🔑 Gerar senha provisória (sem e-mail)';
     temporary.addEventListener('click',()=>createTemporaryPassword(app,temporary,feedback));
-    card.append(resend,temporary,feedback);
+    if(app.source==='public-form-v60-password')card.append(temporary,feedback);
+    else card.append(resend,temporary,feedback);
   }
   recentList.appendChild(card);
  }
@@ -303,7 +305,7 @@ async function request(path,opts={}){
 }
 
 async function loadRows(){
- const fields='id,created_at,full_name,cpf,phone,email,area,declared_role,current_room,notes,cert_issued_on,cert_file_name,cert_storage_path,birth_date,minor_guardian_name,minor_guardian_phone,age_proof_file_name,age_proof_storage_path,age_proof_confirmed_at';
+ const fields='id,created_at,full_name,cpf,phone,email,area,declared_role,current_room,notes,source,account_user_id,cert_issued_on,cert_file_name,cert_storage_path,birth_date,minor_guardian_name,minor_guardian_phone,age_proof_file_name,age_proof_storage_path,age_proof_confirmed_at';
  return await request('/rest/v1/staff_applications_v60?select='+encodeURIComponent(fields)+'&status=eq.pending&order=created_at.asc');
 }
 
@@ -493,7 +495,7 @@ function renderCard(app){
   const verdict='Aprovar o cadastro de '+app.full_name+'?\n\nPerfil: '+roleLabel(role.value)+'\nÁrea: '+areaLabel(area.value)
    +(role.value==='teacher'&&area.value==='ebd'?'\nSala: '+room.value:'')
    +'\nCertidão: '+(minor?'dispensada por menoridade; documento de idade, responsável e acompanhamento confirmados':certChecked.checked?'autenticidade conferida por você':'recebida, autenticidade a conferir')
-   +'\n\nO acesso será criado e '+(minor?'a dispensa da certidão estadual será registrada.':'a certidão existente será vinculada automaticamente.');
+   +'\n\nO acesso será liberado e '+(minor?'a dispensa da certidão estadual será registrada.':'a certidão existente será vinculada automaticamente.');
   if(!confirm(verdict))return;
   approve.disabled=true;reject.disabled=true;feedback.textContent='Importando cadastro...';
   try{
@@ -513,7 +515,7 @@ function renderCard(app){
    focusedApplicationId=null;
    if(searchPending)searchPending.value='';
    const completed='✅ '+app.full_name+': CADASTRO APROVADO, acesso criado. '+(minor?'Atestado estadual dispensado; comprovante de idade e autorização do responsável confirmados.': 'Certidão anexada. '+(checkedResult?'Autenticidade conferida.':certChecked.checked?'Não foi possível registrar a conferência: '+checkError+' Use a opção do cadastro concluído.':'Autenticidade ainda não conferida.'))
-    +(result.emailSent?' E-mail para criar a senha enviado.':' E-mail não enviado; poderá ser reenviado.');
+    +(result.passwordReady?' Senha já escolhida no pré-cadastro. Acesso liberado sem e-mail.':result.emailSent?' E-mail para criar a senha enviado.':' E-mail não enviado; poderá ser reenviado.');
    successLine.textContent=completed;successLine.hidden=false;
    if(recentPanel)recentPanel.open=true;
    // A aprovacao ja foi confirmada no servidor. So atualizar o estado global
@@ -527,7 +529,7 @@ function renderCard(app){
    }
    try{await refreshPending();await refreshRecent();}catch(e){successLine.textContent+=' Atualize a lista de aprovados para consultar este cadastro.';}
    if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
-   if(!result.emailSent)alert('O cadastro foi aprovado e o acesso foi criado, mas o e-mail automático não foi enviado. Use o botão “Reenviar e-mail de criação da senha” nos cadastros concluídos.');
+   if(!result.emailSent&&!result.passwordReady)alert('O cadastro foi aprovado e o acesso foi criado, mas o e-mail automático não foi enviado. Use o botão “Reenviar e-mail de criação da senha” nos cadastros concluídos.');
   }catch(e){
    const reason=e?.message||'Não foi possível importar o cadastro.';
    const message='❌ Aprovação não concluída para '+app.full_name+': '+reason;
@@ -542,7 +544,7 @@ function renderCard(app){
  reject.addEventListener('click',async()=>{
   if(!confirm('Descartar o pré-cadastro de '+app.full_name+'? Ele sairá da fila e não será incluído na equipe.'))return;
   approve.disabled=true;reject.disabled=true;feedback.textContent='Descartando...';
-  try{await request('/rest/v1/rpc/v60_reject_staff_application',{method:'POST',body:JSON.stringify({p_application_id:app.id})});await refreshPending();await refreshRecent()}
+  try{const outcome=await request('/functions/v1/v60-admin-import-staff-application',{method:'POST',body:JSON.stringify({applicationId:app.id,action:'reject'})});if(outcome.cleanupWarning)alert(outcome.cleanupWarning);await refreshPending();await refreshRecent()}
   catch(e){feedback.textContent=e.message||'Não foi possível descartar.';approve.disabled=false;reject.disabled=false}
  });
 
