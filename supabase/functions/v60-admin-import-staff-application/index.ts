@@ -39,21 +39,25 @@ Deno.serve(async(req:Request)=>{
   if(!token) return json(401,{ok:false,error:"Sessão não informada."},origin);
 
   let createdUserId:string|null=null;
+  let freshUserCreated=false;
+  let pendingActivated=false;
+  let pendingAliasInserted=false;
   let finalPath:string|null=null;
   let imported=false;
 
   try{
     const body=await req.json();
     const applicationId=String(body.applicationId||"");
+    const action=String(body.action||"approve");
     const targetRole=String(body.targetRole||"");
     const targetArea=String(body.targetArea||"");
     const room=String(body.room||"").trim();
     const permissions=body.permissions&&typeof body.permissions==="object"?body.permissions:{};
 
     if(!/^[0-9a-f-]{36}$/i.test(applicationId)) return json(400,{ok:false,error:"Pré-cadastro inválido."},origin);
-    if(!["teacher","coordinator","office"].includes(targetRole)) return json(400,{ok:false,error:"Perfil inválido."},origin);
-    if(!["ebd","net"].includes(targetArea)) return json(400,{ok:false,error:"Área inválida."},origin);
-    if(targetRole==="teacher"&&targetArea==="ebd"&&!room) return json(400,{ok:false,error:"Selecione a sala da EBD."},origin);
+    if(action!=="reject"&&!["teacher","coordinator","office"].includes(targetRole)) return json(400,{ok:false,error:"Perfil inválido."},origin);
+    if(action!=="reject"&&!["ebd","net"].includes(targetArea)) return json(400,{ok:false,error:"Área inválida."},origin);
+    if(action!=="reject"&&targetRole==="teacher"&&targetArea==="ebd"&&!room) return json(400,{ok:false,error:"Selecione a sala da EBD."},origin);
 
     const secrets=JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS")||"{}");
     const publishable=JSON.parse(Deno.env.get("SUPABASE_PUBLISHABLE_KEYS")||"{}");
@@ -73,10 +77,30 @@ Deno.serve(async(req:Request)=>{
     }
 
     const {data:app,error:appError}=await admin.from("staff_applications_v60")
-      .select("id,status,full_name,cpf,email,cert_file_name,cert_storage_path")
+      .select("id,status,full_name,cpf,email,cert_file_name,cert_storage_path,birth_date,minor_guardian_name,minor_guardian_phone,account_user_id,source")
       .eq("id",applicationId).maybeSingle();
     if(appError||!app) return json(404,{ok:false,error:"Pré-cadastro não encontrado."},origin);
     if(app.status!=="pending") return json(409,{ok:false,error:"Este pré-cadastro já foi analisado."},origin);
+    if(action==="reject"){
+      const rpc=await fetch(url+"/rest/v1/rpc/v60_reject_staff_application",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","apikey":publicKey,"Authorization":"Bearer "+token},
+        body:JSON.stringify({p_application_id:applicationId})
+      });
+      const rejected=await rpc.json().catch(()=>({}));
+      if(!rpc.ok)return json(409,{ok:false,error:rejected.message||rejected.error||"Não foi possível descartar o cadastro."},origin);
+      let cleanupWarning:null|string=null;
+      if(app.account_user_id&&app.source==="public-form-v60-password"){
+        const {data:pre}=await admin.from("profiles").select("active,role").eq("id",app.account_user_id).maybeSingle();
+        if(pre?.active===false&&pre.role==="teacher"){
+          const {error:deleteError}=await admin.auth.admin.deleteUser(app.account_user_id);
+          if(deleteError)cleanupWarning="Cadastro descartado, mas a conta bloqueada requer limpeza administrativa.";
+          else await admin.from("staff_applications_v60").update({account_user_id:null}).eq("id",applicationId);
+        }else cleanupWarning="Cadastro descartado. A conta vinculada precisa de revisão administrativa.";
+      }
+      return json(200,{ok:true,rejected:true,cleanupWarning},origin);
+    }
+
 
     const cpf=String(app.cpf||"").replace(/\D/g,"");
     const email=String(app.email||"").trim().toLowerCase();
@@ -90,51 +114,80 @@ Deno.serve(async(req:Request)=>{
     if(aliasCheckError) throw aliasCheckError;
     if(existingAlias?.user_id) return json(409,{ok:false,error:"Este CPF já possui acesso ao aplicativo."},origin);
 
-    // Cria a conta primeiro com senha aleatória desconhecida do usuário.
-    // O usuário só define sua senha pelo link seguro enviado depois da aprovação.
+    // Novos cadastros já escolheram a senha: a conta permanece inativa até a revisão.
+    // Cadastros legados continuam no fluxo anterior, sem alterar suas senhas.
     const accountRole=targetRole==="teacher"?"teacher":"coordinator";
-    const {data:created,error:createError}=await admin.auth.admin.createUser({
-      email,
-      password:randomPassword(),
-      email_confirm:true
-    });
-    if(createError||!created.user){
-      return json(409,{ok:false,error:"Não foi possível criar a conta. Confira se este e-mail já está em uso no aplicativo."},origin);
+    const passwordReady=app.source==="public-form-v60-password";
+    if(passwordReady){
+      if(!app.account_user_id)return json(409,{ok:false,error:"Conta pendente não localizada. Peça revisão administrativa."},origin);
+      const {data:preUser,error:preUserError}=await admin.auth.admin.getUserById(app.account_user_id);
+      const {data:preProfile,error:preProfileError}=await admin.from("profiles")
+        .select("id,active,role,cpf_hash").eq("id",app.account_user_id).maybeSingle();
+      if(preUserError||preProfileError||!preUser?.user||!preProfile||
+         preUser.user.email?.trim().toLowerCase()!==email||
+         preProfile.active!==false||preProfile.role!=="teacher"||preProfile.cpf_hash!==digest){
+        return json(409,{ok:false,error:"Dados da conta pendente não conferem com o cadastro. Não foi feita nenhuma alteração."},origin);
+      }
+      createdUserId=app.account_user_id;
+      const {data:activated,error:activateError}=await admin.from("profiles")
+        .update({display_name:name,role:accountRole,cpf_hash:digest,active:true})
+        .eq("id",createdUserId).eq("active",false).select("id").maybeSingle();
+      if(activateError||!activated)throw new Error("Não foi possível ativar a conta pendente.");
+      pendingActivated=true;
+      const {error:aliasError}=await admin.from("account_login_aliases")
+        .insert({user_id:createdUserId,cpf_digest:digest});
+      if(aliasError)throw new Error("Falha ao vincular CPF à conta pendente.");
+      pendingAliasInserted=true;
+    }else{
+      // Contas registradas anteriormente não possuem senha escolhida pelo professor.
+      const {data:created,error:createError}=await admin.auth.admin.createUser({
+        email,password:randomPassword(),email_confirm:true
+      });
+      if(createError||!created.user){
+        return json(409,{ok:false,error:"Não foi possível criar a conta. Confira se este e-mail já está em uso no aplicativo."},origin);
+      }
+      createdUserId=created.user.id;
+      freshUserCreated=true;
+      const {error:profileInsert}=await admin.from("profiles").insert({
+        id:createdUserId,display_name:name,role:accountRole,active:true,cpf_hash:digest
+      });
+      if(profileInsert)throw new Error("Falha ao criar o perfil de acesso.");
+      const {error:aliasInsert}=await admin.from("account_login_aliases").insert({
+        user_id:createdUserId,cpf_digest:digest
+      });
+      if(aliasInsert)throw new Error("Falha ao vincular o CPF ao acesso.");
     }
-    createdUserId=created.user.id;
-
-    const {error:profileInsert}=await admin.from("profiles").insert({
-      id:createdUserId,
-      display_name:name,
-      role:accountRole,
-      active:true,
-      cpf_hash:digest
-    });
-    if(profileInsert) throw new Error("Falha ao criar o perfil de acesso.");
-
-    const {error:aliasInsert}=await admin.from("account_login_aliases").insert({
-      user_id:createdUserId,
-      cpf_digest:digest
-    });
-    if(aliasInsert) throw new Error("Falha ao vincular o CPF ao acesso.");
 
     // Vinculacao EBD ocorre no RPC v60_import_staff_application,
     // com o token do administrador e transacao do cadastro.
 
-    if(!String(app.cert_storage_path||"").startsWith("pending/")) throw new Error("Documento pendente inconsistente.");
-    const {data:file,error:downloadError}=await admin.storage.from("certidoes-ministerio").download(app.cert_storage_path);
-    if(downloadError||!file) throw new Error("Não foi possível recuperar a certidão pendente.");
-    if(file.size===0||file.size>10*1024*1024) throw new Error("Arquivo da certidão inválido.");
-    const type=file.type||"application/octet-stream";
-    if(type!=="application/octet-stream"&&!MIME.has(type)) throw new Error("Formato da certidão não permitido.");
+    const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    const birth=String(app.birth_date||'');
+    const isMinor=/^\d{4}-\d{2}-\d{2}$/.test(birth)&&(() => {
+      let age=Number(today.slice(0,4))-Number(birth.slice(0,4));
+      if(today.slice(5)<birth.slice(5))age--;
+      return age<18;
+    })();
+    if(isMinor && (
+      String(app.minor_guardian_name||'').trim().length<3 ||
+      String(app.minor_guardian_phone||'').replace(/\D/g,'').length<10 ||
+      permissions.minorGuardianConfirmed!==true
+    ))return json(409,{ok:false,error:"Antes de aprovar o menor, confirme a idade, a autorização do responsável e o acompanhamento por adulto."},origin);
 
-    finalPath=`certidoes/${caller.id}/${crypto.randomUUID()}/${safeName(app.cert_file_name)}`;
-    const {error:uploadError}=await admin.storage.from("certidoes-ministerio").upload(finalPath,file,{
-      contentType:type==="application/octet-stream"?"application/pdf":type,
-      upsert:false,
-      cacheControl:"3600"
-    });
-    if(uploadError) throw new Error("Não foi possível preparar a certidão definitiva.");
+    if(!isMinor && !String(app.cert_storage_path||"").startsWith("pending/")) throw new Error("Documento pendente inconsistente.");
+    if(!isMinor){
+      const {data:file,error:downloadError}=await admin.storage.from("certidoes-ministerio").download(app.cert_storage_path);
+      if(downloadError||!file)throw new Error("Não foi possível recuperar a certidão pendente.");
+      if(file.size===0||file.size>10*1024*1024)throw new Error("Arquivo da certidão inválido.");
+      const type=file.type||"application/octet-stream";
+      if(type!=="application/octet-stream"&&!MIME.has(type))throw new Error("Formato da certidão não permitido.");
+      finalPath=`certidoes/${caller.id}/${crypto.randomUUID()}/${safeName(app.cert_file_name)}`;
+      const {error:uploadError}=await admin.storage.from("certidoes-ministerio").upload(finalPath,file,{
+        contentType:type==="application/octet-stream"?"application/pdf":type,
+        upsert:false,cacheControl:"3600"
+      });
+      if(uploadError)throw new Error("Não foi possível preparar a certidão definitiva.");
+    }
 
     const rpc=await fetch(url+"/rest/v1/rpc/v60_import_staff_application",{
       method:"POST",
@@ -161,28 +214,26 @@ Deno.serve(async(req:Request)=>{
       activation_email_error:null
     }).eq("id",applicationId);
 
-    await admin.storage.from("certidoes-ministerio").remove([app.cert_storage_path]).catch(()=>{});
+    if(app.cert_storage_path)await admin.storage.from("certidoes-ministerio").remove([app.cert_storage_path]).catch(()=>{});
 
-    // O envio do e-mail é feito somente depois de a conta e o cadastro oficial estarem prontos.
+    // Senha escolhida pelo próprio professor no pré-cadastro: não há ativação por e-mail.
     let emailSent=false;
     let emailError:string|null=null;
-    try{
-      const publicClient=createClient(url,publicKey,{auth:{persistSession:false,autoRefreshToken:false}});
-      const {error:mailError}=await publicClient.auth.resetPasswordForEmail(email,{redirectTo:ACTIVATION_URL});
-      if(mailError) throw mailError;
-      emailSent=true;
-      await admin.from("staff_applications_v60").update({
-        activation_email_sent_at:new Date().toISOString(),
-        activation_email_error:null
-      }).eq("id",applicationId);
-    }catch(e){
-      emailError=e instanceof Error?e.message:"Não foi possível enviar o e-mail de ativação.";
-      await admin.from("staff_applications_v60").update({
-        activation_email_error:emailError
-      }).eq("id",applicationId);
+    if(!passwordReady){
+      try{
+        const publicClient=createClient(url,publicKey,{auth:{persistSession:false,autoRefreshToken:false}});
+        const {error:mailError}=await publicClient.auth.resetPasswordForEmail(email,{redirectTo:ACTIVATION_URL});
+        if(mailError)throw mailError;
+        emailSent=true;
+        await admin.from("staff_applications_v60").update({
+          activation_email_sent_at:new Date().toISOString(),activation_email_error:null
+        }).eq("id",applicationId);
+      }catch(e){
+        emailError=e instanceof Error?e.message:"Não foi possível enviar o e-mail de ativação.";
+        await admin.from("staff_applications_v60").update({activation_email_error:emailError}).eq("id",applicationId);
+      }
     }
-
-    return json(200,{ok:true,...result,userId:createdUserId,emailSent,emailError},origin);
+    return json(200,{ok:true,...result,userId:createdUserId,emailSent,emailError,passwordReady},origin);
   }catch(e){
     console.error("v60 admin staff import:",e);
     if(!imported){
@@ -197,7 +248,19 @@ Deno.serve(async(req:Request)=>{
           }
         }catch{}
       }
-      if(createdUserId){
+      if(pendingActivated&&createdUserId){
+        try{
+          const secrets=JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS")||"{}");
+          const key=secrets.default||Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
+          const url=Deno.env.get("SUPABASE_URL")||"";
+          if(url&&key){
+            const rollback=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+            if(pendingAliasInserted)await rollback.from("account_login_aliases").delete().eq("user_id",createdUserId);
+            await rollback.from("profiles").update({active:false,role:"teacher"}).eq("id",createdUserId);
+          }
+        }catch(err){console.error("Falha ao reverter aprovação pendente",err)}
+      }
+      if(freshUserCreated&&createdUserId){
         try{
           const secrets=JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS")||"{}");
           const secretKey=secrets.default||Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
