@@ -1,0 +1,25 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Publicação em lote • Ministério Infantil</title>
+<style>:root{font-family:Arial,sans-serif;background:#f5f8fc;color:#223c56}*{box-sizing:border-box}body{margin:0}
+header{background:#104e81;color:white;padding:20px}header>div,main{max-width:810px;margin:auto}
+header h1{font-size:clamp(22px,3.8vw,30px);margin:0 0 6px}header p{margin:0;line-height:1.5}
+main{padding:16px}.card{border:1px solid #d4e0e9;border-radius:15px;padding:21px;background:white;margin:14px 0}
+label{display:block;font-weight:bold;margin-bottom:10px}input{padding:12px 8px;width:100%;border:1px solid #91a8bf;border-radius:10px}
+button,.btn{display:inline-block;background:#087e6b;color:white;border:0;border-radius:10px;padding:12px 16px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none}
+button:disabled,input:disabled{opacity:.55;cursor:not-allowed}.btn{background:#dbeaf5;color:#134e77}
+#status{white-space:pre-line;line-height:1.6;font-size:14px}#status[data-kind=error]{color:#a22727}
+#status[data-kind=success]{color:#12704f}li{margin:5px 0;overflow-wrap:anywhere}small,p{line-height:1.55}
+@media(max-width:600px){.card{padding:16px}}</style></head><body>
+<header><div><h1>Importar PDFs aprovados em lote</h1><p>Publicação no Banco de Atividades para a conta administradora, com conferência de cada caderno.</p></div></header>
+<main><a class="btn" href="./publicar-pdf.html">← Publicação individual</a>
+<section class="card"><h2>1. Selecione o pacote</h2>
+<p id="pending">Conferindo catálogo…</p>
+<label for="zip">Pacote ZIP oficial com os PDFs aprovados</label>
+<input id="zip" type="file" accept=".zip,application/zip" disabled>
+<p><small>O pacote ZIP é apenas o transporte. Os PDFs continuam originais e são conferidos pelo SHA-256 registrado na aprovação. Materiais não aprovados, já publicados ou diferentes do original não são enviados. O arquivo ZIP deve estar sem compressão (pacote oficial).</small></p>
+<p id="summary"></p><ol id="items"></ol></section>
+<section class="card"><h2>2. Conferir e publicar</h2>
+<p><small>O processo envia cada PDF ao armazenamento oficial, verifica a abertura e, só então, libera o material aos professores. Pode levar alguns minutos dependendo da sua conexão. Mantenha o aplicativo aberto durante o envio.</small></p>
+<button id="submit" type="button" disabled>Conferir e publicar cadernos</button>
+<p id="progress" aria-live="polite"></p><p id="status" role="status" aria-live="polite">Verificando autorização…</p>
+</section></main><script src="./publicar-lote.js?v=79" defer></script></body></html>
