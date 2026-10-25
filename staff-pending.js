@@ -122,7 +122,7 @@ function ensureRecentUI(){
  instructions.textContent='📋 Copiar instruções de primeiro acesso (WhatsApp)';
  instructions.style.margin='5px 0 12px';
  instructions.addEventListener('click',async()=>{
-  const msg='Olá! Para acessar o Ministério Infantil da 4ª IEQ Curitiba, abra https://gavsolucoescontabeis-commits.github.io/ministerio-infantil/ . Se ainda não criou sua senha, toque em “Primeiro acesso ou esqueci minha senha”, informe o mesmo e-mail do cadastro e use o link recebido (verifique também o spam). Depois, entre com CPF e senha. Se aparecer erro ou o e-mail não chegar, avise a coordenação informando apenas seu nome e o problema — nunca envie sua senha.';
+  const msg='Olá! Para acessar o Ministério Infantil da 4ª IEQ Curitiba, abra https://gavsolucoescontabeis-commits.github.io/ministerio-infantil/ . Se ainda não criou sua senha, toque em “Primeiro acesso ou esqueci minha senha” e informe o mesmo e-mail do cadastro. Se receber um código numérico, abra https://gavsolucoescontabeis-commits.github.io/ministerio-infantil/ativar-acesso/ , informe e-mail e código e crie sua senha. Se receber um link antigo inválido, avise a administração para gerar uma senha provisória. Confira também a pasta de spam. Depois, entre com CPF e senha. Se aparecer erro ou o e-mail não chegar, avise a coordenação informando apenas seu nome e o problema — nunca envie sua senha.';
   try{await navigator.clipboard.writeText(msg);instructions.textContent='✅ Instruções copiadas!'}catch(_){window.prompt('Copie o texto para enviar à pessoa:',msg)}
   setTimeout(()=>instructions.textContent='📋 Copiar instruções de primeiro acesso (WhatsApp)',3200);
  });
@@ -140,7 +140,7 @@ async function resendActivation(app,button,statusEl){
  button.disabled=true;const old=button.textContent;button.textContent='Enviando...';statusEl.textContent='';
  try{
   await request('/functions/v1/v60-resend-staff-activation',{method:'POST',body:JSON.stringify({applicationId:app.id})});
-  statusEl.textContent='E-mail enviado novamente.';
+  statusEl.textContent='Solicitação de recuperação enviada. Confira se o e-mail contém código ou link. Se o link falhar, gere uma senha provisória e entregue somente ao titular.';
   await refreshRecent();
  }catch(e){statusEl.textContent=e.message||'Não foi possível reenviar o e-mail.'}
  finally{button.disabled=false;button.textContent=old}
@@ -215,7 +215,7 @@ function renderRecentRows(rows,documents=null,accessStatus=[]){
    state.textContent=!access?'🔎 Situação do primeiro login indisponível nesta consulta.'
     :!access.hasAccount?'⚠️ Conta de acesso não encontrada.'
     :!access.active?'⛔ Conta de acesso desativada.'
-    :access.hasLogin?'✅ Primeiro login registrado.':'🟠 Primeiro login ainda não registrado. A pessoa pode solicitar o link em “Primeiro acesso” na tela de login.';
+    :access.hasLogin?'✅ Primeiro login registrado.':'🟠 Primeiro login ainda não registrado. A pessoa pode recuperar o acesso em “Primeiro acesso” ou receber uma senha provisória administrativa.';
    card.appendChild(state);
   }
   if(app.status==='imported'&&app.imported_person_key){
