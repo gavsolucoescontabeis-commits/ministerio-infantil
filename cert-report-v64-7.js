@@ -7,6 +7,7 @@ const BASE='https://jthxnjvqmvtydyfuqcct.supabase.co';
 const KEY='sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs';
 const el=id=>document.getElementById(id);
 const meta={
+ minor:{label:'Dispensada — menor de 18 anos',icon:'🟦',detail:'O Paraná não emite atestado estadual antes dos 18 anos; mantenha os cuidados de proteção e a supervisão por adulto.'},
  missing:{label:'Sem certidão',icon:'⚪',detail:'Solicitar apresentação do documento'},
  unverified:{label:'Aguardando conferência',icon:'📎',detail:'Documento recebido; autenticidade ainda não conferida'},
  expired:{label:'Vencida',icon:'🔴',detail:'Solicitar renovação imediatamente'},
@@ -46,7 +47,8 @@ function summary(list){
   ['Sem certidão',list.filter(x=>x.status==='missing').length],
   ['Para conferir',list.filter(x=>x.status==='unverified').length],
   ['Até 30 dias',list.filter(x=>['due15','due30'].includes(x.status)).length],
-  ['Regulares',list.filter(x=>x.status==='regular').length]
+  ['Regulares',list.filter(x=>x.status==='regular').length],
+  ['Menores (dispensados)',list.filter(x=>x.status==='minor').length]
  ];
  counters.forEach(([label,n])=>{
   const item=mk('div','miV647Metric');
@@ -58,13 +60,14 @@ function filtered(){
  const filter=el('miV647CertFilter')?.value||'all',a=el('miV647CertArea')?.value||'all';
  const search=term(el('miV647CertSearch')?.value.trim());
  return rows.filter(x=>
-   (filter==='all'||(filter==='action'?x.status!=='regular':x.status===filter))&&
+   (filter==='all'||(filter==='action'?!['regular','minor'].includes(x.status):x.status===filter))&&
    (a==='all'||x.area===a)&&
    (!search||term(x.name).includes(search)||term(x.role).includes(search))
  );
 }
 function reminder(item){
  const first=String(item.name||'').trim().split(/\s+/)[0];
+ if(item.status==='minor')return 'Olá, '+first+'! Sua certidão estadual está dispensada enquanto você for menor de 18 anos. A equipe entrará em contato quando chegar a idade para apresentar o documento.';
  if(item.status==='missing')return 'Olá, '+first+'! Precisamos receber sua certidão de antecedentes criminais para manter o cadastro do Ministério Infantil atualizado. Por favor, encaminhe o documento à coordenação. Obrigado!';
  if(item.status==='unverified')return 'Olá, '+first+'! Recebemos sua certidão de antecedentes criminais. A coordenação está acompanhando a conferência da autenticidade. Caso seja necessário, entraremos em contato. Obrigado!';
  return 'Olá, '+first+'! O Ministério Infantil está atualizando o controle de certidões de antecedentes criminais. A sua tem previsão de renovação em '+date(item.due)+'. Pedimos, por favor, que providencie uma certidão atualizada e encaminhe à coordenação. Obrigado!';
@@ -95,16 +98,16 @@ function render(){
   person.append(mk('strong','',item.name||'Sem nome'),mk('span','small',item.role+' • '+area(item.area)));
   const status=mk('span','miV647Status miV647Status-'+item.status,cfg.icon+' '+cfg.label);
   top.append(person,status);card.append(top);
-  const due=mk('p','miV647Dates','Emissão: '+date(item.issued)+'   |   Vencimento/renovação: '+date(item.due));
+  const due=mk('p','miV647Dates',item.status==='minor'?'Certidão estadual exigível a partir de '+date(item.nextRequiredOn):'Emissão: '+date(item.issued)+'   |   Vencimento/renovação: '+date(item.due));
   const note=mk('p','small',cfg.detail);
   card.append(due,note);
   const buttons=mk('div','miV647Actions');
-  if(item.status!=='regular'){
+  if(!['regular','minor'].includes(item.status)){
    const copy=mk('button','soft','📋 Copiar mensagem de acompanhamento');
    copy.type='button';copy.addEventListener('click',()=>copyReminder(item,copy));buttons.append(copy);
   }
   const key=String(item.personKey||'').match(/^(teacher|coord):([0-9]+)$/);
-  if(admin&&key){
+  if(admin&&key&&item.status!=='minor'){
    const open=mk('button','soft','📄 Ver certidão no cadastro');
    open.type='button';
    open.addEventListener('click',()=>window.openPersonCert?.(key[1],key[2]));
@@ -157,8 +160,8 @@ function csvValue(value){
 }
 function exportCSV(){
  if(!hasData)return;
- const head=['Nome','Função','Área','Emissão','Renovação','Conferida','Situação'];
- const entries=filtered().map(x=>[x.name,x.role,area(x.area),date(x.issued),date(x.due),x.verified===true?'Sim':'Não',meta[x.status]?.label||'']);
+ const head=['Nome','Função','Área','Emissão','Renovação','Conferida','Situação','Exigível a partir de'];
+ const entries=filtered().map(x=>[x.name,x.role,area(x.area),date(x.issued),date(x.due),x.verified===true?'Sim':'Não',meta[x.status]?.label||'',date(x.nextRequiredOn)]);
  const csv='\ufeff'+[head,...entries].map(row=>row.map(csvValue).join(';')).join('\r\n');
  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
