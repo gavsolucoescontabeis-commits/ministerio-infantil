@@ -31,7 +31,7 @@ function matchesTheme(p,title,reference){
   [/^criacao-/,['criacao']]
  ];
  const words=new Set(name.split(' ').filter(Boolean));
- const isAnotherArk=/\\barca\\s+(?:da|do|de)\\s+(?:alianca|concerto|testemunho)\\b/.test(name)&&!words.has('noe');
+ const isAnotherArk=/\barca\s+(?:da|do|de)\s+(?:alianca|concerto|testemunho)\b/.test(name)&&!words.has('noe');
  const byKeyword=keywords.some(([id,terms])=>id.test(p.id)&&terms.some(word=>words.has(word))&&
   !(isAnotherArk&&/^noe-arca-/.test(p.id)));
  const byRef=p.books.some(b=>r===b||r.startsWith(b+' '));
