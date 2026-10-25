@@ -24,6 +24,7 @@ button{width:100%;border:0;border-radius:13px;padding:14px 18px;font-size:16px;f
 button:disabled{opacity:.6;cursor:not-allowed}
 #status{display:none;margin-top:14px;padding:14px;border-radius:12px;font-weight:700;line-height:1.45}
 #status.ok{display:block;background:#e9f8ef;color:#176b39;border:1px solid #a7dfba}
+#minorFields[hidden],#certificateCard[hidden]{display:none!important}
 #status.err{display:block;background:#fff0ef;color:#8d221b;border:1px solid #efb4b0}
 .required{color:var(--red)}.hiddenTrap{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 28px}
@@ -49,6 +50,16 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 28px}
       <label for="fullName">Nome completo <span class="required">*</span></label>
       <input id="fullName" name="fullName" autocomplete="name" maxlength="180" required>
 
+      <label for="birthDate">Data de nascimento <span class="required">*</span></label>
+      <input id="birthDate" name="birthDate" type="date" autocomplete="bday" required>
+      <div id="minorFields" class="notice" hidden style="margin-top:12px">
+        <strong>Menor de 18 anos</strong>
+        <p class="small">O Paraná não emite atestado estadual de antecedentes criminais para menores de 18 anos, mesmo emancipados. Por isso, a certidão não será solicitada. A coordenação confirmará a idade, a autorização do responsável e as condições de atuação antes de aprovar.</p>
+        <label for="minorGuardianName">Nome do responsável legal <span class="required">*</span></label>
+        <input id="minorGuardianName" name="minorGuardianName" maxlength="180">
+        <label for="minorGuardianPhone">WhatsApp do responsável legal <span class="required">*</span></label>
+        <input id="minorGuardianPhone" name="minorGuardianPhone" type="tel" maxlength="20" placeholder="(41) 99999-9999">
+      </div>
       <label for="cpf">CPF <span class="required">*</span></label>
       <input id="cpf" name="cpf" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required>
 
@@ -96,7 +107,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 28px}
       <textarea id="notes" name="notes" maxlength="1500" placeholder="Se precisar, informe alguma observação sobre sua atuação no ministério."></textarea>
     </div>
 
-    <div class="card">
+    <div class="card" id="certificateCard">
       <h2>📄 Certidão de antecedentes</h2>
       <p class="small">Anexe a certidão em PDF, JPG, PNG ou WebP, com no máximo 10 MB. O documento será armazenado em área privada.</p>
 
@@ -134,8 +145,20 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 28px}
 const endpoint='https://jthxnjvqmvtydyfuqcct.supabase.co/functions/v1/v60-staff-application-submit';
 const form=document.getElementById('staffForm'), btn=document.getElementById('submitBtn'), status=document.getElementById('status');
 const cpf=document.getElementById('cpf'), phone=document.getElementById('phone'), file=document.getElementById('certificate'), info=document.getElementById('fileInfo');
-const today=new Date().toISOString().slice(0,10);
-document.getElementById('certIssuedOn').max=today;
+const birthDate=document.getElementById('birthDate'), minorFields=document.getElementById('minorFields'),certCard=document.getElementById('certificateCard');
+const gName=document.getElementById('minorGuardianName'),gPhone=document.getElementById('minorGuardianPhone'),certIssued=document.getElementById('certIssuedOn');
+function ageYears(d,t){let y=Number(t.slice(0,4))-Number(d.slice(0,4));if(t.slice(5)<d.slice(5))y--;return y;}
+let minor=false;
+function refreshAge(){
+ minor=!!birthDate.value&&ageYears(birthDate.value,today)<18;
+ minorFields.hidden=!minor;certCard.hidden=minor;
+ gName.required=minor;gPhone.required=minor;certIssued.required=!minor;file.required=!minor;
+ if(minor){file.value='';certIssued.value='';info.textContent='Dispensado para menores de 18 anos.'}
+ else if(!file.files.length){info.textContent='Nenhum arquivo selecionado.'}
+}
+const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+birthDate.max=today;document.getElementById('certIssuedOn').max=today;
+birthDate.addEventListener('change',refreshAge);refreshAge();
 
 function msg(text,ok=false){status.className=ok?'ok':'err';status.textContent=text;status.scrollIntoView({behavior:'smooth',block:'nearest'})}
 function onlyDigits(v){return String(v||'').replace(/\D/g,'')}
@@ -164,9 +187,14 @@ form.addEventListener('submit',async e=>{
  if(!form.reportValidity())return;
  if(!validCpf(cpf.value))return msg('CPF inválido. Confira os números informados.');
  const digits=onlyDigits(phone.value);if(digits.length<10)return msg('Informe um telefone/WhatsApp válido.');
- const f=file.files[0];if(!f)return msg('Anexe a certidão de antecedentes.');
- if(f.size>10*1024*1024)return msg('A certidão deve ter no máximo 10 MB.');
- if(!['application/pdf','image/jpeg','image/png','image/webp'].includes(f.type))return msg('Envie a certidão em PDF, JPG, PNG ou WebP.');
+ if(!birthDate.value||birthDate.value>today)return msg('Informe uma data de nascimento válida.');
+ if(minor){
+  if(gName.value.trim().length<3||onlyDigits(gPhone.value).length<10)return msg('Informe o nome e WhatsApp do responsável legal.');
+ }else{
+  const f=file.files[0];if(!f)return msg('Anexe a certidão de antecedentes.');
+  if(f.size>10*1024*1024)return msg('A certidão deve ter no máximo 10 MB.');
+  if(!['application/pdf','image/jpeg','image/png','image/webp'].includes(f.type))return msg('Envie a certidão em PDF, JPG, PNG ou WebP.');
+ }
 
  const data=new FormData(form);
  data.set('cpf',onlyDigits(cpf.value));
@@ -178,7 +206,7 @@ form.addEventListener('submit',async e=>{
    const r=await fetch(endpoint,{method:'POST',body:data});
    const body=await r.json().catch(()=>({}));
    if(!r.ok||body.ok!==true)throw new Error(body.message||'Não foi possível enviar o cadastro.');
-   form.reset();info.textContent='Nenhum arquivo selecionado.';
+   form.reset();refreshAge();info.textContent='Nenhum arquivo selecionado.';
    msg('Cadastro enviado com sucesso! Protocolo: '+body.protocol+'. Após a aprovação, você receberá um e-mail para criar sua senha de acesso.',true);
  }catch(err){msg(err.message||'Não foi possível enviar o cadastro. Tente novamente.')}
  finally{btn.disabled=false;btn.textContent='Enviar cadastro'}
