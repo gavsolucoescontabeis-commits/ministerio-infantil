@@ -8,7 +8,7 @@ let authorized=false,working=false,records=[],selected=[];
 const getToken=()=>{try{return window.parent!==window?(window.parent.miAuthTokenV58||''):(window.opener?.miAuthTokenV58||'')}catch(_){return ''}};
 function show(msg,kind='info'){$('status').textContent=msg;$('status').dataset.kind=kind}
 async function api(path,{method='GET',body,token}={}){
- const resp=await fetch(BASE+path,{method,cache:'no-store',headers:{apikey:KEY,...(token?{Authorization:'Bearer '+token}:{}),...(body!==undefined?{'Content-Type':'application/json'}:{})},{...(body!==undefined?{body:JSON.stringify(body)}:{})}});
+ const resp=await fetch(BASE+path,{method,cache:'no-store',headers:{apikey:KEY,...(token?{Authorization:'Bearer '+token}:{}),...(body!==undefined?{'Content-Type':'application/json'}:{})},...(body!==undefined?{body:JSON.stringify(body)}:{})});
  if(!resp.ok){let msg='HTTP '+resp.status;try{const j=await resp.json();msg=j.message||j.error||msg}catch(_){}
  throw Error(msg)}
  return resp.status===204?null:resp.json();
