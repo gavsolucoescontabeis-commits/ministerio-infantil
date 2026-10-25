@@ -20,8 +20,22 @@ function matchesTheme(p,title,reference){
  if(p.id==='criacao-9'&&/\badao\b|\beva\b/.test(name))return false;
  if(p.id==='criacao-9'&&/\bcriacao\b/.test(name))return true;
  const byName=p.aliases.some(alias=>{const value=norm(alias);return name===value||(value.length>=13&&name.includes(value))});
+ // Palavras distintivas dos temas já aprovados: reconhece "no arca", "história da arca",
+ // "Noé na arca" etc. Evita que "Arca da Aliança" seja confundida com a arca de Noé.
+ const keywords=[
+  [/^noe-arca-/,['noe','arca','diluvio']],
+  [/^adao-eva-/,['adao','eva','eden']],
+  [/^caim-abel-/,['caim','abel']],
+  [/^abraao-/,['abraao','abrao']],
+  [/^esau-jaco-/,['esau','jaco','lentilhas','primogenitura']],
+  [/^criacao-/,['criacao']]
+ ];
+ const words=new Set(name.split(' ').filter(Boolean));
+ const isAnotherArk=/\\barca\\s+(?:da|do|de)\\s+(?:alianca|concerto|testemunho)\\b/.test(name)&&!words.has('noe');
+ const byKeyword=keywords.some(([id,terms])=>id.test(p.id)&&terms.some(word=>words.has(word))&&
+  !(isAnotherArk&&/^noe-arca-/.test(p.id)));
  const byRef=p.books.some(b=>r===b||r.startsWith(b+' '));
- return byName||(!name&&byRef);
+ return byName||byKeyword||(!name&&byRef);
 }
 async function loadCatalog(){
  let items=null;
@@ -96,7 +110,14 @@ function renderSuggest(){
  const box=document.getElementById('miPreparedPackageCard');if(!box)return;
  const title=document.getElementById('lessonTitle')?.value||'',ref=document.getElementById('lessonReference')?.value||'';
  const age=lessonAge(),p=pick(title,ref,age);box.replaceChildren();
- if(!p){box.hidden=true;return}
+ if(!p){
+  const anyAge=find(title,ref,'');
+  if(!anyAge.length){box.hidden=true;return}
+  box.hidden=false;
+  box.append(el('strong','mi-bank-offer-heading','Caderno disponível em outra faixa etária'));
+  box.append(el('p','mi-bank-offer-copy','Encontramos '+anyAge[0].title+' para '+[...new Set(anyAge.map(a=>a.ageLabel))].join(' e ')+'. Confira a idade selecionada para receber a atividade apropriada.'));
+  return;
+ }
  box.hidden=false;
  box.append(el('strong','mi-bank-offer-heading','Atividade opcional disponível no Banco de Atividades'));
  box.append(el('p','mi-bank-offer-copy','Encontramos '+p.title+' para '+p.ageLabel+'. A preparação do professor não será alterada.'));
