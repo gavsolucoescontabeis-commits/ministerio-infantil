@@ -9,6 +9,13 @@ function isAdmin(){return window.miAuthRoleV58==='developer'&&!!window.miAuthTok
 function escText(v){return String(v??'')}
 function fmtCpf(v){const n=String(v||'').replace(/\D/g,'');return n.length===11?n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4'):n}
 function fmtDate(v){if(!v)return '—';const p=String(v).slice(0,10).split('-');return p.length===3?p.reverse().join('/'):'—'}
+function minorBirth(birth){
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(String(birth||'')))return false;
+ const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+ let age=Number(today.slice(0,4))-Number(birth.slice(0,4));
+ if(today.slice(5)<birth.slice(5))age--;
+ return age<18;
+}
 function fmtDateTime(v){try{return new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date(v))}catch{return fmtDate(v)}}
 function areaLabel(v){return v==='ebd'?'EBD':v==='net'?'Rede de Crianças':v==='both'?'EBD e Rede de Crianças':v||'—'}
 function roleLabel(v){return ({teacher:'Professor(a)',assistant:'Auxiliar',coordinator:'Coordenador(a)',office:'Escritório',other:'Outra'})[v]||v||'—'}
@@ -131,7 +138,7 @@ function ensureRecentUI(){
 }
 
 async function loadRecentRows(){
- const fields='id,created_at,reviewed_at,full_name,cpf,phone,email,area,declared_role,current_room,status,imported_person_key,account_user_id,activation_email_sent_at,activation_email_error';
+ const fields='id,created_at,reviewed_at,full_name,cpf,phone,email,area,declared_role,current_room,status,imported_person_key,account_user_id,activation_email_sent_at,activation_email_error,birth_date,minor_guardian_confirmed_at';
  return await request('/rest/v1/staff_applications_v60?select='+encodeURIComponent(fields)+'&status=in.(imported,rejected)&order=reviewed_at.desc.nullslast&limit=12');
 }
 
@@ -197,7 +204,8 @@ function renderRecentRows(rows,documents=null,accessStatus=[]){
    ['Situação',oldAccountDisabled?'Acesso antigo desativado — novo cadastro necessário':app.status==='imported'?'Aprovado e importado':'Descartado'],
    ['CPF',fmtCpf(app.cpf)],['WhatsApp',app.phone||'—'],['E-mail',app.email||'—'],
    ['Área informada',areaLabel(app.area)],['Atuação informada',roleLabel(app.declared_role)],
-   ['Concluído em',fmtDateTime(app.reviewed_at||app.created_at)]
+   ['Concluído em',fmtDateTime(app.reviewed_at||app.created_at)],
+   ['Certidão estadual',minorBirth(app.birth_date)?'Dispensada — menor de 18 anos':'Conforme documento cadastrado']
   ];
   for(const [k,v] of entries){const d=document.createElement('div'),b=document.createElement('b');b.textContent=k+': ';d.append(b,document.createTextNode(escText(v)));meta.appendChild(d)}
   const mail=document.createElement('p');mail.className='small';
@@ -222,12 +230,13 @@ function renderRecentRows(rows,documents=null,accessStatus=[]){
    const docs=documents?.filter(d=>d.person_key===app.imported_person_key)||[];
    const latest=docs.sort((a,b)=>String(b.issued_on||'').localeCompare(String(a.issued_on||''))||String(b.created_at||'').localeCompare(String(a.created_at||'')))[0];
    const c=document.createElement('p');c.className='small';
-   c.textContent=documents===null?'📄 Situação da certidão indisponível nesta consulta.'
+   c.textContent=minorBirth(app.birth_date)?'🟦 Dispensado de atestado estadual (menor de 18 anos). Responsável confirmado pela administração.'
+    :documents===null?'📄 Situação da certidão indisponível nesta consulta.'
     :!latest?'⚪ Certidão não localizada no histórico. Consulte o cadastro da equipe.'
     :latest.verified_manually?'✅ Certidão recebida e autenticidade conferida.':'📎 Certidão recebida — falta somente confirmar a autenticidade. Não reenvie.';
    card.appendChild(c);
    const match=String(app.imported_person_key).match(/^(teacher|coord):([0-9]+)$/);
-   if(match){
+   if(match&&!minorBirth(app.birth_date)){
     const review=document.createElement('button');review.type='button';review.className='soft';
     review.textContent=latest&&!latest.verified_manually?'📄 Abrir e conferir certidão recebida':'📄 Ver certidão e histórico';
     review.addEventListener('click',()=>{
@@ -288,7 +297,7 @@ async function request(path,opts={}){
 }
 
 async function loadRows(){
- const fields='id,created_at,full_name,cpf,phone,email,area,declared_role,current_room,notes,cert_issued_on,cert_file_name,cert_storage_path';
+ const fields='id,created_at,full_name,cpf,phone,email,area,declared_role,current_room,notes,cert_issued_on,cert_file_name,cert_storage_path,birth_date,minor_guardian_name,minor_guardian_phone';
  return await request('/rest/v1/staff_applications_v60?select='+encodeURIComponent(fields)+'&status=eq.pending&order=created_at.asc');
 }
 
@@ -322,6 +331,7 @@ async function openCertificate(app,button){
 }
 
 function renderCard(app){
+ const minor=minorBirth(app.birth_date);
  const card=document.createElement('article');card.className='mi-pending-card';
  card.dataset.applicationId=String(app.id);card.dataset.searchName=String(app.full_name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
  const head=document.createElement('div');head.className='mi-pending-title';
@@ -333,22 +343,25 @@ function renderCard(app){
  const entries=[
   ['CPF',fmtCpf(app.cpf)],['WhatsApp',app.phone||'—'],['E-mail',app.email||'—'],
   ['Área informada',areaLabel(app.area)],['Atuação informada',roleLabel(app.declared_role)],
-  ['Sala/turma informada',app.current_room||'—'],['Emissão da certidão',fmtDate(app.cert_issued_on)]
+  ['Sala/turma informada',app.current_room||'—'],
+  ['Nascimento',fmtDate(app.birth_date)],
+  ['Certidão estadual',minor?'Dispensada por menoridade':'Emissão: '+fmtDate(app.cert_issued_on)],
+  ...(minor?[['Responsável legal',app.minor_guardian_name||'—'],['Telefone do responsável',app.minor_guardian_phone||'—']]:[])
  ];
  for(const [k,v] of entries){const d=document.createElement('div');const b=document.createElement('b');b.textContent=k+': ';d.append(b,document.createTextNode(escText(v)));meta.appendChild(d)}
  meta.hidden=true;
  card.append(head);
  const quick=document.createElement('p');quick.className='mi-pending-quick';
- quick.textContent='⏳ Aguardando aprovação • '+roleLabel(app.declared_role)+' • '+areaLabel(app.area)+' • 📎 Certidão recebida';
+ quick.textContent='⏳ Aguardando aprovação • '+roleLabel(app.declared_role)+' • '+areaLabel(app.area)+(minor?' • 🟦 Menor — sem certidão estadual':' • 📎 Certidão recebida');
  const review=document.createElement('button');review.type='button';review.className='soft mi-pending-review';
  review.textContent='Revisar e aprovar este cadastro';
  card.append(quick,review,meta);
  if(app.notes){const obs=document.createElement('p');obs.className='small';obs.textContent='Observações: '+app.notes;card.appendChild(obs)}
 
  const info=document.createElement('p');info.className='small';
- info.textContent='📎 Certidão já recebida no pré-cadastro. Ao aprovar, o arquivo será arquivado automaticamente na equipe; não é necessário reenviar.';
+ info.textContent=minor?'🟦 Menor de 18 anos: atestado estadual não é emitido no Paraná. Confirme documento de identidade, autorização do responsável legal e supervisão antes de aprovar.':'📎 Certidão já recebida no pré-cadastro. Ao aprovar, o arquivo será arquivado automaticamente na equipe; não é necessário reenviar.';
  card.appendChild(info);
- const cert=document.createElement('button');cert.type='button';cert.className='soft';cert.textContent='📄 Ver / baixar certidão recebida';cert.addEventListener('click',()=>openCertificate(app,cert));card.appendChild(cert);
+ const cert=document.createElement('button');cert.type='button';cert.className='soft';cert.textContent='📄 Ver / baixar certidão recebida';cert.addEventListener('click',()=>openCertificate(app,cert));if(!minor)card.appendChild(cert);
 
  const config=document.createElement('div');config.className='mi-pending-config';config.hidden=true;
  const subtitle=document.createElement('h4');subtitle.textContent='Confirmar função e permissões';
@@ -381,11 +394,17 @@ function renderCard(app){
  actions.append(approve);
  const danger=document.createElement('details');danger.className='mi-pending-danger';const dangerTitle=document.createElement('summary');dangerTitle.textContent='Outras opções: descartar este pré-cadastro';danger.append(dangerTitle,reject);
  const feedback=document.createElement('p');feedback.className='small mi-pending-review-status';feedback.setAttribute('role','status');
- feedback.textContent='O cadastro será aprovado com os dados e permissões acima. A certidão recebida já será vinculada automaticamente.';
+ feedback.textContent=minor?'A certidão estadual é dispensada. A aprovação só será concluída após confirmar a idade e autorização do responsável legal.':'O cadastro será aprovado com os dados e permissões acima. A certidão recebida já será vinculada automaticamente.';
  const checkLabel=document.createElement('label');checkLabel.className='mi-pending-verify';
  const certChecked=document.createElement('input');certChecked.type='checkbox';
  const checkText=document.createElement('span');checkText.textContent='Já conferi a autenticidade da certidão no site oficial. Marcar é opcional: se não conferi, posso aprovar e verificar o documento depois.';
  checkLabel.append(certChecked,checkText);
+ checkLabel.hidden=minor;
+ const guardianLabel=document.createElement('label');guardianLabel.className='mi-pending-verify';
+ const guardianConfirmed=document.createElement('input');guardianConfirmed.type='checkbox';
+ const guardianText=document.createElement('span');
+ guardianText.textContent='CONFIRMO que conferi a data de nascimento, obtive autorização do responsável legal e organizei supervisão por adulto para a atuação da pessoa menor de 18 anos.';
+ guardianLabel.append(guardianConfirmed,guardianText);guardianLabel.hidden=!minor;
  const detailToggle=()=>{
   const opening=config.hidden;
   document.querySelectorAll('#miPendingListV60 .mi-pending-config').forEach(el=>{el.hidden=true;});
@@ -394,7 +413,7 @@ function renderCard(app){
   document.querySelectorAll('#miPendingListV60 .mi-pending-card').forEach(el=>el.classList.remove('mi-pending-expanded'));
   const cards=[...document.querySelectorAll('#miPendingListV60 .mi-pending-card')];
   cards.forEach(el=>el.querySelectorAll('.mi-pending-intro-detail').forEach(n=>n.hidden=true));
-  config.hidden=!opening;meta.hidden=!opening;info.hidden=!opening;cert.hidden=!opening;
+  config.hidden=!opening;meta.hidden=!opening;info.hidden=!opening;if(!minor)cert.hidden=!opening;
   focusedApplicationId=opening?String(app.id):null;
   review.textContent=opening?'Fechar revisão deste cadastro':'Revisar e aprovar este cadastro';
   if(opening){card.classList.add('mi-pending-expanded');card.scrollIntoView({behavior:'smooth',block:'start'});}
@@ -402,7 +421,7 @@ function renderCard(app){
  review.addEventListener('click',detailToggle);
  const shouldExpand=focusedApplicationId===String(app.id);
  if(shouldExpand){config.hidden=false;meta.hidden=false;review.textContent='Fechar revisão deste cadastro';card.classList.add('mi-pending-expanded');}
- info.classList.add('mi-pending-intro-detail');cert.classList.add('mi-pending-intro-detail');info.hidden=cert.hidden=!shouldExpand;
+ info.classList.add('mi-pending-intro-detail');cert.classList.add('mi-pending-intro-detail');info.hidden=!shouldExpand;if(!minor)cert.hidden=!shouldExpand;
 
  const syncRoom=()=>{
   room.replaceChildren();
@@ -420,6 +439,7 @@ function renderCard(app){
  rebuildPerms();
 
  approve.addEventListener('click',async()=>{
+  if(minor&&!guardianConfirmed.checked){feedback.textContent='Antes de aprovar a pessoa menor, confirme a identidade, autorização do responsável e supervisão de adulto.';return}
   if(role.value==='teacher'&&area.value==='ebd'&&!room.value){feedback.textContent='Selecione a sala da EBD antes de aprovar.';return}
   // A aprovacao e operacao AUTENTICADA e TRANSACIONAL no Supabase.
   // Nao depende do indicador de sincronizacao do estado local do admin.
@@ -430,16 +450,16 @@ function renderCard(app){
   }
   const verdict='Aprovar o cadastro de '+app.full_name+'?\n\nPerfil: '+roleLabel(role.value)+'\nÁrea: '+areaLabel(area.value)
    +(role.value==='teacher'&&area.value==='ebd'?'\nSala: '+room.value:'')
-   +'\nCertidão: '+(certChecked.checked?'autenticidade conferida por você':'recebida, autenticidade a conferir')
-   +'\n\nO acesso será criado e a certidão existente será vinculada automaticamente.';
+   +'\nCertidão: '+(minor?'dispensada por menoridade; responsável e acompanhamento confirmados':certChecked.checked?'autenticidade conferida por você':'recebida, autenticidade a conferir')
+   +'\n\nO acesso será criado e '+(minor?'a dispensa da certidão estadual será registrada.':'a certidão existente será vinculada automaticamente.');
   if(!confirm(verdict))return;
   approve.disabled=true;reject.disabled=true;feedback.textContent='Importando cadastro...';
   try{
    const result=await request('/functions/v1/v60-admin-import-staff-application',{method:'POST',body:JSON.stringify({
-    applicationId:app.id,targetRole:role.value,targetArea:area.value,room:room.value||'',permissions:selectedPermissions(perms)
+    applicationId:app.id,targetRole:role.value,targetArea:area.value,room:room.value||'',permissions:{...selectedPermissions(perms),minorGuardianConfirmed:minor&&guardianConfirmed.checked}
    })});
    let checkedResult=false,checkError='';
-   if(certChecked.checked&&result.personKey){
+   if(!minor&&certChecked.checked&&result.personKey){
     try{
      const docs=await request('/rest/v1/v58_staff_documents?select=id,person_key,verified_manually&person_key=eq.'+encodeURIComponent(result.personKey)+'&order=created_at.desc&limit=1');
      const doc=Array.isArray(docs)?docs[0]:null;
@@ -450,7 +470,7 @@ function renderCard(app){
    }
    focusedApplicationId=null;
    if(searchPending)searchPending.value='';
-   const completed='✅ '+app.full_name+': CADASTRO APROVADO, acesso criado e certidão anexada. '+(checkedResult?'Autenticidade conferida.':certChecked.checked?'Não foi possível registrar a conferência: '+checkError+' Use a opção do cadastro concluído.':'Autenticidade ainda não conferida.')
+   const completed='✅ '+app.full_name+': CADASTRO APROVADO, acesso criado. '+(minor?'Atestado estadual dispensado por menoridade; autorização do responsável confirmada.': 'Certidão anexada. '+(checkedResult?'Autenticidade conferida.':certChecked.checked?'Não foi possível registrar a conferência: '+checkError+' Use a opção do cadastro concluído.':'Autenticidade ainda não conferida.'))
     +(result.emailSent?' E-mail para criar a senha enviado.':' E-mail não enviado; poderá ser reenviado.');
    successLine.textContent=completed;successLine.hidden=false;
    if(recentPanel)recentPanel.open=true;
@@ -484,7 +504,7 @@ function renderCard(app){
   catch(e){feedback.textContent=e.message||'Não foi possível descartar.';approve.disabled=false;reject.disabled=false}
  });
 
- config.append(subtitle,grid,roomNote,advanced,checkLabel,actions,feedback,danger);card.appendChild(config);
+ config.append(subtitle,grid,roomNote,advanced,checkLabel,guardianLabel,actions,feedback,danger);card.appendChild(config);
  return card;
 }
 
