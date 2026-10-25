@@ -35,6 +35,7 @@ function style(){
  #miPendingListV60 .mi-pending-perm-extra{border:1px solid #dce5ee;padding:12px;border-radius:10px;margin:10px 0}
  #miPendingListV60 .mi-pending-perm-extra summary{font-weight:700;cursor:pointer;line-height:1.5}
  #miPendingListV60 .mi-pending-verify span{flex:1;min-width:0}
+ #miPendingListV60 .mi-pending-verify[hidden]{display:none!important}
  #miPendingListV60 .mi-pending-verify{cursor:pointer}
  #miPendingListV60 .mi-pending-config{padding-top:16px}
  #miPendingListV60 .mi-pending-danger{margin-top:14px;border-top:1px solid #eee;padding-top:12px}
@@ -348,8 +349,12 @@ async function openAgeProof(app,button){
   const response=await fetch(url,{headers:{apikey:KEY,Authorization:'Bearer '+token},cache:'no-store'});
   if(!response.ok)throw Error('Não foi possível abrir o comprovante de idade.');
   const blob=await response.blob();
-  if(!['application/pdf','image/jpeg','image/png','image/webp'].includes(blob.type))throw Error('Formato inesperado.');
-  const local=URL.createObjectURL(blob);
+  const suffix=path.split('.').pop()?.toLowerCase();
+  const fallbackType=({pdf:'application/pdf',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'})[suffix];
+  const contentType=['application/pdf','image/jpeg','image/png','image/webp'].includes(blob.type)?blob.type:fallbackType;
+  if(!contentType)throw Error('Formato inesperado.');
+  const typed=new Blob([blob],{type:contentType});
+  const local=URL.createObjectURL(typed);
   if(win&&!win.closed)win.location.href=local;
   else{const a=document.createElement('a');a.href=local;a.download=app.age_proof_file_name||'comprovante-idade';document.body.appendChild(a);a.click();a.remove();}
   setTimeout(()=>URL.revokeObjectURL(local),120000);
