@@ -438,6 +438,12 @@ function renderCard(app){
  const checkText=document.createElement('span');checkText.textContent='Já conferi a autenticidade da certidão no site oficial. Marcar é opcional: se não conferi, posso aprovar e verificar o documento depois.';
  checkLabel.append(certChecked,checkText);
  checkLabel.hidden=minor;
+ const identityLabel=document.createElement('label');identityLabel.className='mi-pending-verify';
+ const identityChecked=document.createElement('input');identityChecked.type='checkbox';
+ const identityText=document.createElement('span');
+ identityText.textContent='CONFIRMO que identifiquei pessoalmente este professor ou conferi com ele por contato confiável o CPF e os dados do cadastro. A senha foi definida pelo próprio candidato e só será liberada após esta aprovação.';
+ identityLabel.append(identityChecked,identityText);
+ identityLabel.hidden=app.source!=='public-form-v60-password';
  const guardianLabel=document.createElement('label');guardianLabel.className='mi-pending-verify';
  const guardianConfirmed=document.createElement('input');guardianConfirmed.type='checkbox';
  const guardianText=document.createElement('span');
@@ -481,6 +487,7 @@ function renderCard(app){
  rebuildPerms();
 
  approve.addEventListener('click',async()=>{
+  if(app.source==='public-form-v60-password'&&!identityChecked.checked){feedback.textContent='Confirme a identidade do candidato antes de liberar a senha escolhida por ele.';return}
   if(minor&&!guardianConfirmed.checked){feedback.textContent='Antes de aprovar a pessoa menor, confirme a identidade, autorização do responsável e supervisão de adulto.';return}
   if(minor&&!app.age_proof_storage_path){feedback.textContent='Comprovante de idade não anexado. Não é possível aprovar.';return}
   if(minor&&!proofChecked.checked){feedback.textContent='Abra o comprovante de idade e confirme a data de nascimento.';return}
@@ -500,7 +507,7 @@ function renderCard(app){
   approve.disabled=true;reject.disabled=true;feedback.textContent='Importando cadastro...';
   try{
    const result=await request('/functions/v1/v60-admin-import-staff-application',{method:'POST',body:JSON.stringify({
-    applicationId:app.id,targetRole:role.value,targetArea:area.value,room:room.value||'',permissions:{...selectedPermissions(perms),minorGuardianConfirmed:minor&&guardianConfirmed.checked,minorAgeProofConfirmed:minor&&proofChecked.checked}
+    applicationId:app.id,targetRole:role.value,targetArea:area.value,room:room.value||'',permissions:{...selectedPermissions(perms),minorGuardianConfirmed:minor&&guardianConfirmed.checked,minorAgeProofConfirmed:minor&&proofChecked.checked,identityConfirmed:app.source==='public-form-v60-password'&&identityChecked.checked}
    })});
    let checkedResult=false,checkError='';
    if(!minor&&certChecked.checked&&result.personKey){
@@ -548,7 +555,7 @@ function renderCard(app){
   catch(e){feedback.textContent=e.message||'Não foi possível descartar.';approve.disabled=false;reject.disabled=false}
  });
 
- config.append(subtitle,grid,roomNote,advanced,checkLabel,proofLabel,guardianLabel,actions,feedback,danger);card.appendChild(config);
+ config.append(subtitle,grid,roomNote,advanced,checkLabel,identityLabel,proofLabel,guardianLabel,actions,feedback,danger);card.appendChild(config);
  return card;
 }
 
