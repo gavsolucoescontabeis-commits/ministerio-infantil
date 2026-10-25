@@ -236,7 +236,7 @@ function renderRecentRows(rows,documents=null,accessStatus=[]){
     :!latest?'⚪ Certidão não localizada no histórico. Consulte o cadastro da equipe.'
     :latest.verified_manually?'✅ Certidão recebida e autenticidade conferida.':'📎 Certidão recebida — falta somente confirmar a autenticidade. Não reenvie.';
    card.appendChild(c);
-   if(minorBirth(app.birth_date)&&app.age_proof_storage_path){
+   if(app.age_proof_storage_path){
     const show=document.createElement('button');show.type='button';show.className='soft';
     show.textContent='🪪 Ver comprovante de idade arquivado';
     show.addEventListener('click',()=>openAgeProof(app,show));card.appendChild(show);
