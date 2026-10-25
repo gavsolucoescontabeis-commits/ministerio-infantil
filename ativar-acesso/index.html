@@ -15,13 +15,29 @@ label{display:block;font-size:13px;font-weight:800;color:#526571;margin:14px 0 6
 input{width:100%;padding:12px;border:1px solid #cfdbe2;border-radius:11px;font-size:16px}
 button,a.action{display:block;width:100%;border:0;border-radius:13px;padding:14px 18px;font-size:16px;font-weight:800;text-align:center;text-decoration:none;margin-top:16px}
 button{background:var(--green);color:#fff;cursor:pointer}a.action{background:var(--blue);color:#fff}
-#formBox[hidden],#successBox[hidden],#backToLogin[hidden]{display:none!important}#status{margin-top:12px;font-weight:700}.err{color:var(--red)}.ok{color:#176b39}
+#formBox[hidden],#successBox[hidden],#backToLogin[hidden],#codeBox[hidden]{display:none!important}
+#codeBox{margin:12px 0 18px;padding:15px;border:1px solid #c8deee;background:#f3f9ff;border-radius:14px}
+#codeBox h2{font-size:18px;margin:0 0 7px}#codeBox form button{background:#176eaf}#codeBox input{letter-spacing:normal}
+#codeBox #otpCode{letter-spacing:3px;font-size:22px;max-width:230px;font-weight:800}.help{margin:8px 0;font-size:14px;color:#526571}#status{margin-top:12px;font-weight:700}.err{color:var(--red)}.ok{color:#176b39}
 </style>
 </head>
 <body>
 <header><div style="font-size:40px">👧👦</div><div style="font-weight:800;color:#267da3">Ministério Infantil • 4ª IEQ Curitiba</div><h1>Criar minha senha</h1></header>
 <main><div class="card">
 <p id="intro">Validando seu link de acesso...</p>
+<div id="codeBox">
+  <h2>🔐 Ativar com código recebido por e-mail</h2>
+  <p class="help">Se seu e-mail contém um código numérico de acesso, informe-o aqui. Não é necessário abrir um link de confirmação.</p>
+  <form id="codeForm">
+   <label for="otpEmail">Seu e-mail cadastrado</label>
+   <input id="otpEmail" type="email" autocomplete="email" required placeholder="nome@exemplo.com" maxlength="254">
+   <label for="otpCode">Código do e-mail</label>
+   <input id="otpCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,8}" minlength="6" maxlength="8" placeholder="Código de 6 a 8 dígitos" required>
+   <button id="verifyCodeButton" type="submit">Confirmar código e criar senha</button>
+  </form>
+  <p class="help">Ainda não tem código? Volte ao aplicativo e use <b>Primeiro acesso ou esqueci minha senha</b>. Se aparecer limite de envio, fale com a administração para receber uma senha provisória segura.</p>
+  <p id="otpStatus" role="status" aria-live="polite"></p>
+</div>
 <div id="formBox" hidden>
   <p>Seu cadastro foi aprovado. Crie agora a senha que você usará junto com seu <b>CPF</b> para entrar no aplicativo.</p>
   <form id="passwordForm">
@@ -45,6 +61,7 @@ button{background:var(--green);color:#fff;cursor:pointer}a.action{background:var
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm";
 const supabase=createClient("https://jthxnjvqmvtydyfuqcct.supabase.co","sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs",{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 const intro=document.getElementById("intro"),box=document.getElementById("formBox"),success=document.getElementById("successBox"),status=document.getElementById("status"),form=document.getElementById("passwordForm");
+const codeBox=document.getElementById('codeBox'),codeForm=document.getElementById('codeForm'),otpStatus=document.getElementById('otpStatus');
 function fail(msg){
  intro.textContent="Não foi possível validar este link.";
  box.hidden=true;status.className="err";
@@ -52,7 +69,7 @@ function fail(msg){
  document.getElementById('backToLogin').hidden=false;
 }
 let authReady=false;
-function showForm(){authReady=true;intro.textContent="";box.hidden=false;status.textContent="";status.className=""}
+function showForm(){authReady=true;intro.textContent="";box.hidden=false;codeBox.hidden=true;status.textContent="";status.className="";try{history.replaceState(null,'',location.pathname)}catch(_){}}
 async function showIfSession(){
  const {data:{session},error}=await supabase.auth.getSession();
  if(!error&&session){showForm();return true}
@@ -65,6 +82,8 @@ async function startRecovery(){
  const query=new URLSearchParams(location.search);
  const fragment=new URLSearchParams(location.hash.slice(1));
  const reported=query.get("error_description")||fragment.get("error_description");
+ const hasLinkData=!!(query.get('token_hash')||query.get('code')||fragment.get('access_token')||query.get('error')||fragment.get('error'));
+ if(!hasLinkData){intro.textContent='Use o código recebido no e-mail para criar sua senha. Se você tem um link antigo, ele pode ter expirado.';document.getElementById('backToLogin').hidden=false;return}
  if(reported){fail("O link foi recusado pelo serviço de autenticação: "+reported.slice(0,160));return}
  const tokenHash=query.get("token_hash");
  const type=query.get("type");
@@ -89,6 +108,19 @@ async function startRecovery(){
  if(!authReady&&!(await showIfSession()))fail("Não foi encontrada uma sessão de recuperação válida.");
 }
 startRecovery();
+codeForm.addEventListener('submit',async e=>{
+ e.preventDefault();
+ const email=document.getElementById('otpEmail').value.trim().toLowerCase();
+ const token=document.getElementById('otpCode').value.replace(/\s/g,'');
+ if(!/^[0-9]{6,8}$/.test(token)){otpStatus.className='err';otpStatus.textContent='O código precisa ter de 6 a 8 números.';return}
+ const btn=document.getElementById('verifyCodeButton');btn.disabled=true;btn.textContent='Conferindo...';otpStatus.className='';otpStatus.textContent='Conferindo seu código com segurança...';
+ try{
+  const {data,error}=await supabase.auth.verifyOtp({email,token,type:'recovery'});
+  if(error||!data?.session){otpStatus.className='err';otpStatus.textContent='Código inválido, já utilizado ou expirado. Solicite outro no aplicativo ou fale com a administração.';return}
+  codeForm.reset();otpStatus.textContent='';showForm();
+ }catch(_){otpStatus.className='err';otpStatus.textContent='Não foi possível conferir o código. Verifique a conexão e tente novamente.'}
+ finally{btn.disabled=false;btn.textContent='Confirmar código e criar senha'}
+});
 form.addEventListener("submit",async e=>{
  e.preventDefault();status.className="";status.textContent="";
  const a=document.getElementById("password").value,b=document.getElementById("confirm").value;
