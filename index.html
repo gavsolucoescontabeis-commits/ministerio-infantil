@@ -229,7 +229,7 @@
 .miV647EntryPerson strong{font-size:15px}
 .miV647Status{font-size:12px;background:#eef4f9;border-radius:20px;padding:6px 9px;max-width:100%;white-space:normal}
 .miV647Status-expired{background:#fbe2e2}.miV647Status-due15{background:#ffedcf}
-.miV647Status-due30{background:#fff6d9}.miV647Status-regular{background:#ddf5e7}
+.miV647Status-due30{background:#fff6d9}.miV647Status-regular{background:#ddf5e7}.miV647Status-minor{background:#e3efff}
 .miV647Dates{font-size:12px;line-height:1.5;margin:10px 0 5px}
 .miV647Entry .small{line-height:1.45}
 .miV647Actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
@@ -334,7 +334,7 @@
 <div id="miV647CertStats" class="miV647Stats" aria-label="Resumo de vencimentos"></div>
 <div class="miV647Filters">
 <div><label for="miV647CertSearch">Pesquisar pessoa</label><input type="search" id="miV647CertSearch" placeholder="Digite parte do nome" autocomplete="off"></div>
-<div><label for="miV647CertFilter">Situação</label><select id="miV647CertFilter"><option value="all">Todas</option><option value="action">Pendentes e a renovar</option><option value="expired">Vencidas</option><option value="missing">Sem certidão</option><option value="unverified">Aguardando conferência</option><option value="due15">Até 15 dias</option><option value="due30">16 a 30 dias</option><option value="regular">Regulares</option></select></div>
+<div><label for="miV647CertFilter">Situação</label><select id="miV647CertFilter"><option value="all">Todas</option><option value="action">Pendentes e a renovar</option><option value="expired">Vencidas</option><option value="missing">Sem certidão</option><option value="unverified">Aguardando conferência</option><option value="due15">Até 15 dias</option><option value="due30">16 a 30 dias</option><option value="regular">Regulares</option><option value="minor">Dispensados — menores</option></select></div>
 <div><label for="miV647CertArea">Área</label><select id="miV647CertArea"><option value="all">Todas autorizadas</option><option value="ebd">EBD</option><option value="net">Rede de Crianças</option></select></div></div>
 <div class="miV647Toolbar"><button id="miV647CertCSV" type="button" class="soft">⬇️ Exportar planilha CSV</button><button id="miV647CertPrint" type="button" class="soft">🖨️ Imprimir relatório</button></div>
 <p id="miV647CertMessage" class="small" role="status">Selecione Atualizar para consultar as certidões.</p>
@@ -1819,8 +1819,8 @@ window.addEventListener('mi-auth-ready',refresh);document.getElementById('authEx
 const observer=new MutationObserver(refresh);observer.observe(document.getElementById('authV58')||document.body,{attributes:true,attributeFilter:['hidden','style']});
 refresh();
 })();</script>
-<script src="./staff-pending.js?v=20261025-recuperacao-otp" defer></script>
-<script src="./cert-report-v64-7.js?v=v64-7-20261018" defer></script>\n<script src="./auto-update.js?v=20261021-no-auto-reload" defer></script>
+<script src="./staff-pending.js?v=20261025-menores-certidoes" defer></script>
+<script src="./cert-report-v64-7.js?v=20261025-menores-certidoes" defer></script>\n<script src="./auto-update.js?v=20261021-no-auto-reload" defer></script>
 <script id="mi-pwa-script">if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(e=>console.warn('Instalação PWA indisponível',e));</script>
 <style id="mi-v64-views">#rooms>.card[hidden],#ebd .tabs button[hidden]{display:none!important}.miV64RoomManager{border:2px solid #29a9df}.miV64RoomGrid{display:grid;gap:8px}.miV64RoomRow{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #d7e3ea;border-radius:10px;padding:12px;background:white}.miV64RoomName{min-width:0;overflow-wrap:anywhere;flex:1}.miV64RoomActions{display:flex;gap:8px;flex-wrap:wrap}.miV64RoomActions button{min-width:100px;padding:11px 14px}#ebdCloseV64 .listWrap{overflow-x:auto}#ebdCloseV64 .actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}#ebdCloseV64 td,#ebdCloseV64 th{padding:8px;border-bottom:1px solid #ddd}#ebdCloseV64 table{width:100%;border-collapse:collapse}.miV64Roster{border:1px solid #d7e3ea;padding:10px 12px;margin:8px 0;border-radius:9px;background:white}.miV64Roster summary{cursor:pointer;font-weight:700}.miV64Roster ol{padding-left:26px;margin-bottom:4px}.miV64Roster li{padding:4px 0}@media(max-width:550px){.miV64RoomRow{align-items:stretch;flex-direction:column;gap:10px}.miV64RoomActions button{flex:1;min-width:0}.miV64RoomActions{width:100%}}</style><script id="mi-v64-logic">(function v64Boot(){
  const BASE='https://jthxnjvqmvtydyfuqcct.supabase.co/rest/v1/rpc/';
