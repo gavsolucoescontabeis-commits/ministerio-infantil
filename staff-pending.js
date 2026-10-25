@@ -116,7 +116,17 @@ function ensureRecentUI(){
  const refresh=document.createElement('button');refresh.type='button';refresh.className='soft';refresh.textContent='Atualizar concluídos';
  refresh.addEventListener('click',()=>refreshRecent());
  recentList=document.createElement('div');recentList.id='miRecentStaffListV60';recentList.setAttribute('role','status');
- recentPanel.append(title,help,refresh,recentList);
+ const stats=document.createElement('div');
+ stats.id='miAccessStatsV68';stats.style.cssText='margin:12px 0;padding:13px;border:1px solid #d1e2ef;border-radius:10px;background:#f3f9ff;font-size:14px;line-height:1.6';
+ const instructions=document.createElement('button');instructions.type='button';instructions.className='soft';
+ instructions.textContent='📋 Copiar instruções de primeiro acesso (WhatsApp)';
+ instructions.style.margin='5px 0 12px';
+ instructions.addEventListener('click',async()=>{
+  const msg='Olá! Para acessar o Ministério Infantil da 4ª IEQ Curitiba, abra https://gavsolucoescontabeis-commits.github.io/ministerio-infantil/ . Se ainda não criou sua senha, toque em “Primeiro acesso ou esqueci minha senha”, informe o mesmo e-mail do cadastro e use o link recebido (verifique também o spam). Depois, entre com CPF e senha. Se aparecer erro ou o e-mail não chegar, avise a coordenação informando apenas seu nome e o problema — nunca envie sua senha.';
+  try{await navigator.clipboard.writeText(msg);instructions.textContent='✅ Instruções copiadas!'}catch(_){window.prompt('Copie o texto para enviar à pessoa:',msg)}
+  setTimeout(()=>instructions.textContent='📋 Copiar instruções de primeiro acesso (WhatsApp)',3200);
+ });
+ recentPanel.append(title,help,refresh,stats,instructions,recentList);
  anchor.insertAdjacentElement('afterend',recentPanel);
 }
 
@@ -156,6 +166,22 @@ async function loadRecentDocuments(){
  const fields='person_key,issued_on,due_on,verified_manually,created_at';
  return await request('/rest/v1/v58_staff_documents?select='+encodeURIComponent(fields)+'&order=issued_on.desc');
 }
+function updateRecentAccessStats(rows,accessStatus){
+ const panel=document.getElementById('miAccessStatsV68');if(!panel)return;
+ const imported=rows.filter(x=>x.status==='imported');
+ const statuses=new Map((Array.isArray(accessStatus)?accessStatus:[]).map(s=>[s.applicationId,s]));
+ const known=statuses.size>0;
+ const noLogin=imported.filter(x=>statuses.get(x.id)?.hasAccount===true&&statuses.get(x.id)?.hasLogin===false).length;
+ const disabled=imported.filter(x=>statuses.get(x.id)?.active===false || String(x.activation_email_error||'').startsWith('Acesso antigo desativado:')).length;
+ const notLinked=imported.filter(x=>!x.account_user_id).length;
+ const emailError=imported.filter(x=>x.activation_email_error&&!String(x.activation_email_error).startsWith('Acesso antigo desativado:')).length;
+ panel.textContent='📊 Cadastros aprovados: '+imported.length+' | Primeiro login pendente: '+(known?noLogin:'indisponível')+
+  ' | Erros recentes de e-mail: '+emailError+' | Contas desativadas: '+(known?disabled:'indisponível')+' | Sem conta vinculada: '+notLinked+'.';
+ const hint=document.createElement('div');hint.style.cssText='font-size:12px;color:#506678;margin-top:6px';
+ hint.textContent='Para cada pessoa, confira o cartão abaixo. Falhou o e-mail? Use “Gerar senha provisória”, entregue somente ao titular e peça para ele alterar depois. Conta desativada? Avalie antes de reativar. Não crie logins duplicados.';
+ panel.appendChild(hint);
+}
+
 function renderRecentRows(rows,documents=null,accessStatus=[]){
  const statuses=new Map((Array.isArray(accessStatus)?accessStatus:[]).map(x=>[x.applicationId,x]));
  if(!recentList)return;
@@ -177,7 +203,8 @@ function renderRecentRows(rows,documents=null,accessStatus=[]){
   const mail=document.createElement('p');mail.className='small';
   if(oldAccountDisabled) mail.textContent='⚠️ Conta antiga desativada por endereço de e-mail incorreto. O CPF foi liberado para novo pré-cadastro; não reenvie o link anterior.';
   else if(app.status==='imported'){
-   if(app.activation_email_sent_at) mail.textContent='✉️ E-mail para criação da senha enviado em '+fmtDateTime(app.activation_email_sent_at)+'.';
+   if(app.activation_email_error) mail.textContent='⚠️ Problema no último envio do e-mail: '+String(app.activation_email_error).slice(0,180)+'. Se houver limite de envio, use a senha provisória administrativa em vez de repetir o envio agora.';
+   else if(app.activation_email_sent_at) mail.textContent='✉️ E-mail para criação da senha enviado em '+fmtDateTime(app.activation_email_sent_at)+'.';
    else if(app.account_user_id) mail.textContent='🟡 Acesso criado, mas o envio automático do e-mail ainda não foi confirmado.';
    else mail.textContent='Cadastro concluído antes da automação do e-mail; os dados permanecem disponíveis aqui.';
   }else mail.textContent='Pré-cadastro descartado; nenhum acesso foi criado.';
@@ -233,6 +260,7 @@ async function refreshRecent(silent=false){
   let docs=null,accessStatus=[];
   try{docs=await loadRecentDocuments()}catch(_){/* Mantém os cadastros disponíveis. */}
   try{accessStatus=await request('/rest/v1/rpc/v60_staff_activation_status',{method:'POST',body:'{}'})}catch(_){/* Sem bloquear a consulta. */}
+  updateRecentAccessStats(rows,accessStatus);
   renderRecentRows(rows,docs,accessStatus);
  }
  catch(e){if(!silent)recentList.textContent=e.message||'Não foi possível consultar os cadastros concluídos.'}
