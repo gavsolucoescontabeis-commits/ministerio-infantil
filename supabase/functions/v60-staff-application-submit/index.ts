@@ -55,6 +55,11 @@ Deno.serve(async (req: Request) => {
   const length=Number(req.headers.get("content-length")||0);
   if(length && length > MAX_FILE + 200000) return json(413,{ok:false,message:"Envio acima do limite permitido."},origin);
 
+  let cleanupClient:any=null;
+  let createdUserId:string|null=null;
+  const uploadedPaths:string[]=[];
+  let registered=false;
+  let failStatus=500;
   try {
     const form=await req.formData();
 
@@ -71,6 +76,7 @@ Deno.serve(async (req: Request) => {
     const currentRoom=txt(form.get("currentRoom"),120);
     const notes=txt(form.get("notes"),1500);
     const birthDate=txt(form.get("birthDate"),10);
+    const accountPassword=String(form.get("accountPassword")||"");
     const minorGuardianName=properName(txt(form.get("minorGuardianName"),180));
     const minorGuardianPhone=txt(form.get("minorGuardianPhone"),30);
     const certIssuedOn=txt(form.get("certIssuedOn"),10);
@@ -82,7 +88,8 @@ Deno.serve(async (req: Request) => {
     if(!validCpf(cpf)) return json(400,{ok:false,message:"CPF inválido. Confira os números informados."},origin);
     const phoneDigits=phone.replace(/\D/g,"");
     if(phoneDigits.length<10 || phoneDigits.length>13) return json(400,{ok:false,message:"Informe um telefone/WhatsApp válido."},origin);
-    if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json(400,{ok:false,message:"E-mail inválido."},origin);
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json(400,{ok:false,message:"Informe um e-mail válido."},origin);
+    if(accountPassword.length<10||accountPassword.length>72||!/[A-Za-zÀ-ÿ]/.test(accountPassword)||!/\d/.test(accountPassword))return json(400,{ok:false,message:"Crie uma senha entre 10 e 72 caracteres, com letras e números."},origin);
     if(!AREAS.has(area)) return json(400,{ok:false,message:"Selecione a área de atuação."},origin);
     if(!ROLES.has(declaredRole)) return json(400,{ok:false,message:"Selecione a atuação atual."},origin);
     const today=localDate();
@@ -115,6 +122,12 @@ Deno.serve(async (req: Request) => {
     if(!url || !serviceKey) throw new Error("Configuração interna indisponível.");
 
     const supabase=createClient(url,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
+    cleanupClient=supabase;
+    // Não recriar contas nem aceitar cadastros duplicados do mesmo CPF.
+    const {data:existing,error:duplicateError}=await supabase.from("staff_applications_v60")
+      .select("id").eq("cpf",cpf).in("status",["pending","imported"]).limit(1);
+    if(duplicateError)throw new Error("Não foi possível conferir cadastros existentes.");
+    if(existing?.length)return json(409,{ok:false,message:"Esse CPF já possui pré-cadastro ou acesso. Procure a coordenação."},origin);
     const applicationId=crypto.randomUUID();
     let path:string|null=null;
     let proofPath:string|null=null;
@@ -132,13 +145,33 @@ Deno.serve(async (req: Request) => {
       const {error:proofErr}=await supabase.storage.from("certidoes-ministerio")
        .upload(proofPath,proof,{contentType:proof.type,upsert:false,cacheControl:"3600"});
       if(proofErr)throw new Error("Não foi possível armazenar o comprovante de idade.");
+      uploadedPaths.push(proofPath);
     }
     if(!minor && file instanceof File){
       path=`pending/${applicationId}/${safeName(file.name)}`;
       const {error:uploadError}=await supabase.storage.from("certidoes-ministerio")
        .upload(path,file,{contentType:file.type,upsert:false,cacheControl:"3600"});
       if(uploadError)throw new Error("Não foi possível armazenar a certidão.");
+      uploadedPaths.push(path);
     }
+
+    // Cria a conta no Auth com a senha definida pela própria pessoa.
+    // Não confirmamos propriedade do e-mail: identidade/documentos são verificados
+    // pela administração antes de ativar perfil e associar CPF ao login.
+    const digestBytes=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(cpf));
+    const cpfDigest=Array.from(new Uint8Array(digestBytes)).map(b=>b.toString(16).padStart(2,"0")).join("");
+    const {data:created,error:createError}=await supabase.auth.admin.createUser({
+      email,password:accountPassword,email_confirm:true
+    });
+    if(createError||!created.user){
+      failStatus=409;
+      throw new Error("Não foi possível criar a conta. Esse e-mail pode já estar cadastrado; contate a coordenação.");
+    }
+    createdUserId=created.user.id;
+    const {error:profileError}=await supabase.from("profiles").insert({
+      id:createdUserId,display_name:fullName,role:"teacher",active:false,cpf_hash:cpfDigest
+    });
+    if(profileError)throw new Error("Não foi possível registrar a conta pendente.");
 
     const { error: insertError }=await supabase.from("staff_applications_v60").insert({
       id:applicationId,
@@ -159,25 +192,37 @@ Deno.serve(async (req: Request) => {
       cert_file_name:minor?null:(file instanceof File?file.name.slice(0,240):null),
       cert_storage_path:path,
       privacy_ack:true,
-      source:"public-form-v60",
+      source:"public-form-v60-password",
+      account_user_id:createdUserId,
       status:"pending"
     });
 
-    if(insertError) {
-      await supabase.storage.from("certidoes-ministerio").remove([path,proofPath].filter((x):x is string=>!!x));
-      if(insertError.code==="23505") {
-        return json(409,{ok:false,message:"Já existe um cadastro pendente para este CPF. Se precisar corrigir alguma informação, fale com a coordenação."},origin);
-      }
-      throw new Error("Não foi possível registrar o cadastro.");
+    if(insertError){
+      failStatus=insertError.code==="23505"?409:500;
+      throw new Error(insertError.code==="23505"
+        ?"Já existe um cadastro pendente para este CPF. Contate a coordenação."
+        :"Não foi possível registrar o cadastro.");
     }
-
+    registered=true;
     return json(200,{
       ok:true,
-      message:"Cadastro enviado com sucesso.",
+      message:"Cadastro enviado com sucesso. Sua senha já está definida; o acesso será liberado após aprovação.",
       protocol:applicationId.split("-")[0].toUpperCase()
     },origin);
   } catch (e) {
-    console.error("staff application submit:",e);
-    return json(500,{ok:false,message:"Não foi possível enviar o cadastro agora. Tente novamente em alguns instantes."},origin);
+    if(!registered&&cleanupClient){
+      // Operação fracassou: não deixar conta bloqueada órfã nem documento solto.
+      if(createdUserId){
+        try{await cleanupClient.auth.admin.deleteUser(createdUserId)}
+        catch(err){console.error("Falha ao limpar conta incompleta",err)}
+      }
+      if(uploadedPaths.length){
+        try{await cleanupClient.storage.from("certidoes-ministerio").remove(uploadedPaths)}
+        catch(err){console.error("Falha ao limpar anexo incompleto",err)}
+      }
+    }
+    console.error("staff application submit:",e instanceof Error?e.message:"Erro desconhecido");
+    const friendly=e instanceof Error?e.message:"Não foi possível enviar o cadastro agora.";
+    return json(failStatus,{ok:false,message:friendly},origin);
   }
 });
