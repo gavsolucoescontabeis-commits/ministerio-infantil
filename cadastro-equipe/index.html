@@ -119,6 +119,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 28px}
 
       <label for="certIssuedOn">Data de emissão da certidão <span class="required">*</span></label>
       <input id="certIssuedOn" name="certIssuedOn" type="date" required>
+      <p class="small">Use a data de <strong>emissão/expedição</strong> indicada na certidão, nunca a data de nascimento. Para PDFs da Polícia Federal, tentaremos preencher automaticamente.</p>
+      <p id="certReadStatus" class="small" role="status" aria-live="polite">Anexe a certidão para conferir a data de emissão.</p>
 
       <label for="certificate">Arquivo da certidão <span class="required">*</span></label>
       <div class="filebox">
@@ -153,7 +155,8 @@ const form=document.getElementById('staffForm'), btn=document.getElementById('su
 const cpf=document.getElementById('cpf'), phone=document.getElementById('phone'), file=document.getElementById('certificate'), info=document.getElementById('fileInfo');
 const birthDate=document.getElementById('birthDate'), minorFields=document.getElementById('minorFields'),certCard=document.getElementById('certificateCard');
 const gName=document.getElementById('minorGuardianName'),gPhone=document.getElementById('minorGuardianPhone'),certIssued=document.getElementById('certIssuedOn');
-const ageProof=document.getElementById('ageProof'),ageProofInfo=document.getElementById('ageProofInfo');
+const ageProof=document.getElementById('ageProof'),ageProofInfo=document.getElementById('ageProofInfo'),certReadStatus=document.getElementById('certReadStatus');
+let certParsed=null,certReadPromise=Promise.resolve();
 function ageYears(d,t){let y=Number(t.slice(0,4))-Number(d.slice(0,4));if(t.slice(5)<d.slice(5))y--;return y;}
 let minor=false;
 function refreshAge(){
@@ -187,14 +190,54 @@ ageProof.addEventListener('change',()=>{
  const f=ageProof.files[0];
  ageProofInfo.textContent=f?f.name+' • '+(f.size/1024/1024).toFixed(2).replace('.',',')+' MB':'Nenhum comprovante selecionado.';
 });
+function pfEmissionFromText(txt){
+ if(!/pol[ií]cia\s+federal|ePol\s*[-–]\s*SINIC/i.test(txt))return null;
+ // A data "nascido(a) aos" nunca deve ser interpretada como data de emissão.
+ const match=txt.match(/(?:expedid[ao]|emitid[ao])\s+em\s+(\d{1,2})\/(\d{1,2})\/(\d{4})\b/i);
+ if(!match)return null;
+ const day=Number(match[1]),month=Number(match[2]),year=Number(match[3]);
+ const check=new Date(Date.UTC(year,month-1,day));
+ return check.getUTCFullYear()===year&&check.getUTCMonth()===month-1&&check.getUTCDate()===day
+  ?[year,String(month).padStart(2,'0'),String(day).padStart(2,'0')].join('-'):null;
+}
 file.addEventListener('change',()=>{
+ certParsed=null;
  const f=file.files[0];
- if(!f){info.textContent='Nenhum arquivo selecionado.';return}
+ if(!f){info.textContent='Nenhum arquivo selecionado.';certReadStatus.textContent='Anexe a certidão para conferir a data de emissão.';certReadPromise=Promise.resolve();return}
  info.textContent=f.name+' • '+(f.size/1024/1024).toFixed(2).replace('.',',')+' MB';
+ certReadPromise=(async()=>{
+  if(f.type!=='application/pdf'||f.size>10*1024*1024){
+   certReadStatus.textContent='Leitura automática indisponível para este arquivo. Confira a data de emissão manualmente.';return;
+  }
+  certReadStatus.textContent='Conferindo a data de emissão no PDF...';
+  try{
+   const pdfjs=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');
+   pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
+   const pdf=await pdfjs.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;
+   let txt='';
+   for(let n=1;n<=Math.min(pdf.numPages,3);n++){
+    const page=await pdf.getPage(n),content=await page.getTextContent();
+    txt+=' '+content.items.map(item=>item.str||'').join(' ');
+   }
+   if(file.files[0]!==f)return;
+   txt=txt.replace(/\s+/g,' ').trim();
+   const issued=pfEmissionFromText(txt);
+   if(issued){
+    certParsed={file:f,issued};
+    certIssued.value=issued;
+    certReadStatus.textContent='✅ Polícia Federal: emissão identificada em '+issued.split('-').reverse().join('/')+'. Confira antes de enviar. A autenticidade não foi verificada.';
+   }else{
+    certReadStatus.textContent='Data não identificada automaticamente neste modelo. Confira no documento e preencha a data de emissão manualmente.';
+   }
+  }catch(_err){
+   if(file.files[0]===f)certReadStatus.textContent='Não foi possível ler este PDF automaticamente. Confira e preencha a data de emissão manualmente.';
+  }
+ })();
 });
 
 form.addEventListener('submit',async e=>{
  e.preventDefault();status.className='';status.textContent='';
+ await certReadPromise;
  if(!form.reportValidity())return;
  if(!validCpf(cpf.value))return msg('CPF inválido. Confira os números informados.');
  const digits=onlyDigits(phone.value);if(digits.length<10)return msg('Informe um telefone/WhatsApp válido.');
@@ -207,6 +250,10 @@ form.addEventListener('submit',async e=>{
   if(!['application/pdf','image/jpeg','image/png','image/webp'].includes(proof.type))return msg('Envie o comprovante em PDF, JPG, PNG ou WebP.');
  }else{
   const f=file.files[0];if(!f)return msg('Anexe a certidão de antecedentes.');
+  if(certIssued.value<=birthDate.value)return msg('A data de emissão da certidão não pode ser a data de nascimento nem anterior a ela. Confira a data escrita no documento.');
+  const ageOfCertificate=(Date.parse(today+'T12:00:00Z')-Date.parse(certIssued.value+'T12:00:00Z'))/86400000;
+  if(!Number.isFinite(ageOfCertificate)||ageOfCertificate>365)return msg('A data de emissão informada está muito antiga. Confira a data de expedição da certidão.');
+  if(certParsed&&certParsed.file===f&&certIssued.value!==certParsed.issued)return msg('A data informada é diferente da emissão identificada na certidão da Polícia Federal. Corrija antes de enviar.');
   if(f.size>10*1024*1024)return msg('A certidão deve ter no máximo 10 MB.');
   if(!['application/pdf','image/jpeg','image/png','image/webp'].includes(f.type))return msg('Envie a certidão em PDF, JPG, PNG ou WebP.');
  }
