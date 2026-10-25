@@ -34,3 +34,18 @@ Antes desta atualização o pré-cadastro **não coletava data de nascimento**. 
 
 ## Validação
 Código frontend verificado sintaticamente; Edge Functions publicadas como ACTIVE; migrations criadas no banco; testados limites de idade com consultas SQL. Fluxo real de envio/primeiro cadastro completo requer teste de usuário autorizado. Não usar dados fictícios de pessoas na produção.
+
+## Comprovante obrigatório de idade (atualização)
+- O pré-cadastro de menores **exige RG, CIN ou certidão de nascimento**, com data de nascimento legível.
+- Aceita **PDF, JPG/JPEG, PNG ou WebP**, até **10 MB**, enviados diretamente pelo formulário. Não aceita arquivos executáveis nem Word como comprovante.
+- Backend verifica formato MIME e assinatura mágica de PDF/imagens antes do upload.
+- Arquivo original é guardado no bucket **privado** `certidoes-ministerio`, caminho `pending/{applicationId}/idade/comprovante.{ext}`. Esse arquivo permanece preservado e acessível somente à administração mesmo após a aprovação, sem divulgação pública.
+- Administrador abre o comprovante pela tela de pré-cadastros, confere a data de nascimento e marca **confirmação específica do documento** além da autorização do responsável.
+- A função de aprovação confere no servidor o caminho, a existência do arquivo privado e os dois indicadores administrativos. Falhas bloqueiam a aprovação e não criam login.
+- Cadastro importado registra `age_proof_confirmed_at` e `age_proof_confirmed_by`, mantém nome e caminho do documento original. Registro e PDF da certidão estadual permanecem vazios para menores.
+- Após completar 18 anos, a certidão estadual torna-se exigível; o documento antigo de idade permanece consultável em histórico para a administração.
+- A prova de identidade **não substitui** a autorização do responsável ou as condições de proteção da igreja.
+- Documentos anexados por menores **não são exibidos nos relatórios** para coordenadores; continuam disponíveis somente ao administrador.
+
+## Verificações necessárias
+O código e as definições do banco foram conferidos; o teste completo de ponta a ponta deve ser realizado com pré-cadastro autorizado real ou ambiente de homologação antes da operação rotineira.
