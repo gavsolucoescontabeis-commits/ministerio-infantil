@@ -41,7 +41,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 28px}
 
 <main>
   <div class="notice">
-    <b>Importante:</b> este formulário é somente para pré-cadastro. A coordenação fará a conferência e definirá as permissões. Depois da aprovação, o sistema enviará automaticamente um e-mail para você criar sua senha de acesso.
+    <b>Importante:</b> este formulário é somente para pré-cadastro. A coordenação fará a conferência e definirá as permissões. Escolha sua senha neste cadastro. Ela só permitirá entrar no aplicativo depois de a coordenação conferir os documentos e aprovar seu acesso. Nenhum e-mail de ativação será necessário.
   </div>
 
   <form id="staffForm" novalidate>
@@ -79,6 +79,17 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 28px}
           <input id="email" name="email" type="email" autocomplete="email" maxlength="180" placeholder="seunome@email.com" required>
         </div>
       </div>
+    </div>
+
+    <div class="card">
+      <h2>🔐 Minha senha de acesso</h2>
+      <p class="small">Escolha agora a senha que usará junto com seu CPF. Não é preciso aguardar link por e-mail. A conta fica bloqueada até a aprovação da coordenação.</p>
+      <label for="accountPassword">Criar senha <span class="required">*</span></label>
+      <input id="accountPassword" name="accountPassword" type="password" autocomplete="new-password" minlength="10" maxlength="72" required placeholder="Mínimo 10 caracteres, com letras e números">
+      <label for="passwordConfirm">Confirmar senha <span class="required">*</span></label>
+      <input id="passwordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" minlength="10" maxlength="72" required>
+      <label class="check" style="font-weight:600"><input id="showPassword" type="checkbox" style="width:20px;min-width:20px"> Mostrar senha digitada</label>
+      <p class="small">A senha não será exibida para a administração nem armazenada na ficha de pré-cadastro.</p>
     </div>
 
     <div class="card">
@@ -156,6 +167,8 @@ const cpf=document.getElementById('cpf'), phone=document.getElementById('phone')
 const birthDate=document.getElementById('birthDate'), minorFields=document.getElementById('minorFields'),certCard=document.getElementById('certificateCard');
 const gName=document.getElementById('minorGuardianName'),gPhone=document.getElementById('minorGuardianPhone'),certIssued=document.getElementById('certIssuedOn');
 const ageProof=document.getElementById('ageProof'),ageProofInfo=document.getElementById('ageProofInfo'),certReadStatus=document.getElementById('certReadStatus');
+const accountPassword=document.getElementById('accountPassword'),passwordConfirm=document.getElementById('passwordConfirm');
+document.getElementById('showPassword').addEventListener('change',e=>{accountPassword.type=passwordConfirm.type=e.target.checked?'text':'password'});
 let certParsed=null,certReadPromise=Promise.resolve();
 function ageYears(d,t){let y=Number(t.slice(0,4))-Number(d.slice(0,4));if(t.slice(5)<d.slice(5))y--;return y;}
 let minor=false;
@@ -242,6 +255,8 @@ form.addEventListener('submit',async e=>{
  if(!validCpf(cpf.value))return msg('CPF inválido. Confira os números informados.');
  const digits=onlyDigits(phone.value);if(digits.length<10)return msg('Informe um telefone/WhatsApp válido.');
  if(!birthDate.value||birthDate.value>today)return msg('Informe uma data de nascimento válida.');
+ if(accountPassword.value!==passwordConfirm.value)return msg('As duas senhas não coincidem.');
+ if(accountPassword.value.length<10||accountPassword.value.length>72||!/[A-Za-zÀ-ÿ]/.test(accountPassword.value)||!/\d/.test(accountPassword.value))return msg('A senha deve conter entre 10 e 72 caracteres, com letras e números.');
  if(minor){
   if(gName.value.trim().length<3||onlyDigits(gPhone.value).length<10)return msg('Informe o nome e WhatsApp do responsável legal.');
   const proof=ageProof.files[0];
@@ -259,6 +274,8 @@ form.addEventListener('submit',async e=>{
  }
 
  const data=new FormData(form);
+ data.delete('passwordConfirm');
+ data.delete('showPassword');
  data.set('cpf',onlyDigits(cpf.value));
  data.set('phone',phone.value.trim());
  data.set('privacyAck','yes');
@@ -269,7 +286,7 @@ form.addEventListener('submit',async e=>{
    const body=await r.json().catch(()=>({}));
    if(!r.ok||body.ok!==true)throw new Error(body.message||'Não foi possível enviar o cadastro.');
    form.reset();refreshAge();info.textContent='Nenhum arquivo selecionado.';ageProofInfo.textContent='Nenhum comprovante selecionado.';
-   msg('Cadastro enviado com sucesso! Protocolo: '+body.protocol+'. Após a aprovação, você receberá um e-mail para criar sua senha de acesso.',true);
+   msg('Cadastro enviado com sucesso! Protocolo: '+body.protocol+'. Sua senha já está definida. Aguarde a aprovação da coordenação para entrar com CPF e senha.',true);
  }catch(err){msg(err.message||'Não foi possível enviar o cadastro. Tente novamente.')}
  finally{btn.disabled=false;btn.textContent='Enviar cadastro'}
 });
