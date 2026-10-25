@@ -1,8 +1,9 @@
 {
   "release": "Ministério Infantil — acesso dos professores sem e-mail",
-  "build": "20261025-acesso-sem-email-v1",
+  "build": "20261025-acesso-sem-email-v2",
   "date": "2026-10-25",
   "changes": [
+    "Segurança: a aprovação exige confirmação da identidade antes de liberar a senha escolhida pelo candidato",
     "Pré-cadastro: professor escolhe senha na própria ficha, sem depender de e-mail",
     "Acesso permanece bloqueado até aprovação do administrador",
     "Aprovação ativa a senha escolhida e mantém CPF, sala e permissões",
