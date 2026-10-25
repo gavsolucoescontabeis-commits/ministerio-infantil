@@ -1,8 +1,13 @@
 {
-  "release": "Ministério Infantil — V65 (Estudos: caderno editorial)",
-  "build": "v65-20261021-estudos-editorial",
-  "date": "2026-10-21",
+  "release": "Ministério Infantil — acesso dos professores sem e-mail",
+  "build": "20261025-acesso-sem-email-v1",
+  "date": "2026-10-25",
   "changes": [
+    "Pré-cadastro: professor escolhe senha na própria ficha, sem depender de e-mail",
+    "Acesso permanece bloqueado até aprovação do administrador",
+    "Aprovação ativa a senha escolhida e mantém CPF, sala e permissões",
+    "Rejeição descarta a conta pendente e evita logins sem autorização",
+    "Cadastros anteriores continuam compatíveis, sem mudar senhas já existentes",
     "Estudos: aula navegável com abas separadas para criança, professor e gabarito",
     "Estudos: páginas editoriais dinâmicas por tema, referência e faixa etária",
     "A Criação: 10 páginas estruturadas para 9 anos, com investigação e reflexão",
