@@ -40,6 +40,16 @@ Vigente para todos os cadernos do Ministério Infantil. O usuário aprovou que m
 
 **Fila acordada:** finalizar `Adão e Eva — 7–9` e `Esaú e Jacó — 7–9`, nessa ordem, antes de `Jesus transforma água em vinho — 5–6`. Os dois primeiros temas não devem ser marcados como concluídos enquanto não houver páginas individuais aprovadas e PDF final efetivamente publicado.
 
+## Regra de preservação das capas e inclusão de Levi — 26/10/2026
+
+**Determinação do responsável:** nenhuma capa nem atividade de temas já concluídos ou aprovados deve ser recriada, substituída ou alterada somente para incluir Levi. Isso inclui, expressamente, **A Criação, Adão e Eva, Caim e Abel, Abraão, Esaú e Jacó e Noé e a Arca**, sempre preservando exatamente os originais de cada faixa etária, incluindo variações anteriormente aprovadas. Não realizar alterações retroativas nem fazer nova arte sem solicitação pontual.
+
+**Exceção expressa: José do Egito.** O responsável autorizou **acrescentar Levi à capa original de José do Egito**, mantendo todos os outros personagens, texto, composição e arte já aprovados. Preservar a capa original como versão anterior e apresentar a variante com Levi para conferência **antes de qualquer substituição/publicação**. Essa autorização **não se estende às atividades** de José do Egito, que continuam preservadas.
+
+**Capas de temas produzidos daqui em diante:** incluir Levi junto aos demais personagens **desde a criação da nova capa**, respeitando o arquivo de referência aprovado de cada um; variar expressões e poses de acordo com a identidade e o papel de Pipo, Lia, Maya e Levi. Nunca incluir nomes dos personagens na página impressa nem confundir o elenco com a loja Cantinho da Gi.
+
+**José do Egito — materiais complementares aprovados (26/10/2026):** 16 quadros das três pranchas produzidas em conversa. Primeira prancha: quadros 1–6 aprovados. Segunda: quadros 1–6 aprovados. Terceira: quadros **2, 3, 5 e 6** aprovados; **quadros 1 e 4 (labirinto) rejeitados**. Os originais, recortes e ZIP estão arquivados em `/Ministerio Infantil/Estudos/Banco de Atividades/Jose do Egito/Aprovados/Complementares 16 atividades 26-10-2026/` na Biblioteca. Não redesenhar. Esses materiais estão preservados na Biblioteca; **não afirmar que foram publicados no aplicativo sem confirmar PDF e Storage**.
+
 ## Fechamento
 
 A entrega só pode ser informada como **disponível no aplicativo** após constar arquivo real no bucket e link verificável pelo professor. Caso contrário, informar claramente **arquivado com segurança, pendente de publicação**.
