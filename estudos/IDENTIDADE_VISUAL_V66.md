@@ -7,9 +7,21 @@ Fontes artísticas históricas identificadas (não são solicitações para rede
 - `lia_a_investigadora_bíblica.png` — referência da Lia e das expressões.
 - `pipo_o_aventureiro_das_montanhas.png` — referência do Pipo e das expressões.
 - `wide_colorful_polished_3d_cgi_cartoon_style_char.png` — prancha histórica de Lia, Pipo e Maya.
-- **Levi:** referência oficial em folhas originais de expressões aprovadas na conversa de 25/10/2026; menino afrodescendente associado a música, louvor e adoração, com instrumentos musicais. **Localização do arquivo-fonte original ainda não verificada neste repositório; não improvisar sua aparência**.
+- **Levi:** a folha de expressões original de 25/10/2026 foi **localizada na Biblioteca do projeto**, conforme caminhos abaixo. Menino afrodescendente ligado a música, louvor e adoração, com instrumentos musicais. Não redesenhar sua aparência.
 
 Essas fontes são **para recorte e composição do material**, sem mudar rosto, cabelo, roupas, cores, proporções, expressões ou traços reconhecíveis. Ajuste de posicionamento/recorte não constitui autorização para criar uma nova aparência. Se uma arte requerida não estiver disponível, não usar nenhum substituto genérico.
+
+## Referências visuais recuperadas na Biblioteca — 26/10/2026
+
+**Localizações exatas; conferir as imagens originais antes de cada nova geração, inclusive ao iniciar outro chat:**
+
+1. `/APP MINISTÉRIO INFANTIL/Folha de Expressões Musicais do Levi.png` — **fonte visual individual de Levi**, seis expressões aprovadas, cabelo crespo encaracolado, colete jeans, blusa clara e acessórios musicais (Biblioteca: `file_00000000eca4820ebae9411f7e9de7c2`).
+2. `/APP MINISTÉRIO INFANTIL/Turma Musical: Pipo, Lia, Maya e Levi.png` — prancha dos quatro com nomes identificados: Pipo (boné azul/amarelo e roupa de aventura vermelha), Lia (laço rosa e vestido rosa), Maya (tiara amarela, roupa azul/amarela), Levi (cabelo crespo, roupa verde, violão) (Biblioteca: `file_00000000d408820e9bdc622b977290e0`).
+3. `/APP MINISTÉRIO INFANTIL/Quatro Amigos, Uma Fé Alegre.png` — outra prancha coletiva de 25/10 com as quatro identidades e detalhes **diferentes de roupa/acessórios**, que precisam ser cotejados com as folhas individuais aprovadas em vez de misturados indiscriminadamente (Biblioteca: `file_000000009c0c820e8ae3b8728b99e9e0`).
+
+**Nota crucial:** as pranchas coletivas trazem *variações* de roupa/aparência; não deduzir delas que se pode inventar rostos, roupas ou expressões. Para personagens individuais, consultar suas próprias folhas originais e a última aprovação. As três imagens citadas foram **inspecionadas visualmente nesta conversa**, não apenas localizadas por nome. A folha individual definitiva da versão atual de Lia, Maya e Pipo ainda requer conferência entre as versões disponíveis.
+
+**Falha observada em 26/10:** foi gerada uma atividade de Adão e Eva com crianças arbitrárias e elementos do outro projeto, apesar da regra escrita. Os resultados dessa tentativa estão **rejeitados**. O erro não se resolve apenas mudando prompts: é obrigatório carregar/visualizar os arquivos reais antes de criar arte e verificar o resultado contra o original. Se não for possível ancorar a geração à referência, não afirmar fidelidade artística ou apresentar personagens substitutos.
 
 ## Nomes privados do desenvolvimento
 - Lia: investigação, pistas e observação;
