@@ -20,6 +20,26 @@ Vigente para todos os cadernos do Ministério Infantil. O usuário aprovou que m
 - **Adão e Eva • 5–6**: `adao-eva-5-6` — PDF final de 7 páginas com "Siga as Pegadas", preservado em `/Ministerio Infantil/Estudos/Banco de Atividades/Adao e Eva/Aprovados/`; SHA-256 `909bc714a04b75764ffcabc7ee1ae6c99b9f085f57e1e28fdda9596e08249ea7`; `review` aguardando upload ao Storage.
 - **Caim e Abel • 5–6**: `caim-abel-5-6` — capa + seis atividades em PDF de 7 páginas preservado em `/Ministerio Infantil/Estudos/Banco de Atividades/Caim e Abel/Aprovados/`, com ZIP de fontes individuais; SHA-256 `ddebdb779d9338d23e0fe2fb915bce33ca919350fe7b8fda1530ac640ac7c199`; `review` aguardando upload ao Storage.
 
+
+## Padrão visual e de produção — bloqueio contra regressão (26/10/2026)
+
+**ANTES DE CRIAR QUALQUER IMAGEM**, ler `estudos/PADRAO_V65.md`, `estudos/IDENTIDADE_VISUAL_V66.md` e este protocolo; consultar os arquivos originais aprovados das atividades anteriores (não reinterpretar a aparência a partir de uma descrição). Se a referência visual não estiver disponível ou não puder ser inspecionada, informar essa limitação e **não substituir por arte genérica**. Um chat novo não é autorização para redefinir o padrão.
+
+- **Arquivo principal de referência visual:** páginas originais individuais dos cadernos aprovados; a prévia `Esau_e_Jaco_5_a_6_anos_APROVADO_Previa_7_paginas.jpg` na Biblioteca é uma amostra visual do acabamento, **não** fonte para ampliar ou recortar as miniaturas.
+- **Formato:** uma página individual por imagem, A4 vertical, inteira e em alta resolução; **nunca** gerar uma colagem, prancha de miniaturas ou quadro panorâmico como se fosse um caderno pronto. Só apresentar montagens de prévia depois de existirem as páginas individuais aprovadas.
+- **Caderno:** capa própria + seis atividades individuais (sete páginas), salvo acordo explícito e específico de outro tamanho. **Sem indicação de idade escrita na capa ou nas artes**; indicar a faixa no catálogo/nome do arquivo. Evitar espaços enormes vazios e exercícios triviais.
+- **Arte:** acabamento tridimensional/cartoon ilustrado rico, profundidade, luz e sombra, ambientação bíblica completa, cores vivas, anatomia natural dentro do estilo, expressões e poses variadas. Nada de vetores genéricos, figuras geométricas, rostos clonados, personagens repetidos com outra roupa ou ícones sem função pedagógica.
+- **Mascotes:** usar exclusivamente suas identidades visuais aprovadas quando houver imagens-fonte disponíveis; integrar à cena de forma natural. Não redesenhar Lia, Pipo ou Maya nem exibir seus nomes ou qualidades nas páginas. Humanos bíblicos, animais e Jesus devem ser distintos, não cópias dos mascotes.
+- **Atividade e arte inseparáveis:** a cena ilustrada deve permitir à criança executar o exercício, como ordenar cenas, identificar diferenças, completar ou investigar; não adicionar um quadro de perguntas genéricas sobre uma ilustração decorativa.
+- **Faixa 5–6:** prioritariamente visual e lúdica, adequada a crianças que ainda não leem com autonomia; variar ligar, colorir, ordenar, observar, circular, traçar e completar cenas, sem repetir sempre as mesmas soluções.
+- **Faixa 7–9:** elevar a complexidade com investigação bíblica, leitura guiada, sequência, interpretação, observação, decisões/consequências e aplicação prática; não reaproveitar sem mudanças as atividades de 5–6.
+- **Qualidade editorial:** revisar português, acentuação, referência bíblica e resposta correta antes da aprovação. Não inventar palavras de personagens bíblicos nem confundir citações com interpretação.
+- **Fluxo imutável:** recuperar a referência aprovada → planejar cada atividade → criar **uma página por vez, começando pela capa** → inspecionar e apresentar em tamanho legível → aguardar aprovação visual antes de avançar para a página seguinte → arquivar fontes aprovadas → reunir PDF A4 sem redesenhar → publicar no banco somente após verificação real.
+- **Não regressão:** a aprovação de uma página torna o **arquivo original** a referência imutável. Correções limitadas ao ponto solicitado, sem redesenhar, trocar de personagem, cobrir textos improvisadamente ou substituir por versões menores.
+- **Continuidade entre conversas:** antes de retomar uma aula, conferir os arquivos já aprovados, os registros `review/approved` do banco e os PDFs existentes. Não afirmar que nada foi produzido sem verificar Biblioteca, repositório e Storage; rascunho anterior não equivale a caderno final aprovado.
+
+**Fila acordada:** finalizar `Adão e Eva — 7–9` e `Esaú e Jacó — 7–9`, nessa ordem, antes de `Jesus transforma água em vinho — 5–6`. Os dois primeiros temas não devem ser marcados como concluídos enquanto não houver páginas individuais aprovadas e PDF final efetivamente publicado.
+
 ## Fechamento
 
 A entrega só pode ser informada como **disponível no aplicativo** após constar arquivo real no bucket e link verificável pelo professor. Caso contrário, informar claramente **arquivado com segurança, pendente de publicação**.
