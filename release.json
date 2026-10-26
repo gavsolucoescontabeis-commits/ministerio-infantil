@@ -1,8 +1,13 @@
 {
-  "release": "Ministério Infantil — login com CPF e senha, recuperação manual",
-  "build": "20261025-login-manual-v3",
-  "date": "2026-10-25",
+  "release": "Ministério Infantil — Equipe organizada, com consulta paginada",
+  "build": "20261026-equipe-busca-v4",
+  "date": "2026-10-26",
   "changes": [
+    "Equipe: Cadastro da Equipe aparece primeiro e abre por padrão",
+    "Equipe: formulário de cadastro/edição aparece antes da consulta da equipe",
+    "Equipe: lista de professores e coordenadores oculta até usar Localizar cadastro",
+    "Equipe: pesquisa por nome ou CPF, filtros por área e função e dez resultados por página",
+    "Equipe: botões de editar, certidão e excluir ficha preservados, assim como as permissões de login",
     "Senha: permanecem login por CPF, escolha de senha no pré-cadastro, redefinição administrativa e alteração pelo próprio usuário",
     "Login: removida opção de primeiro acesso/recuperação por e-mail, que estava indisponível; a equipe solicita senha provisória à coordenação",
     "Segurança: a aprovação exige confirmação da identidade antes de liberar a senha escolhida pelo candidato",
