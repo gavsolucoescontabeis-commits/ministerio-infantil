@@ -1,8 +1,10 @@
 {
-  "release": "Ministério Infantil — acesso dos professores sem e-mail",
-  "build": "20261025-acesso-sem-email-v2",
+  "release": "Ministério Infantil — login com CPF e senha, recuperação manual",
+  "build": "20261025-login-manual-v3",
   "date": "2026-10-25",
   "changes": [
+    "Senha: permanecem login por CPF, escolha de senha no pré-cadastro, redefinição administrativa e alteração pelo próprio usuário",
+    "Login: removida opção de primeiro acesso/recuperação por e-mail, que estava indisponível; a equipe solicita senha provisória à coordenação",
     "Segurança: a aprovação exige confirmação da identidade antes de liberar a senha escolhida pelo candidato",
     "Pré-cadastro: professor escolhe senha na própria ficha, sem depender de e-mail",
     "Acesso permanece bloqueado até aprovação do administrador",
