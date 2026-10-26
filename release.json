@@ -1,8 +1,9 @@
 {
   "release": "Ministério Infantil — Equipe organizada, com consulta paginada",
-  "build": "20261026-equipe-busca-v4",
+  "build": "20261026-equipe-busca-v5",
   "date": "2026-10-26",
   "changes": [
+    "Correção crítica: inicialização da busca de equipe ocorre antes da renderização inicial, evitando Cannot access miV68RosterState before initialization",
     "Equipe: Cadastro da Equipe aparece primeiro e abre por padrão",
     "Equipe: formulário de cadastro/edição aparece antes da consulta da equipe",
     "Equipe: lista de professores e coordenadores oculta até usar Localizar cadastro",
