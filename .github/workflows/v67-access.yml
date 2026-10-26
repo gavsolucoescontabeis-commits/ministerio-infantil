@@ -1,0 +1,21 @@
+name: Conferencia V67 Acessos
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'acesso-mestre-v67.js'
+      - 'supabase/functions/v67-master-access/**'
+      - 'sql/v67_acesso_mestre.sql'
+      - 'tests/v67-access.test.mjs'
+  workflow_dispatch:
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/v67-access.test.mjs
