@@ -1,3 +1,5 @@
+> **DOCUMENTO COMPLEMENTAR.** A regra editorial prioritária para novas atividades é `estudos/PADRAO_MESTRE_IMUTAVEL.md` + imagens originais da Biblioteca. Esta ficha nunca autoriza novas gerações por descrição sem inspecionar a referência visual. Caso haja divergência, prevalecem as imagens aprovadas e o Padrão Mestre.
+
 # Trava visual dos quatro personagens oficiais — Ministério Infantil
 **Vigência: 27/10/2026. Aprovação anterior protegida.**
 
