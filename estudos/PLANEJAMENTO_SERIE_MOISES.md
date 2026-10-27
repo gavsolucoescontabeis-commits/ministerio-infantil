@@ -78,3 +78,7 @@ Por solicitação do responsável, o material **aprovado** de Moisés 7A para **
 - **Caderno 2:** a mesma capa + atividades **7–13** (8 páginas, PDF leve de aproximadamente **2,6 MB**).
 
 As duas edições, seus arquivos de prévia e manifesto de integridade estão na Biblioteca: `/Ministerio Infantil/Estudos/Banco de Atividades/Moises 7A - Do Nascimento ao Chamado/5 a 6 anos/Aprovados/Dois Cadernos/`. Os dois PDFs foram verificados página a página e utilizam **exatamente os mesmos dados de imagem embutidos** no PDF original. O PDF único de 14 páginas permanece preservado na Biblioteca como referência aprovada, mas a entrega preferida aos professores é a versão em dois cadernos. O registro do pacote `moises-7a-nascimento-chamado-5-6` contém `twoBookletEdition`; **`published=false`** até confirmar arquivos reais no armazenamento do aplicativo.
+
+## Trava obrigatória de personagens para novas atividades de Moisés
+
+**Antes de produzir qualquer nova página de Moisés, ler `estudos/PADRAO_FIXO_PERSONAGENS_OFICIAIS.md` e abrir as duas imagens aprovadas na Biblioteca:** `BASE_ORIGINAL_PIPO_LIA_MAYA_CRIACAO.png` e `BASE_QUATRO_PERSONAGENS_MOISES_7A_APROVADA.png`. Maya é ruiva de pele mais clara com rosto próprio, não idêntico ao da Lia; Levi segue o colete azul/camiseta clara da capa aprovada, não alterna roupa azul/verde. Variações somente em expressões/poses. Artes originais já aprovadas são intocáveis. Não publicar novas imagens que desrespeitem a identidade.
