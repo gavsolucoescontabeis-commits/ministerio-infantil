@@ -23,7 +23,7 @@ O arquivo de imagem manda no desenho; estes elementos textuais funcionam como co
 - **PIPO** — menino aventureiro, cabelo castanho cacheado, rosto próprio, camisa clara de aventureiro, lenço vermelho no pescoço, mochila do modelo original. Coragem e iniciativa sem sorriso automático em cenas difíceis.
 - **LIA** — menina investigadora, cabelo castanho ondulado conforme capa original, rosto próprio, chapéu bege com distintivo, binóculos e roupa clara de investigação com mochila. **Não pode receber cabelo ruivo/rosa nem o rosto da Maya.**
 - **MAYA** — menina de fé, **cabelo ruivo avermelhado/acobreado**, cabelos cacheados/ondulados longos, laço rosa, **pele um pouco mais clara que a da Lia** e feições próprias; roupa predominantemente rosa conforme original, Bíblia quando coerente. **Jamais cabelos castanhos clonados da Lia ou o mesmo rosto dela.**
-- **LEVI** — menino negro de cabelo crespo curto escuro, rosto próprio; preservar o **colete azul/jeans sobre camiseta clara com detalhe verde da capa Moisés 7A**. Violão ou acessórios musicais quando houver ação musical; não precisa estar tocando em toda cena. **Nunca trocar entre camisa toda verde, camisa azul e figurinos aleatórios.**
+- **LEVI** — menino negro de cabelo crespo curto escuro, rosto próprio, voltado à **música, louvor e adoração**. A imagem recente que o usuário anexou de **João 2:11 — Objetos da História** o mostra com blusa **VERDE**; esta é uma referência visual concreta, não é permitido alternar arbitrariamente figurinos entre cenas. Documentos antigos citam colete azul e são CONFLITANTES: **não impor azul como padrão definitivo**; consultar o arquivo original escolhido da série e, quando possível, a folha individual aprovada de Levi. Manter seu instrumento/expressão musical quando fizer sentido, sem inventar outra criança.
 - **OS NOMES são APENAS INTERNOS**. Jamais escrever “Pipo”, “Lia”, “Maya” ou “Levi” nas capas, no caderno, nas falas, nas instruções ou balões de personagens.
 
 **Pode variar:** expressão, pose, direção do olhar, movimento corporal, emoção compatível com a narrativa, inclusão/ausência de cada personagem conforme a atividade; um ou dois bastam.
@@ -81,3 +81,6 @@ Depois de gerar, **NÃO PASSA** enquanto qualquer item falhar:
 
 ## 9. ESTADO DO TRABALHO ATUAL
 **Moisés 7A — 7 a 9 anos:** a capa 7A está aprovada; atividade 1 sobre bebê Moisés foi apresentada, e o responsável autorizou avançar. **Atividade 2 (filha de Faraó/Miriam) NÃO foi entregue em padrão correto**: geração de pranchas panorâmicas rejeitadas. A próxima entrega deverá ser **uma única página A4 vertical, número 2, sem capa adicional**. Não divulgar 10/12 mini-atividades como caderno pronto.
+
+
+> **FONTE REAL CONFERIDA EM 27/10/2026:** `estudos/REFERENCIAS_VISUAIS_USUARIO_27-10-2026.md` (PDF de Caim e Abel e imagem de João 2:11 com Levi enviada pelo responsável). Qualquer conflito visual neste arquivo deve ser resolvido pelos arquivos originais, não por suposição.
