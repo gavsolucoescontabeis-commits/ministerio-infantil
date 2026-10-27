@@ -21,7 +21,7 @@ Quando os originais de expressões individuais aprovadas estiverem disponíveis,
 - **MAYA — fé e confiança em Deus:** cabelo **ruivo / vermelho acobreado**, com cachos e **laço rosa**; **pele mais clara**; **rosto e traços próprios e distinguíveis da Lia**. Roupa rosa da identidade original aprovada, Bíblia quando fizer sentido. **PROIBIDO** converter o cabelo em castanho igual ao da Lia, clonar o rosto da Lia, trocar cor do cabelo ou do tom de pele.
 - **LIA — investigação:** cabelos **castanhos**, longos/ondulados conforme a referência; **chapéu bege de investigadora** com distintivo e **binóculos** como itens característicos; camisa clara e mochila de exploradora conforme original. **NÃO** repetir os traços faciais da Maya mudando apenas cabelo e roupa.
 - **PIPO — aventura e coragem:** cabelos **castanhos cacheados**, **lenço vermelho no pescoço**, camisa clara de aventureiro e mochila conforme capa original. Não trocar seu figurino por visual de outro mascote.
-- **LEVI — música, louvor e adoração:** **pele negra**, **cabelo curto, crespo e escuro**, rosto próprio. **Padronizar pela capa aprovada de Moisés 7A: colete/jaqueta azul sobre camiseta clara de estampa verde e detalhes da mochila**; violão pequeno quando fizer sentido na cena. **NÃO** improvisar camisa toda verde, trocar roupa de uma cena para outra ou usar modelos de outras marcas/projetos. Não precisa estar sempre tocando música.
+- **LEVI — música, louvor e adoração:** **pele negra**, **cabelo curto, crespo e escuro**, rosto próprio. A ilustração original enviada pelo responsável **João 2:11 — Objetos da História** o apresenta em blusa/moletom **VERDE**, e confirma o elenco de quatro; documentos anteriores que impunham colete azul devem ser tratados como **conflito histórico, não como autorização para alternar roupa**. Reproduzir fielmente o Levi do arquivo original selecionado, preservando instrumento e personalidade ligados à música nas cenas em que fizer sentido; não adicionar criança genérica em seu lugar.
 
 **Nomes dos quatro são internos e NUNCA devem aparecer impressos em capas/atividades.**
 
@@ -41,3 +41,6 @@ PROIBIDO: mudar formato/identidade facial; trocar textura ou cor de cabelo; muda
 
 ## Trabalho em andamento
 O caderno **Moisés 7A — 7 a 9 anos** está em elaboração. A atividade 1 foi apresentada, mas a inconsistência visual relatada em páginas subsequentes exige checagem rigorosa das referências antes de prosseguir. Não fingir que páginas adicionais estão aprovadas.
+
+
+> **FONTE REAL CONFERIDA EM 27/10/2026:** `estudos/REFERENCIAS_VISUAIS_USUARIO_27-10-2026.md` (PDF de Caim e Abel e imagem de João 2:11 com Levi enviada pelo responsável). Qualquer conflito visual neste arquivo deve ser resolvido pelos arquivos originais, não por suposição.
