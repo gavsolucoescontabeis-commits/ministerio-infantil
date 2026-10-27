@@ -68,3 +68,13 @@ Roteiro pedagógico para criação de páginas individuais, sujeito a revisão v
 
 Poderá ser necessário **acrescentar páginas** se a narrativa ou os exercícios exigirem; não impor teto de seis atividades nesta série. Nomes Pipo, Lia, Maya e Levi permanecem internos; no papel devem aparecer em expressões e poses adequadas, sem nomes escritos.
 
+
+
+## Entrega em dois cadernos — 5 e 6 anos (27/10/2026)
+
+Por solicitação do responsável, o material **aprovado** de Moisés 7A para **5–6 anos** foi dividido em **dois PDFs menores**, sem editar nenhum desenho nem alterar a numeração original. A capa aprovada é repetida integralmente nos dois.
+
+- **Caderno 1:** capa + atividades **1–6** (7 páginas, PDF leve de aproximadamente **2,3 MB**).
+- **Caderno 2:** a mesma capa + atividades **7–13** (8 páginas, PDF leve de aproximadamente **2,6 MB**).
+
+As duas edições, seus arquivos de prévia e manifesto de integridade estão na Biblioteca: `/Ministerio Infantil/Estudos/Banco de Atividades/Moises 7A - Do Nascimento ao Chamado/5 a 6 anos/Aprovados/Dois Cadernos/`. Os dois PDFs foram verificados página a página e utilizam **exatamente os mesmos dados de imagem embutidos** no PDF original. O PDF único de 14 páginas permanece preservado na Biblioteca como referência aprovada, mas a entrega preferida aos professores é a versão em dois cadernos. O registro do pacote `moises-7a-nascimento-chamado-5-6` contém `twoBookletEdition`; **`published=false`** até confirmar arquivos reais no armazenamento do aplicativo.
