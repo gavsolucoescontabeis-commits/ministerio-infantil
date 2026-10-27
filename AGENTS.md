@@ -15,7 +15,7 @@ Ler os documentos **NÃO** basta: abrir e conferir os arquivos aprovados de pers
 - `BASE_ORIGINAL_PIPO_LIA_MAYA_CRIACAO.png` (Pipo, Lia e Maya);
 - `BASE_QUATRO_PERSONAGENS_MOISES_7A_APROVADA.png` (Levi e elenco).
 
-Se não tiver acesso a esses originais, **não inventar substitutos**. Maya deve permanecer ruiva e de pele mais clara, com rosto próprio; Lia é investigadora de cabelo castanho; Pipo tem cabelo cacheado e lenço vermelho; Levi usa a roupa fixa original, sem alternar verde e azul.
+Se não tiver acesso a esses originais, **não inventar substitutos**. Maya deve permanecer ruiva e de pele mais clara, com rosto próprio; Lia é investigadora de cabelo castanho; Pipo é aventureiro com cabelo castanho cacheado; Levi é ligado a música, louvor e adoração. **Ver o novo arquivo original enviado pelo usuário de João 2:11, onde Levi usa blusa verde; não forçar o colete azul mencionado em versões documentais conflitantes nem misturar figurinos.**
 
 ## Bloqueios importantes
 - Não misturar com **Cantinho da Gi**.
@@ -30,3 +30,6 @@ Se não tiver acesso a esses originais, **não inventar substitutos**. Maya deve
 **Este arquivo guia o trabalho em repositório; ele não modifica sozinho as instruções internas do gerador de imagens ou as memórias de novas conversas.** O assistente deve recuperá-lo e utilizar as fontes originais ativamente.
 
 Para demandas estritamente de programação de EBD, equipe, financeiro, login e demais módulos do app, manter o baseline aprovado do sistema; evitar alterações fora do escopo.
+
+
+> **FONTE REAL CONFERIDA EM 27/10/2026:** `estudos/REFERENCIAS_VISUAIS_USUARIO_27-10-2026.md` (PDF de Caim e Abel e imagem de João 2:11 com Levi enviada pelo responsável). Qualquer conflito visual neste arquivo deve ser resolvido pelos arquivos originais, não por suposição.
