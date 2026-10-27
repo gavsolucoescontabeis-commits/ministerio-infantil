@@ -1,3 +1,5 @@
+> **AVISO DE SUPERAÇÃO — 27/10/2026.** Este documento é **HISTÓRICO** e cita pranchas coletivas com aparência/roupas e identificação de Lia/Maya/Levi divergentes. A única autoridade para **novas** imagens é `estudos/PADRAO_MESTRE_IMUTAVEL.md` junto aos **dois arquivos originais canônicos abertos e conferidos** na Biblioteca em `/Ministerio Infantil/Estudos/Padrao Visual/Personagens Oficiais/Referencias Confirmadas/`. **NÃO usar as pranchas antigas descritas abaixo para inferir identidades**: cabelo ruivo e pele mais clara são de **MAYA**, não de Lia; Levi não pode trocar de figurino. Nenhuma arte anteriormente aprovada deve ser alterada.
+
 # Identidade visual oficial dos personagens — Ministério Infantil
 
 ## Referências oficiais
