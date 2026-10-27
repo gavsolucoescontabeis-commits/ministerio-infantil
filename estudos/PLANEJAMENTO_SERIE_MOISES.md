@@ -41,3 +41,30 @@ Preservar **a capa original de Moisés, com Levi incluído**, sem recriar ou alt
 5. Só depois retornar à sequência original seguinte: **Davi e Golias**.
 
 **Regra de continuidade em conversas futuras:** sempre ler esta decisão antes de gerar qualquer nova atividade de Moisés; este desdobramento substitui o plano antigo de uma única aula genérica, mas **não invalida ou revoga nenhuma arte aprovada anteriormente**.
+
+## Estado das entregas e roteiro 7–9 anos — 27/10/2026
+
+**5–6 anos — aprovada e arquivada:** capa `caderno_infantil_moisés_e_seu_chamado.png` e 13 páginas de atividades originalmente aprovadas (numeração 1–13), reunidas em **um PDF A4 com 14 páginas**. Arquivos originais preservados. Arquivos na Biblioteca do projeto: `/Ministerio Infantil/Estudos/Banco de Atividades/Moises 7A - Do Nascimento ao Chamado/5 a 6 anos/Aprovados/` (PDF completo, PDF leve, ZIP com originais, manifesto e prévia). Registro Supabase: `mi_study_activity_packages.id = 'moises-7a-nascimento-chamado-5-6'`, `status='approved'`, **`published=false`**, pois não foi confirmada a publicação do PDF no Storage do aplicativo. Não se deve alterar nem substituí-las.
+
+**7–9 anos — em produção, NÃO aprovadas:** três tentativas de imagem geraram pranchas/montagens com dezenas de miniaturas e conteúdo de 5–6 anos, inclusive capas divergentes dos originais. **Todas as montagens estão REJEITADAS e NÃO podem ser tratadas como páginas, PDF ou material aprovado.** Não recortar as miniaturas nem cadastrar esse resultado.
+
+**Diretriz para 7–9:** reutilizar exatamente a capa de 7A que já foi aprovada (sem refazê-la), produzir **cada atividade como uma imagem A4 vertical individual** no mesmo acabamento e com maior dificuldade pedagógica, de Êxodo 2 a 5:1. Sem quantidade máxima predeterminada, trabalhar a narrativa completa e variar raciocínio, interpretação, sequência, investigação e decisões.
+
+Roteiro pedagógico para criação de páginas individuais, sujeito a revisão visual do responsável:
+
+1. Êxodo 2:1–4 — O cuidado da família: organizar a sequência de esconder por três meses, preparar o cesto, deixar entre os juncos e acompanhar de longe; descobrir o porquê de cada ação.
+2. Êxodo 2:5–10 — A filha de Faraó e Miriam: associar pessoas e atitudes, identificar quem propôs uma ama e quem cuidou da criança.
+3. Êxodo 2:7–10 — Moisés cresce entre dois mundos: comparar o cuidado de sua mãe hebreia e sua criação junto à filha do Faraó; distinguir informações bíblicas de suposições.
+4. Êxodo 2:11 — Moisés adulto vê o sofrimento de seu povo: observação orientada, empatia e interpretação.
+5. Êxodo 2:11–15 — Uma decisão grave e suas consequências: tratar o conflito e a morte do egípcio com seriedade, **sem cena explícita de violência**, investigar consequências e fuga de Moisés.
+6. Êxodo 2:15–17 — A chegada a Midiã: pesquisar o trecho e reconhecer o lugar, o poço e a necessidade das jovens.
+7. Êxodo 2:16–20 — Ajuda no poço: ordenar o que Moisés fez, o que as filhas contaram e o convite do pai, examinando a atitude de proteção e serviço.
+8. Êxodo 2:21–22 — A nova família: localizar Zípora e Gérson no texto, distinguir fatos do relato.
+9. Êxodo 3:1–3 — O pastor encontra a sarça: observar e explicar o detalhe da sarça que queimava sem se consumir, com Lia investigando pistas.
+10. Êxodo 3:4–6 — Terra santa: interpretar por que Moisés tirou as sandálias e a atitude de reverência, sem reproduzir visual violento ou jocoso.
+11. Êxodo 3:7–12 — A missão e a promessa de Deus: distinguir problema, chamado, dúvida e promessa “Eu serei contigo” por texto guiado.
+12. Êxodo 4:1–17 — Os sinais e a participação de Arão: relacionar sinais e palavras de Deus, sem antecipar o desenvolvimento específico das dez pragas (aula 7B).
+13. Êxodo 4:27–31; 5:1–2 — Regresso e primeira audiência com Faraó: ordenar as cenas Moisés e Arão juntos, o povo recebe a mensagem e a ida a Faraó; compreender o pedido e a reação.
+
+Poderá ser necessário **acrescentar páginas** se a narrativa ou os exercícios exigirem; não impor teto de seis atividades nesta série. Nomes Pipo, Lia, Maya e Levi permanecem internos; no papel devem aparecer em expressões e poses adequadas, sem nomes escritos.
+
