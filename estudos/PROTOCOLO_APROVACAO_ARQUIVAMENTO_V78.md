@@ -1,3 +1,5 @@
+> **PRECEDÊNCIA ATUALIZADA — 27/10/2026.** Antes de criar novas imagens, ler **primeiro** `estudos/PADRAO_MESTRE_IMUTAVEL.md` e inspecionar fisicamente as duas imagens canônicas confirmadas da Biblioteca. Os links históricos a `estudos/IDENTIDADE_VISUAL_V66.md` adiante **não** permitem usar pranchas conflitantes para redefinir Lia/Maya/Levi; tratar V66 apenas como histórico. O Padrão Mestre substitui qualquer instrução conflitante deste protocolo visual, mantendo as regras de aprovação e arquivamento.
+
 # Protocolo do Banco de Atividades — aprovação, arquivo seguro e publicação
 
 Vigente para todos os cadernos do Ministério Infantil. O usuário aprovou que materiais finalizados sejam preservados e disponibilizados no aplicativo sem depender do histórico do chat.
