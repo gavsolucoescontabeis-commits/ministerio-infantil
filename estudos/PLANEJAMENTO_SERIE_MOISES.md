@@ -82,3 +82,18 @@ As duas edições, seus arquivos de prévia e manifesto de integridade estão na
 ## Trava obrigatória de personagens para novas atividades de Moisés
 
 **Antes de produzir qualquer nova página de Moisés, ler `estudos/PADRAO_FIXO_PERSONAGENS_OFICIAIS.md` e abrir as duas imagens aprovadas na Biblioteca:** `BASE_ORIGINAL_PIPO_LIA_MAYA_CRIACAO.png` e `BASE_QUATRO_PERSONAGENS_MOISES_7A_APROVADA.png`. Maya é ruiva de pele mais clara com rosto próprio, não idêntico ao da Lia; Levi segue o colete azul/camiseta clara da capa aprovada, não alterna roupa azul/verde. Variações somente em expressões/poses. Artes originais já aprovadas são intocáveis. Não publicar novas imagens que desrespeitem a identidade.
+
+## Aprovação de Moisés 7A — 7–9 anos, edição parcial de 4 páginas (28/10/2026)
+
+O responsável conferiu a prévia de capa + três atividades (`Moises_7a_7a9_Capa_e_3_Atividades_PREVIA.pdf`) e respondeu **“Blz, aprovado”** em 28/10/2026. Esta aprovação protege a **composição de quatro páginas exatas** apresentada naquele PDF. Não recriar, redesenhar, cortar, alterar texto/roupas/expressões ou substituir imagens sem solicitação explícita.
+
+A mesma sequência foi copiada SEM ALTERAÇÕES para a Biblioteca em:
+`/Ministerio Infantil/Estudos/Banco de Atividades/Moises 7A - Do Nascimento ao Chamado/7 a 9 anos/Aprovados/Edicao_4_paginas_28OUT2026/`
+
+Arquivos: `Moises_7A_7a9_Capa_e_3_Atividades_APROVADO.pdf` (4 páginas A4, 3.388.135 bytes, SHA-256 `f9d48521af370847a18e0d3e13cf618f2838d3dc363a4de73f8274d6d715bc78`); `PREVIA_4_PAGINAS_APROVADO.jpg`, `Moises_7A_7a9_APROVADO_PDF_E_PAGINAS.zip`, `MANIFESTO_APROVACAO.json` e as quatro imagens extraídas do PDF sem redesenho. O ZIP guarda os originais EMBUTIDOS no PDF e a versão final preservada.
+
+Supabase: `mi_study_activity_packages.id='moises-7a-nascimento-chamado-7-9-parcial-4p'`, `status='approved'`, `published=false`. **Este é um caderno PARCIAL aprovado, não a aula inteira finalizada ou publicada**; publicação só depois de upload real e validação do Storage.
+
+**Observação preservada, sem correção não solicitada:** antes da aprovação foi apontada possível inconsistência editorial da última atividade sobre quem amamentou Moisés. O usuário aprovou **como apresentado**, portanto não editar silenciosamente. Se solicitar correção específica depois, aplicar sobre cópia, preservando a versão aprovada.
+
+**Próximas atividades:** não gerar novas capas, grades nem misturar páginas. Uma nova atividade bíblica de cada vez em A4, retomando a cronologia adulta de Moisés (Êxodo 2:11–15, Midiã, sarça e primeiro encontro com Faraó). **Sem idade impressa nas artes, sem números de atividade**, conforme última preferência. Personagens conforme referência visual do usuário, com poses/expressões variadas. Não repetir novamente três atividades sobre o palácio.
