@@ -61,3 +61,13 @@ O caderno **Moisés 7A — 7 a 9 anos** está em elaboração. A atividade 1 foi
 
 
 > **FONTE REAL CONFERIDA EM 27/10/2026:** `estudos/REFERENCIAS_VISUAIS_USUARIO_27-10-2026.md` (PDF de Caim e Abel e imagem de João 2:11 com Levi enviada pelo responsável). Qualquer conflito visual neste arquivo deve ser resolvido pelos arquivos originais, não por suposição.
+
+## CAPA OFICIAL APROVADA — DAVI E GOLIAS (28/10/2026)
+
+O responsável aprovou EXPLICITAMENTE a última versão da capa de Davi e Golias gerada após entregar duas vezes a ficha técnica atualizada dos quatro personagens. **É o modelo visual definitivo para os próximos cadernos e atividades.** Fonte original, arquivada sem alterações na Biblioteca:
+
+`/Ministerio Infantil/Estudos/Capas/Davi e Golias/Original Aprovado/Davi_e_Golias_Capa_FINAL_4_PERSONAGENS_Padrao_28OUT2026.png`
+
+Características da aprovação: Lia exploradora chapéu bege e binóculos; Maya ruiva de pele mais clara, laço rosa e roupa rosa; Pipo aventureiro camisa clara e lenço azul; Levi menino negro de cachos pretos, moletom verde-oliva e violão. A capa NÃO deve ser redesenhada, substituída ou alterada. **O visual desta capa é referência de identidade**, sem obrigar a mesma pose repetitiva em todas as atividades.
+
+**Tarefa em andamento:** Davi e Golias 5–6 anos, seis atividades em **seis páginas verticais independentes**, sem numeração nem idade na arte, campo Nome/Data. Primeiras duas tentativas de 28/10 geraram COLAGENS com 6 mini-páginas, numeração, labirinto e acabamento simplificado; **rejeitadas, não aprovadas nem publicadas**. Não recortar para fingir páginas completas. Conteúdo por ordem: (1) Davi cuida das ovelhas: observar/contar, (2) Davi visita irmãos no campo: identificar os personagens, (3) Davi confia em Deus: atitudes, (4) Davi escolhe cinco pedras: contar/selecionar, (5) Davi enfrenta Golias: ligar objetos e personagens, (6) Deus deu coragem a Davi: sequência simples/reflexão. Antes de gerar qualquer outra imagem, superar o problema técnico de mosaicos e gerar exatamente UMA página por vez.
