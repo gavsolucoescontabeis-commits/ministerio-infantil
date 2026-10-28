@@ -1,3 +1,20 @@
+## FICHA TÉCNICA ATUALIZADA PELO RESPONSÁVEL — 28/10/2026
+
+**Instrução expressa e mais recente para futuras capas e atividades.** Esta ficha prevalece em descrições textuais de roupa conflitantes, sem alterar automaticamente os ARQUIVOS originais já aprovados. Consultar as imagens de referência originais em paralelo; nomes dos personagens continuam internos e não são impressos nas atividades.
+
+**Estética:** ilustração tridimensional de animação digital profissional, detalhamento de texturas, iluminação solar vibrante, personagens expressivos, profundidade cinematográfica.
+
+- **Lia — exploradora:** cabelo castanho longo, ondulado e volumoso, pele clara e bochechas rosadas, olhos castanhos grandes. Chapéu safári BEGE com pequeno emblema AZUL; camisa de aventureira BEGE com bolsos; binóculos PRETOS como acessório-base.
+- **Maya (também grafada “Maia” pelo responsável) — fé:** cabelo RUIVO longo, cacheado e volumoso, pele mais clara que a Lia, sardas suaves, olhos castanhos; laço ROSA CHOQUE no lado direito; camiseta ROSA CLARA; Bíblia ou livro de capa ESCURA como acessório-base. Não copiar o rosto de Lia.
+- **Pipo — aventureiro:** cabelo castanho curto, ondulado e despenteado, pele clara, olhos castanhos grandes; camisa BEGE CLARA de botão em estilo explorador/safári, **LENÇO AZUL** amarrado ao pescoço. Esta orientação de lenço azul SUBSTITUI a exigência textual antiga de lenço vermelho para novas imagens; NÃO redesenhar páginas já aprovadas.
+- **Levi — louvor e música:** menino NEGRO de pele retinta, cabelos crespos curtos de pequenos cachos pretos, olhos castanhos grandes, rosto distinto; **MOLETOM COM CAPUZ verde-oliva OU azul vivo**, e violão/ukulele pequeno de madeira. Na capa-testagem atual, **verde-oliva** serve como escolha concreta para manter consistente; não inventar outro figurino, e não confundir com personagens da loja Cantinho da Gi.
+
+**Pose e expressão podem variar com a história e o sentimento** (o responsável quer superar a repetição de dedo apontado/binóculos/Bíblia/violão sempre na MESMA pose), mas cores, rostos, roupas, cabelos e acessórios-base devem continuar reconhecíveis. Nas cenas tristes ou graves, não colocar sorrisos artificiais. Uma atividade por página vertical A4; nenhuma nova capa ou atividade pode substituir material previamente aprovado sem autorização.
+
+**Capa de Davi e Golias:** teste solicitado com a ficha acima; a versão gerada deve ser mostrada ao responsável **somente para avaliação**. A capa previamente aprovada permanece intacta até nova aprovação expressa.
+
+---
+
 > **DOCUMENTO COMPLEMENTAR.** A regra editorial prioritária para novas atividades é `estudos/PADRAO_MESTRE_IMUTAVEL.md` + imagens originais da Biblioteca. Esta ficha nunca autoriza novas gerações por descrição sem inspecionar a referência visual. Caso haja divergência, prevalecem as imagens aprovadas e o Padrão Mestre.
 
 # Trava visual dos quatro personagens oficiais — Ministério Infantil
