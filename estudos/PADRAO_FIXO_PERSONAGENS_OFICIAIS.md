@@ -83,3 +83,24 @@ Características da aprovação: Lia exploradora chapéu bege e binóculos; Maya
 - `/Ministerio Infantil/Estudos/Banco de Atividades/Davi e Golias/5 a 6 anos/Rascunhos - Aguardando Aprovacao/Continuacao da Historia 28OUT2026/A_Sequencia_da_Historia_PREVIA.png` — seis quadros de história e números para colar; **observar antes da aprovação que os quadros já aparecem em ordem cronológica, o que torna o exercício muito simples**.
 
 **Não aprovadas e nem arquivadas como finais:** última tentativa de “Deus deu vitória” gerou um labirinto (proibido); outra tentativa repetiu o exercício dos objetos. Não aproveitar. O responsável quer mais opções para os professores e continuar a história até Davi derrotar Golias; **gerar UMA atividade por vez, UMA imagem vertical inteira, com personagem bíblico Davi de rosto próprio e cabelo ruivo, sem ser Pipo disfarçado, personagens oficiais integrados quando fizer sentido, SEM idades nem paginação**, sem labirintos, nunca mosaicos. A capa oficial aprovada está preservada no diretório de capas.
+
+## DAVI E GOLIAS 5–6 ANOS — CADERNO FINAL DE SETE PÁGINAS (28/10/2026)
+
+O responsável decidiu em 28/10/2026 montar **a capa oficial aprovada + seis atividades já criadas**, sem alteração artística, e aceitou como parte do mesmo caderno as duas páginas antes marcadas como prévia. **A montagem final ESTÁ CONCLUÍDA E ARQUIVADA**, sem redesenhar nenhuma das sete imagens originais:
+
+**Ordem final:**
+1. Capa **Davi_e_Golias_Capa_FINAL_4_PERSONAGENS_Padrao_28OUT2026.png**.
+2. Davi cuida das ovelhas — contagem original 1.
+3. Davi cuida das ovelhas — contagem original 2.
+4. Davi cuida das ovelhas — contagem original 3.
+5. As cinco pedras — atividade anteriormente aprovada.
+6. O que Davi usou? — atividade individual apresentada e incluída na aprovação da montagem.
+7. A sequência da história — atividade individual apresentada e incluída na aprovação da montagem.
+
+**Local na Biblioteca:** `/Ministerio Infantil/Estudos/Banco de Atividades/Davi e Golias/5 a 6 anos/Aprovadas/Caderno Completo 28OUT2026/`
+
+**Arquivos preservados:** `Davi_e_Golias_5a6_Capa_e_6_Atividades_APROVADO.pdf` (original sem compressão adicional, 7 páginas A4, SHA-256 `f155e57e6b00677164faca040ef6cfc0e9f31e2b537b8d69b9aa7a3ccdbbef3b`); `Davi_e_Golias_5a6_Caderno_7_Paginas_LEVE.pdf` (cópia com compressão JPG de alta qualidade para acesso fácil, mesma composição, SHA-256 `d181dc8f63ec3dd377501f3bd05ea1a8873be62cc6b72a7f846dd9e540cfb8b5`); ZIP contendo as sete imagens originais + PDF; duas prévias; manifesto de origem/hashes.
+
+**Banco de dados:** `public.mi_study_activity_packages`, pacote `davi-e-golias-5-6-caderno-final-7p`, status `approved`, **`published=false`**. Isso NÃO significa que o PDF já foi publicado no aplicativo; o upload ao Storage e validação real do acesso ficam para a fase posterior. Não converter nenhuma das três ovelhinhas em duplicata a ser descartada: o usuário quer as três opções preservadas.
+
+**Regra protegida:** nenhum arquivo original deve ser substituído por ilustrações geradas novamente; alterações somente com aprovação explícita. As seis atividades continuam sem numeração ou idade impressa nas imagens. A sequência já vem com cenas em ordem cronológica, conforme a arte original — não modificar silenciosamente.
