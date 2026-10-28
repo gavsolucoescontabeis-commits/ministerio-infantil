@@ -97,3 +97,16 @@ Supabase: `mi_study_activity_packages.id='moises-7a-nascimento-chamado-7-9-parci
 **Observação preservada, sem correção não solicitada:** antes da aprovação foi apontada possível inconsistência editorial da última atividade sobre quem amamentou Moisés. O usuário aprovou **como apresentado**, portanto não editar silenciosamente. Se solicitar correção específica depois, aplicar sobre cópia, preservando a versão aprovada.
 
 **Próximas atividades:** não gerar novas capas, grades nem misturar páginas. Uma nova atividade bíblica de cada vez em A4, retomando a cronologia adulta de Moisés (Êxodo 2:11–15, Midiã, sarça e primeiro encontro com Faraó). **Sem idade impressa nas artes, sem números de atividade**, conforme última preferência. Personagens conforme referência visual do usuário, com poses/expressões variadas. Não repetir novamente três atividades sobre o palácio.
+
+## Regra fechada para completar o caderno 7–9 com 6 atividades (28/10/2026)
+
+O responsável esclareceu que a montagem aprovada **tem apenas três atividades**, quando o caderno padrão deve ter **seis atividades**. Portanto FALTAM **EXATAMENTE TRÊS NOVAS ATIVIDADES INDIVIDUAIS**, sem substituir ou modificar as três páginas aprovadas anteriormente (capa + três = quatro páginas no PDF da Biblioteca). O resultado final esperado será **uma capa original + seis atividades aprovadas = sete páginas**, após aprovação das três novas.
+
+As três páginas faltantes, acompanhando o enredo sem voltar ao bebê ou recontar mais uma vez o palácio:
+- **Moisés vê uma injustiça e foge do Egito — Êxodo 2:11–15**. Tratar o acontecimento grave com fidelidade e sobriedade, sem violência gráfica e sem reduzir a morte do egípcio a ato comemorativo.
+- **Moisés chega a Midiã — Êxodo 2:15–22**. Chegada ao poço, auxílio às filhas de Reuel/Jetro, acolhimento, Zípora e a nova etapa da vida de Moisés.
+- **A sarça ardente e o retorno ao Egito — Êxodo 3:1–4:31 e 5:1–2**. Chamado, promessa de Deus, cooperação de Arão e a primeira audiência com Faraó sem entrar nas dez pragas (aula posterior).
+
+**Protocolo de criação:** UMA única ilustração/página A4 vertical por geração; o usuário aprova a página antes da próxima, preservando o nível 3D, a referência visual original dos quatro personagens, poses variadas, Nome/Data, conteúdo adequado a 7–9, **sem idade e sem numeração impressas**. NÃO fazer colagens/quadros com várias atividades, não recortar as miniaturas e não produzir labirintos.
+
+**Falhas nesta tentativa de 28/10/2026:** o gerador retornou duas vezes pranchas com 7–8 mini-páginas e até labirinto, apesar de ter sido solicitada só a atividade seguinte. **Resultados DESCARTADOS, não aprovados e não publicados.** Pelo protocolo, não insistir na mesma geração de pranchas até mudar o método com capacidade real de produzir uma única página. A aprovação das quatro páginas anteriores permanece intacta.
