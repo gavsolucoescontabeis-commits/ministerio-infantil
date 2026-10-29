@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const formUrl = pathToFileURL(resolve('cadastro-equipe/index.html')).href;
+const formUrl = process.env.FORM_URL || pathToFileURL(resolve('cadastro-equipe/index.html')).href;
 const image = { name: 'comprovante.png', mimeType: 'image/png', buffer: Buffer.from('89504e470d0a1a0a0000000d49484452', 'hex') };
 
 async function abrir(page) {
@@ -85,4 +85,28 @@ test('erro do servidor aparece na tela e não indica sucesso', async ({ page }) 
   await page.locator('#submitBtn').click();
   await expect(page.locator('#status')).toContainText('Erro de homologação');
   await expect(page.locator('#status')).not.toContainText('Cadastro enviado com sucesso');
+});
+
+test('menor sem comprovante recebe aviso visível, sem tentar enviar', async ({ page }) => {
+  await abrir(page);
+  await preencher(page, '2010-04-05');
+  await page.locator('#minorGuardianName').fill('Responsável de Teste');
+  await page.locator('#minorGuardianPhone').fill('41999997777');
+  let chamadas = 0;
+  await page.route('**/functions/v1/v60-staff-application-submit', route => { chamadas++; return route.abort(); });
+  await page.locator('#submitBtn').click();
+  await expect(page.locator('#status')).toContainText('Confira o campo obrigatório');
+  await expect(page.locator('#ageProof')).toBeFocused();
+  expect(chamadas).toBe(0);
+});
+test('declaração desmarcada impede envio e informa o campo', async ({ page }) => {
+  await abrir(page);
+  await preencher(page, '2010-04-05');
+  await page.locator('#minorGuardianName').fill('Responsável de Teste');
+  await page.locator('#minorGuardianPhone').fill('41999997777');
+  await page.locator('#ageProof').setInputFiles(image);
+  await page.locator('#privacyAck').uncheck();
+  await page.locator('#submitBtn').click();
+  await expect(page.locator('#status')).toContainText('Confira o campo obrigatório');
+  await expect(page.locator('#privacyAck')).toBeFocused();
 });
