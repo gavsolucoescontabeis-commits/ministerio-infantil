@@ -256,7 +256,7 @@ file.addEventListener('change',()=>{
 form.addEventListener('submit',async e=>{
  e.preventDefault();status.className='';status.textContent='';
  await certReadPromise;
- if(!form.reportValidity())return;
+ if(!form.reportValidity()){const invalid=form.querySelector(':invalid');if(invalid){const field=invalid.closest('[hidden]')?null:invalid;msg('Confira o campo obrigatório: '+(field?.labels?.[0]?.textContent?.trim()||field?.name||'não preenchido')+'.');field?.scrollIntoView({behavior:'smooth',block:'center'});field?.focus({preventScroll:true});}return;}
  if(!validCpf(cpf.value))return msg('CPF inválido. Confira os números informados.');
  const digits=onlyDigits(phone.value);if(digits.length<10)return msg('Informe um telefone/WhatsApp válido.');
  if(!birthDate.value||birthDate.value>today)return msg('Informe uma data de nascimento válida.');
