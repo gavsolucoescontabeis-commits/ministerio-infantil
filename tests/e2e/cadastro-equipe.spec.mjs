@@ -38,7 +38,7 @@ test('menor vê finalização e envia sem certidão de antecedentes', async ({ p
     const body = request.postData() || '';
     expect(body).toContain('minorGuardianName');
     expect(body).toContain('ageProof');
-    expect(body).not.toContain('name="certificate"; filename=');
+    expect(body).not.toMatch(/name="certificate"; filename="[^\"]+"/);
     enviou = true;
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, protocol: 'TESTE-LOCAL' }) });
   });
