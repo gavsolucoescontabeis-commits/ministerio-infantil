@@ -1,4 +1,4 @@
-/* V81 — Importação em lote de PDFs editoriais aprovados, a partir de ZIP sem compressão. */
+/* V82 — Importação em lote de PDFs editoriais aprovados, a partir de ZIP sem compressão. */
 (()=>{'use strict';
 const BASE='https://jthxnjvqmvtydyfuqcct.supabase.co';
 const KEY='sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs';
@@ -157,14 +157,22 @@ async function publishAll(){
     show('Conferindo arquivo '+(i+1)+' de '+selected.length+': '+p.title+' — '+p.ageLabel+'…');
     if(r.file.blob.size<1024||r.file.blob.size>50*1024*1024)throw Error('PDF ultrapassa o limite permitido.');
     const sign=new TextDecoder().decode(await r.file.blob.slice(0,5).arrayBuffer());if(sign!=='%PDF-')throw Error('Assinatura de PDF inválida.');
-    const sum=await checksum(r.file.blob);if(sum.toLowerCase()!==String(p.pdfSha256).toLowerCase())throw Error('SHA-256 diferente do caderno aprovado. Não enviado.');
+    const sum=await checksum(r.file.blob);
+    // V82: conferir novamente as variantes do MESMO PDF editorial aprovado.
+    // O leitor ZIP V81 já reconhecia a versão leve, mas esta segunda validação
+    // aceitava somente o hash da versão grande e barrava a publicação.
+    const allowedHashes=[p.pdfSha256,p.lightweightPdfSha256,...(Array.isArray(p.acceptedPdfHashes)?p.acceptedPdfHashes:[])]
+      .filter(h=>typeof h==='string'&&/^[a-f0-9]{64}$/i.test(h))
+      .map(h=>h.toLowerCase());
+    if(!allowedHashes.includes(sum.toLowerCase())||r.verifiedSha256!==sum.toLowerCase())
+      throw Error('SHA-256 diferente das versões aprovadas deste caderno. Não enviado.');
     const token=getToken();if(!token)throw Error('A sessão de administração expirou.');
     const dest=r.id+'/'+crypto.randomUUID()+'.pdf';
     const url=BASE+'/storage/v1/object/public/'+BUCKET+'/'+dest;
     show('Enviando '+p.title+' — '+p.ageLabel+' ('+(i+1)+'/'+selected.length+')…');
     await upload(r.file.blob,dest,token,i,selected.length);
     if(!await verify(url))throw Error('O PDF foi enviado, mas ainda não foi possível confirmar acesso ao arquivo.');
-    const updated={...p,status:'approved',published:true,student:url,editorialApproved:true,pdfSha256:sum,pdfFilename:r.file.name};
+    const updated={...p,status:'approved',published:true,student:url,editorialApproved:true,originalPdfSha256:p.originalPdfSha256||p.pdfSha256,originalPdfFilename:p.originalPdfFilename||p.pdfFilename,pdfSha256:sum,pdfFilename:r.file.name};
     const rows=await api('/rest/v1/mi_study_activity_packages?id=eq.'+encodeURIComponent(r.id),{method:'PATCH',body:{status:'approved',payload:updated,updated_at:new Date().toISOString()},token});
     /* In case Supabase returns minimal response, verify via fresh read below. */
     const check=await api('/rest/v1/mi_study_activity_packages?select=id,status,payload&id=eq.'+encodeURIComponent(r.id),{token});
