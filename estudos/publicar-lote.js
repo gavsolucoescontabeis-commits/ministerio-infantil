@@ -1,10 +1,18 @@
-/* V79 — Importação em lote de PDFs editoriais aprovados, a partir de ZIP sem compressão. */
+/* V80 — Importação em lote de PDFs editoriais aprovados, a partir de ZIP sem compressão. */
 (()=>{'use strict';
 const BASE='https://jthxnjvqmvtydyfuqcct.supabase.co';
 const KEY='sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs';
 const BUCKET='mi-estudos-atividades';
 const $=id=>document.getElementById(id);
 let authorized=false,working=false,records=[],selected=[];
+// V80: materiais com aprovação editorial, mas sem PDF publicado, também são importáveis.
+// Ignora versões parciais já substituídas por caderno final e nunca reenvia PDFs publicados.
+const eligibleForUpload=r=>{
+ const p=r?.payload||{};
+ return !!(p.editorialApproved&&p.pdfFilename&&p.pdfSha256)
+  &&(r.status==='review'||(r.status==='approved'&&(p.published===false||p.published==='false')))
+  &&p.partialEdition!==true&&p.partialEdition!=='true';
+};
 const getToken=()=>{try{return window.parent!==window?(window.parent.miAuthTokenV58||''):(window.opener?.miAuthTokenV58||'')}catch(_){return ''}};
 function show(msg,kind='info'){$('status').textContent=msg;$('status').dataset.kind=kind}
 async function api(path,{method='GET',body,token}={}){
@@ -21,7 +29,7 @@ async function init(){
   if(!Array.isArray(staff)||staff[0]?.staff_role!=='developer')throw Error('Apenas a conta administradora pode publicar materiais.');
   records=await api('/rest/v1/mi_study_activity_packages?select=id,status,payload&order=id.asc',{token});
   if(!Array.isArray(records))throw Error('Não foi possível carregar os cadernos cadastrados.');
-  const pend=records.filter(r=>r.status==='review'&&r.payload?.editorialApproved&&r.payload?.pdfFilename&&r.payload?.pdfSha256);
+  const pend=records.filter(eligibleForUpload);
   $('pending').textContent=pend.length+' cadernos aprovados esperando o envio do PDF.';
   authorized=true;$('zip').disabled=false;
   show('Selecione o pacote ZIP de cadernos aprovados. Nenhum PDF será enviado sem sua confirmação.');
@@ -57,7 +65,7 @@ async function pick(){
   show('Lendo o pacote sem alterar os arquivos…');
   const items=await readZip(file);
   const byname=new Map(items.map(x=>[x.name,x]));
-  const eligible=records.filter(r=>r.status==='review'&&r.payload?.editorialApproved&&r.payload?.pdfSha256&&r.payload?.pdfFilename);
+  const eligible=records.filter(eligibleForUpload);
   selected=eligible.filter(r=>byname.has(r.payload.pdfFilename)).map(r=>({...r,file:byname.get(r.payload.pdfFilename)}));
   const missing=eligible.filter(r=>!byname.has(r.payload.pdfFilename));
   const skipped=items.length-selected.length;
