@@ -1,4 +1,4 @@
-/* V80 — Importação em lote de PDFs editoriais aprovados, a partir de ZIP sem compressão. */
+/* V81 — Importação em lote de PDFs editoriais aprovados, a partir de ZIP sem compressão. */
 (()=>{'use strict';
 const BASE='https://jthxnjvqmvtydyfuqcct.supabase.co';
 const KEY='sb_publishable_bzWCtwbFj1B1WqSMdhl0GQ_VDCPqDRs';
@@ -35,26 +35,55 @@ async function init(){
   show('Selecione o pacote ZIP de cadernos aprovados. Nenhum PDF será enviado sem sua confirmação.');
  }catch(e){show(e.message,'error')}
 }
+// V81 — Leitura por diretório central: aceita ZIP com subpastas, STORE/DEFLATE e data descriptor.
+// Identificação por SHA-256 dos PDF aprovados (nome do arquivo não é requisito de aprovação).
 async function readZip(file){
- let offset=0,items=[];const MAX=100;
- while(offset+4<=file.size){
-  const sigView=new DataView(await file.slice(offset,offset+4).arrayBuffer());
-  const sig=sigView.getUint32(0,true);
-  if(sig===0x02014b50||sig===0x06054b50)break;
-  if(sig!==0x04034b50)throw Error('O pacote ZIP está danificado ou usa um formato inesperado.');
-  if(offset+30>file.size)throw Error('O pacote ZIP está incompleto.');
-  const d=new DataView(await file.slice(offset,offset+30).arrayBuffer());
-  const flags=d.getUint16(6,true),method=d.getUint16(8,true);
-  const size=d.getUint32(18,true),total=d.getUint32(22,true),namelen=d.getUint16(26,true),extra=d.getUint16(28,true);
-  if(flags&8||method!==0||size!==total||size===0xFFFFFFFF)throw Error('Use o pacote ZIP oficial, sem compressão ou alteração dos PDFs.');
-  if(namelen<1||namelen>260)throw Error('Nome de arquivo inválido no pacote.');
-  const name=new TextDecoder('utf-8').decode(await file.slice(offset+30,offset+30+namelen).arrayBuffer());
-  const begin=offset+30+namelen+extra;
-  if(begin+size>file.size)throw Error('Pacote incompleto no arquivo '+safeText(name));
-  if(/^[\w.À-ÿ -]+\.pdf$/i.test(name))items.push({name,blob:file.slice(begin,begin+size,'application/pdf')});
-  offset=begin+size;
-  if(items.length>MAX)throw Error('O pacote contém arquivos demais.');
+ const tailSize=Math.min(file.size,65557),tailStart=file.size-tailSize;
+ const tail=new DataView(await file.slice(tailStart).arrayBuffer());
+ let eocd=-1;
+ for(let i=tailSize-22;i>=0;i--){
+  if(tail.getUint32(i,true)===0x06054b50){eocd=i;break}
  }
+ if(eocd<0)throw Error('O arquivo selecionado não é um ZIP válido.');
+ const count=tail.getUint16(eocd+10,true);
+ const centralSize=tail.getUint32(eocd+12,true),centralOffset=tail.getUint32(eocd+16,true);
+ if(count===0xFFFF||centralSize===0xFFFFFFFF||centralOffset===0xFFFFFFFF)throw Error('O ZIP64 não é suportado neste importador.');
+ if(centralOffset+centralSize>file.size||count>200)throw Error('O diretório do ZIP está inválido ou contém arquivos demais.');
+ const central=new DataView(await file.slice(centralOffset,centralOffset+centralSize).arrayBuffer());
+ const decode=new TextDecoder('utf-8');
+ let cursor=0,items=[];
+ for(let i=0;i<count;i++){
+  if(cursor+46>central.byteLength||central.getUint32(cursor,true)!==0x02014b50)throw Error('Entrada inválida no diretório do ZIP.');
+  const method=central.getUint16(cursor+10,true);
+  const compressedSize=central.getUint32(cursor+20,true);
+  const originalSize=central.getUint32(cursor+24,true);
+  const nameLen=central.getUint16(cursor+28,true);
+  const extraLen=central.getUint16(cursor+30,true);
+  const commentLen=central.getUint16(cursor+32,true);
+  const localOffset=central.getUint32(cursor+42,true);
+  if(cursor+46+nameLen+extraLen+commentLen>central.byteLength)throw Error('Nome de arquivo inválido no ZIP.');
+  const fullName=decode.decode(new Uint8Array(central.buffer,central.byteOffset+cursor+46,nameLen));
+  cursor+=46+nameLen+extraLen+commentLen;
+  const name=fullName.replace(/\\/g,'/').split('/').pop();
+  if(!/^[\w.À-ÿ -]+\.pdf$/i.test(name))continue;
+  if(originalSize<1024||originalSize>50*1024*1024)throw Error('O PDF "'+safeText(name)+'" excede os limites de upload.');
+  if(localOffset+30>file.size)throw Error('O ZIP contém um PDF incompleto.');
+  const local=new DataView(await file.slice(localOffset,localOffset+30).arrayBuffer());
+  if(local.getUint32(0,true)!==0x04034b50)throw Error('Cabeçalho do PDF dentro do ZIP inválido.');
+  const start=localOffset+30+local.getUint16(26,true)+local.getUint16(28,true);
+  if(start+compressedSize>file.size)throw Error('O ZIP está incompleto no arquivo '+safeText(name));
+  const compressed=file.slice(start,start+compressedSize);
+  let blob;
+  if(method===0)blob=compressed;
+  else if(method===8){
+   if(!('DecompressionStream' in window))throw Error('Atualize o navegador para importar arquivos ZIP comprimidos.');
+   try{blob=await new Response(compressed.stream().pipeThrough(new DecompressionStream('deflate-raw'))).blob()}
+   catch(_){throw Error('Falha ao descompactar '+safeText(name)+'.')}
+  }else throw Error('O ZIP usa um tipo de compressão não suportado: '+method);
+  if(blob.size!==originalSize)throw Error('Tamanho incorreto em '+safeText(name)+'.');
+  items.push({name,blob:new Blob([blob],{type:'application/pdf'})});
+ }
+ if(!items.length)throw Error('Nenhum PDF encontrado no ZIP.');
  return items;
 }
 async function pick(){
@@ -62,18 +91,42 @@ async function pick(){
  if(!authorized)return;
  try{
   const file=$('zip').files?.[0];if(!file)throw Error('Escolha o arquivo ZIP.');
-  show('Lendo o pacote sem alterar os arquivos…');
+  show('Lendo PDFs do ZIP sem alterar os arquivos…');
   const items=await readZip(file);
-  const byname=new Map(items.map(x=>[x.name,x]));
   const eligible=records.filter(eligibleForUpload);
-  selected=eligible.filter(r=>byname.has(r.payload.pdfFilename)).map(r=>({...r,file:byname.get(r.payload.pdfFilename)}));
-  const missing=eligible.filter(r=>!byname.has(r.payload.pdfFilename));
-  const skipped=items.length-selected.length;
-  $('summary').textContent='Prontos para enviar: '+selected.length+'. Outros arquivos ignorados: '+skipped+'. Aprovados que não estão neste pacote: '+missing.length+'.';
+  const unpublishedByHash=new Map(),publishedByHash=new Map();
+  for(const r of records){
+   const p=r.payload||{},hashes=[p.pdfSha256,p.lightweightPdfSha256,...(Array.isArray(p.acceptedPdfHashes)?p.acceptedPdfHashes:[])]
+      .filter(v=>typeof v==='string'&&/^[a-f0-9]{64}$/i.test(v)).map(v=>v.toLowerCase());
+   const target=eligibleForUpload(r)?unpublishedByHash:
+      (p.published===true||p.published==='true')?publishedByHash:null;
+   if(target)for(const h of hashes)target.set(h,r);
+  }
+  let publishedCount=0,ignoredCount=0;
+  const chosenIds=new Set();
+  for(let i=0;i<items.length;i++){
+   const item=items[i];
+   show('Conferindo aprovação do PDF '+(i+1)+' de '+items.length+': '+safeText(item.name)+'…');
+   const sign=new TextDecoder().decode(await item.blob.slice(0,5).arrayBuffer());
+   if(sign!=='%PDF-')throw Error('Arquivo '+safeText(item.name)+' não é um PDF válido.');
+   const sha=await checksum(item.blob);
+   const approved=unpublishedByHash.get(sha);
+   if(approved&&!chosenIds.has(approved.id)){
+    selected.push({...approved,file:item,verifiedSha256:sha});
+    chosenIds.add(approved.id);
+   }else if(publishedByHash.has(sha))publishedCount++;
+   else ignoredCount++;
+  }
+  const missing=eligible.filter(r=>!chosenIds.has(r.id));
+  $('summary').textContent='Prontos para enviar: '+selected.length+
+    '. Já publicados no aplicativo: '+publishedCount+
+    '. Outros arquivos ignorados: '+ignoredCount+
+    '. Aprovados ainda ausentes no pacote: '+missing.length+'.';
   $('items').replaceChildren();
   for(const r of selected){const li=document.createElement('li');li.textContent=r.payload.title+' — '+(r.payload.ageLabel||'')+' ('+r.file.name+')';$('items').appendChild(li)}
-  if(!selected.length)throw Error('Nenhum PDF aprovado deste pacote corresponde aos registros pendentes no Banco de Atividades.');
-  $('submit').disabled=false;show('Pacote reconhecido. Clique em “Conferir e publicar” para enviar os PDFs aprovados.');
+  if(!selected.length)throw Error('O ZIP não contém PDFs aprovados que ainda estejam pendentes. Confira os materiais já publicados.');
+  $('submit').disabled=false;
+  show('Cadernos pendentes reconhecidos e conferidos por SHA-256. Clique em “Conferir e publicar”.');
  }catch(e){show(e.message,'error')}
 }
 async function checksum(blob){
