@@ -45,15 +45,37 @@ async function init(){
    opt.textContent=p.title+' — '+(p.ageLabel||p.ageMin+' a '+p.ageMax+' anos')+(p.status==='approved'?' (publicado)':' (aguardando)');
    select.appendChild(opt);
   }
-  // Prefere o material aprovado editorialmente mais recente que ainda espera o PDF.
-  const mostRecent=rows.find(row=>row?.payload?.status==='review'&&row?.payload?.pdfSha256);
-  if(mostRecent&&originals.has(mostRecent.id))select.value=mostRecent.id;
-  else if(originals.has('criacao-5-6'))select.value='criacao-5-6';
-  selectExisting();
+  // Nunca escolher outro tema automaticamente: o arquivo aprovado decide o registro.
+  select.value='new';
   select.addEventListener('change',selectExisting);
+  $('pdf').addEventListener('change',recognizeSelectedPdf);
   authorized=true;$('publish').disabled=false;
   show('Conta autorizada. Selecione o PDF aprovado e clique em “Enviar e publicar”.');
  }catch(error){show(error.message,'error')}
+}
+async function pdfChecksum(file){
+ if(!crypto?.subtle?.digest)throw Error('Este navegador não oferece SHA-256 para conferir arquivos.');
+ return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',await file.arrayBuffer())),b=>b.toString(16).padStart(2,'0')).join('');
+}
+function matchingApprovedRecord(checksum){
+ return [...originals.entries()].find(([id,p])=>typeof p.pdfSha256==='string'&&p.pdfSha256.toLowerCase()===checksum);
+}
+async function recognizeSelectedPdf(){
+ const file=$('pdf').files?.[0];if(!file)return;
+ try{
+  if(!/\.pdf$/i.test(file.name))throw Error('Escolha o arquivo PDF do caderno, não a imagem de prévia.');
+  const header=new TextDecoder().decode(await file.slice(0,5).arrayBuffer());
+  if(header!=='%PDF-')throw Error('O arquivo selecionado não é PDF. Selecione o caderno .pdf.');
+  if(file.size>50*1024*1024)throw Error('O PDF excede o limite de 50 MB.');
+  show('Identificando automaticamente a aula aprovada...');
+  const match=matchingApprovedRecord(await pdfChecksum(file));
+  if(match){
+   $('entry').value=match[0];selectExisting();
+   show('PDF reconhecido: '+match[1].title+' — '+(match[1].ageLabel||match[1].ageMin+' a '+match[1].ageMax+' anos')+'. Clique em Enviar e publicar.');
+  }else if($('entry').value!=='new'){
+   show('Este arquivo não corresponde ao material cadastrado selecionado. Confira se escolheu o PDF final aprovado.','error');
+  }else show('PDF válido. Para um novo tema, confira título, idade e referência antes de publicar.');
+ }catch(e){show(e.message,'error')}
 }
 function upload(file,path,token){
  return new Promise((resolve,reject)=>{
@@ -88,6 +110,12 @@ async function publish(){
   if(file.size<1024||file.size>50*1024*1024)throw Error('O PDF deve ter entre 1 KB e 50 MB.');
   const header=new TextDecoder().decode(await file.slice(0,5).arrayBuffer());
   if(header!=='%PDF-')throw Error('O arquivo selecionado não possui assinatura de PDF.');
+  show('Conferindo o arquivo PDF e identificando a aula...');
+  const checksum=await pdfChecksum(file);
+  const match=matchingApprovedRecord(checksum);
+  if(match&&$('entry').value!==match[0]){
+   $('entry').value=match[0];selectExisting();
+  }
   const title=$('theme').value.trim(),ref=$('reference').value.trim();
   const min=Number($('minAge').value),max=Number($('maxAge').value),pages=Number($('pages').value);
   if(!title||!ref)throw Error('Informe tema e passagem bíblica.');
@@ -98,14 +126,11 @@ async function publish(){
   if(!/^[a-z0-9-]+$/.test(id))throw Error('Não foi possível criar identificador para a atividade.');
   if(!saved&&originals.has(id))throw Error('Já existe material para o tema e a faixa. Selecione o registro existente.');
   if(!saved&&Array.from(originals.values()).some(p=>norm(p.title)===norm(title)&&Number(p.ageMin||p.age)===min&&Number(p.ageMax||p.age)===max))throw Error('Já existe um caderno deste tema e idade. Escolha o material cadastrado.');
-  // Impede enviar versões antigas ou cadernos montados em baixa resolução.
-  // Para registros editoriais aprovados compara os bytes com o SHA-256 confirmado.
-  show('Conferindo se o PDF é exatamente o material aprovado…');
-  if(!crypto?.subtle?.digest)throw Error('Este navegador não oferece a verificação necessária para publicar o PDF. Atualize seu navegador.');
-  const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
-  const checksum=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+  // Protege as aprovações editoriais: não publica arquivo diferente do registrado.
   if(saved?.pdfSha256&&checksum!==String(saved.pdfSha256).toLowerCase())
-    throw Error('Este PDF não corresponde ao arquivo aprovado. Selecione o caderno final correto, sem modificar ou renomear o conteúdo.');
+    throw Error('PDF diferente do original aprovado para '+saved.title+' — '+(saved.ageLabel||saved.ageMin+' a '+saved.ageMax+' anos')+'. Selecione o PDF correspondente.');
+  if(saved?.published===true&&saved?.student)
+    throw Error('Este caderno já está publicado. Abra o PDF publicado em Estudos; não substitua a versão aprovada.');
     const token=getToken();if(!token)throw Error('Sessão encerrada. Entre novamente no aplicativo.');
   const path=id+'/'+crypto.randomUUID()+'.pdf';
   const url=BASE+'/storage/v1/object/public/'+BUCKET+'/'+path;
