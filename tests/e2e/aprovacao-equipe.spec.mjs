@@ -63,5 +63,5 @@ test('adulto: confirma identidade, certidão opcional, sem caixa adicional de co
  age_proof_storage_path:null,minor_guardian_name:null,minor_guardian_phone:null});
  const checks=page.locator('.mi-pending-config label.mi-pending-verify:visible input[type=checkbox]');
  await expect(checks).toHaveCount(2);
- await expect(page.locator('.mi-pending-verify:visible')).toContainText('identidade');
+ await expect(page.locator('.mi-pending-verify:visible').last()).toContainText('identidade');
 });
