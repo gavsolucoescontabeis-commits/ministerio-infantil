@@ -1,7 +1,16 @@
-name: Homologação — cadastro da equipe
+name: Homologação — cadastro e publicação de PDFs
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'estudos/publicar-pdf.js'
+      - 'estudos/publicar-pdf.html'
+      - 'tests/**'
+      - '.github/workflows/homologacao-cadastro.yml'
   pull_request:
     paths:
+      - 'estudos/publicar-pdf.js'
+      - 'estudos/publicar-pdf.html'
       - 'cadastro-equipe/**'
       - 'tests/**'
       - 'playwright.config.mjs'
