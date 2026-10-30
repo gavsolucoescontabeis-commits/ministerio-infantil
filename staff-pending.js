@@ -432,7 +432,7 @@ function renderCard(app){
  actions.append(approve);
  const danger=document.createElement('details');danger.className='mi-pending-danger';const dangerTitle=document.createElement('summary');dangerTitle.textContent='Outras opções: descartar este pré-cadastro';danger.append(dangerTitle,reject);
  const feedback=document.createElement('p');feedback.className='small mi-pending-review-status';feedback.setAttribute('role','status');
- feedback.textContent=minor?'A certidão estadual é dispensada. A aprovação só será concluída após confirmar a idade e autorização do responsável legal.':'O cadastro será aprovado com os dados e permissões acima. A certidão recebida já será vinculada automaticamente.';
+ feedback.textContent=minor?'Confira o documento e os dados do responsável, marque a confirmação única e aprove. A certidão estadual é dispensada.':'Confira a identidade, marque a confirmação e aprove. A certidão recebida será vinculada automaticamente.';
  const checkLabel=document.createElement('label');checkLabel.className='mi-pending-verify';
  const certChecked=document.createElement('input');certChecked.type='checkbox';
  const checkText=document.createElement('span');checkText.textContent='Já conferi a autenticidade da certidão no site oficial. Marcar é opcional: se não conferi, posso aprovar e verificar o documento depois.';
@@ -441,15 +441,15 @@ function renderCard(app){
  const identityLabel=document.createElement('label');identityLabel.className='mi-pending-verify';
  const identityChecked=document.createElement('input');identityChecked.type='checkbox';
  const identityText=document.createElement('span');
- identityText.textContent='CONFIRMO que identifiquei pessoalmente este professor ou conferi com ele por contato confiável o CPF e os dados do cadastro. A senha foi definida pelo próprio candidato e só será liberada após esta aprovação.';
+ identityText.textContent=minor?'Confirmo que conferi a identidade e o documento de idade, obtive autorização do responsável legal e garanti supervisão de adulto.':'Confirmo que conferi a identidade e o CPF da pessoa antes de liberar seu acesso.';
  identityLabel.append(identityChecked,identityText);
- identityLabel.hidden=app.source!=='public-form-v60-password';
+ identityLabel.hidden=!minor&&app.source!=='public-form-v60-password';
  const guardianLabel=document.createElement('label');guardianLabel.className='mi-pending-verify';
  const guardianConfirmed=document.createElement('input');guardianConfirmed.type='checkbox';
  const guardianText=document.createElement('span');
  guardianText.textContent='CONFIRMO que conferi a data de nascimento, obtive autorização do responsável legal e organizei supervisão por adulto para a atuação da pessoa menor de 18 anos.';
- guardianLabel.append(guardianConfirmed,guardianText);guardianLabel.hidden=!minor;
- const proofLabel=document.createElement('label');proofLabel.className='mi-pending-verify';proofLabel.hidden=!minor;
+ guardianLabel.append(guardianConfirmed,guardianText);guardianLabel.hidden=true;
+ const proofLabel=document.createElement('label');proofLabel.className='mi-pending-verify';proofLabel.hidden=true;
  const proofChecked=document.createElement('input');proofChecked.type='checkbox';
  const proofText=document.createElement('span');proofText.textContent='CONFIRMO que abri e conferi o RG, CIN ou certidão de nascimento e que a data de nascimento coincide com o pré-cadastro.';
  proofLabel.append(proofChecked,proofText);
@@ -487,10 +487,8 @@ function renderCard(app){
  rebuildPerms();
 
  approve.addEventListener('click',async()=>{
-  if(app.source==='public-form-v60-password'&&!identityChecked.checked){feedback.textContent='Confirme a identidade do candidato antes de liberar a senha escolhida por ele.';return}
-  if(minor&&!guardianConfirmed.checked){feedback.textContent='Antes de aprovar a pessoa menor, confirme a identidade, autorização do responsável e supervisão de adulto.';return}
+  if((minor||app.source==='public-form-v60-password')&&!identityChecked.checked){feedback.textContent=minor?'Confirme a conferência do documento, autorização do responsável e supervisão de adulto.':'Confirme a identidade antes de liberar o acesso.';return}
   if(minor&&!app.age_proof_storage_path){feedback.textContent='Comprovante de idade não anexado. Não é possível aprovar.';return}
-  if(minor&&!proofChecked.checked){feedback.textContent='Abra o comprovante de idade e confirme a data de nascimento.';return}
   if(role.value==='teacher'&&area.value==='ebd'&&!room.value){feedback.textContent='Selecione a sala da EBD antes de aprovar.';return}
   // A aprovacao e operacao AUTENTICADA e TRANSACIONAL no Supabase.
   // Nao depende do indicador de sincronizacao do estado local do admin.
@@ -499,15 +497,10 @@ function renderCard(app){
    feedback.textContent='Sua sessao administrativa expirou. Entre novamente antes de aprovar.';
    return;
   }
-  const verdict='Aprovar o cadastro de '+app.full_name+'?\n\nPerfil: '+roleLabel(role.value)+'\nÁrea: '+areaLabel(area.value)
-   +(role.value==='teacher'&&area.value==='ebd'?'\nSala: '+room.value:'')
-   +'\nCertidão: '+(minor?'dispensada por menoridade; documento de idade, responsável e acompanhamento confirmados':certChecked.checked?'autenticidade conferida por você':'recebida, autenticidade a conferir')
-   +'\n\nO acesso será liberado e '+(minor?'a dispensa da certidão estadual será registrada.':'a certidão existente será vinculada automaticamente.');
-  if(!confirm(verdict))return;
   approve.disabled=true;reject.disabled=true;feedback.textContent='Importando cadastro...';
   try{
    const result=await request('/functions/v1/v60-admin-import-staff-application',{method:'POST',body:JSON.stringify({
-    applicationId:app.id,targetRole:role.value,targetArea:area.value,room:room.value||'',permissions:{...selectedPermissions(perms),minorGuardianConfirmed:minor&&guardianConfirmed.checked,minorAgeProofConfirmed:minor&&proofChecked.checked,identityConfirmed:app.source==='public-form-v60-password'&&identityChecked.checked}
+    applicationId:app.id,targetRole:role.value,targetArea:area.value,room:room.value||'',permissions:{...selectedPermissions(perms),minorGuardianConfirmed:minor&&identityChecked.checked,minorAgeProofConfirmed:minor&&identityChecked.checked,identityConfirmed:app.source==='public-form-v60-password'&&identityChecked.checked}
    })});
    let checkedResult=false,checkError='';
    if(!minor&&certChecked.checked&&result.personKey){
@@ -555,7 +548,7 @@ function renderCard(app){
   catch(e){feedback.textContent=e.message||'Não foi possível descartar.';approve.disabled=false;reject.disabled=false}
  });
 
- config.append(subtitle,grid,roomNote,advanced,checkLabel,identityLabel,proofLabel,guardianLabel,actions,feedback,danger);card.appendChild(config);
+ config.append(subtitle,grid,roomNote,advanced,checkLabel,identityLabel,actions,feedback,danger);card.appendChild(config);
  return card;
 }
 
