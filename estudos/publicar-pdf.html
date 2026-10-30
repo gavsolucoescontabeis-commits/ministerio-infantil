@@ -34,13 +34,13 @@ button:disabled{opacity:.55;cursor:not-allowed}.btn{background:#e9f2fa;color:#16
    </label>
   </div>
  </section>
- <section class="card"><h2>2. Enviar o PDF aprovado</h2>
+ <section class="card"><h2>2. Escolha primeiro o PDF aprovado — a aula e a idade serão identificadas automaticamente</h2>
   <label>Arquivo PDF (até 50 MB)<input id="pdf" type="file" accept=".pdf,application/pdf"></label>
-  <p class="hint">O original será guardado sem reinterpretação ou perda de qualidade. A publicação só será liberada depois do envio e da verificação do arquivo. Professores não têm permissão para publicar ou substituir cadernos.</p>
+  <p class="hint">Selecione o PDF aprovado de Jonas. O sistema reconhece automaticamente o tema e a faixa etária pelo código SHA-256 do arquivo, sem alterar o PDF. Publicação restrita ao administrador.</p>
   <div class="actions"><button id="publish" type="button" disabled>Enviar e publicar no Banco</button><span id="progress" class="hint"></span></div>
   <p id="status" role="status" aria-live="polite">Verificando sua autorização…</p>
   <div id="published"><a id="publishedLink" class="btn" target="_blank" rel="noopener noreferrer">Abrir PDF publicado ↗</a><a class="btn" href="./index.html">Voltar aos Estudos</a></div>
  </section>
 </main>
-<script src="./publicar-pdf.js?v=78" defer></script>
+<script src="./publicar-pdf.js?v=83-jonas-identificacao" defer></script>
 </body></html>
