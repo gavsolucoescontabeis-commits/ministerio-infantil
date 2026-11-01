@@ -60,9 +60,9 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 28px}
         <label for="minorGuardianPhone">WhatsApp do responsável legal <span class="required">*</span></label>
         <input id="minorGuardianPhone" name="minorGuardianPhone" type="tel" maxlength="20" placeholder="(41) 99999-9999">
         <label for="ageProof">Documento para comprovar a idade <span class="required">*</span></label>
-        <p class="small">Envie RG, CIN ou certidão de nascimento em PDF ou foto (JPG, PNG ou WebP). A data de nascimento deve estar legível. Até 10 MB. Arquivo privado, acessível somente à administração autorizada.</p>
+        <p class="small">Envie RG, CIN ou certidão de nascimento em PDF, imagem (JPG, PNG, WebP, HEIC) ou documento (DOC, DOCX, RTF). Até 10 MB. A data de nascimento precisa estar legível. Arquivo privado, acessível somente à administração autorizada.</p>
         <div class="filebox">
-          <input id="ageProof" name="ageProof" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" required>
+          <input id="ageProof" name="ageProof" type="file" required>
           <div id="ageProofInfo" class="small" style="margin-top:7px">Nenhum comprovante selecionado.</div>
         </div>
       </div>
@@ -267,7 +267,7 @@ form.addEventListener('submit',async e=>{
   const proof=ageProof.files[0];
   if(!proof||proof.size===0)return msg('Anexe um documento que comprove a data de nascimento do menor.');
   if(proof.size>10*1024*1024)return msg('O comprovante de idade deve ter no máximo 10 MB.');
-  if(!['application/pdf','image/jpeg','image/png','image/webp'].includes(proof.type))return msg('Envie o comprovante em PDF, JPG, PNG ou WebP.');
+  if(!/\.(pdf|jpe?g|png|webp|heic|heif|doc|docx|rtf)$/i.test(proof.name))return msg('Escolha PDF, JPG, PNG, WebP, HEIC, DOC, DOCX ou RTF. Outros formatos não são aceitos por segurança.');
  }else{
   const f=file.files[0];if(!f)return msg('Anexe a certidão de antecedentes.');
   if(certIssued.value<=birthDate.value)return msg('A data de emissão da certidão não pode ser a data de nascimento nem anterior a ela. Confira a data escrita no documento.');
