@@ -352,13 +352,19 @@ async function openAgeProof(app,button){
   if(!response.ok)throw Error('Não foi possível abrir o comprovante de idade.');
   const blob=await response.blob();
   const suffix=path.split('.').pop()?.toLowerCase();
-  const fallbackType=({pdf:'application/pdf',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'})[suffix];
-  const contentType=['application/pdf','image/jpeg','image/png','image/webp'].includes(blob.type)?blob.type:fallbackType;
-  if(!contentType)throw Error('Formato inesperado.');
+  const fallbackType=({pdf:'application/pdf',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',heic:'image/heic',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',rtf:'application/rtf'})[suffix];
+  const allowed=['application/pdf','image/jpeg','image/png','image/webp','image/heic','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/rtf'];
+  const contentType=allowed.includes(blob.type)?blob.type:fallbackType;
+  if(!contentType)throw Error('Formato de documento não reconhecido.');
   const typed=new Blob([blob],{type:contentType});
   const local=URL.createObjectURL(typed);
-  if(win&&!win.closed)win.location.href=local;
-  else{const a=document.createElement('a');a.href=local;a.download=app.age_proof_file_name||'comprovante-idade';document.body.appendChild(a);a.click();a.remove();}
+  const previewable=['application/pdf','image/jpeg','image/png','image/webp'].includes(contentType);
+  if(previewable&&win&&!win.closed)win.location.href=local;
+  else{
+   if(win&&!win.closed)win.close();
+   const a=document.createElement('a');a.href=local;a.download=app.age_proof_file_name||('comprovante-idade.'+suffix);
+   document.body.appendChild(a);a.click();a.remove();
+  }
   setTimeout(()=>URL.revokeObjectURL(local),120000);
  }catch(e){if(win&&!win.closed)win.close();alert(e.message||'Falha ao abrir o comprovante.')}
  finally{button.disabled=false;button.textContent=old}
