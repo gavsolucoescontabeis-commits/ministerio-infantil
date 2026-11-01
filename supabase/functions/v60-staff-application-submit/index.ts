@@ -43,6 +43,27 @@ function isoDate(v:string) {
 }
 function ageYears(birth:string,today:string){let age=Number(today.slice(0,4))-Number(birth.slice(0,4));if(today.slice(5)<birth.slice(5))age--;return age;}
 function localDate(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
+
+/** Identifica o documento por sua assinatura, não pelo MIME inconsistente do celular.
+ *  Documentos ficam em bucket privado; executáveis e ZIPs genéricos são rejeitados.
+ */
+async function detectMinorProof(file:File):Promise<{mime:string,ext:string}|null>{
+ const lower=file.name.toLowerCase();
+ const head=new Uint8Array(await file.slice(0,32).arrayBuffer());
+ const starts=(v:number[])=>v.every((b,i)=>head[i]===b);
+ const ascii=(offset:number,len:number)=>String.fromCharCode(...head.slice(offset,offset+len));
+ if(/\.pdf$/.test(lower) && starts([37,80,68,70,45]))return {mime:"application/pdf",ext:"pdf"};
+ if(/\.(jpg|jpeg)$/.test(lower) && starts([255,216,255]))return {mime:"image/jpeg",ext:"jpg"};
+ if(/\.png$/.test(lower) && starts([137,80,78,71,13,10,26,10]))return {mime:"image/png",ext:"png"};
+ if(/\.webp$/.test(lower) && ascii(0,4)==="RIFF" && ascii(8,4)==="WEBP")return {mime:"image/webp",ext:"webp"};
+ if(/\.(heic|heif)$/.test(lower) && ascii(4,4)==="ftyp" && ["heic","heix","hevc","hevx","mif1","msf1"].includes(ascii(8,4)))
+   return {mime:"image/heic",ext:"heic"};
+ if(/\.docx$/.test(lower) && starts([80,75,3,4]))return {mime:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",ext:"docx"};
+ if(/\.doc$/.test(lower) && starts([208,207,17,224,161,177,26,225]))return {mime:"application/msword",ext:"doc"};
+ if(/\.rtf$/.test(lower) && ascii(0,5)==="{\\rtf")return {mime:"application/rtf",ext:"rtf"};
+ return null;
+}
+
 function safeName(name:string) {
   return name.normalize("NFKD").replace(/[^a-zA-Z0-9._-]+/g,"_").replace(/^_+|_+$/g,"").slice(0,120) || "documento";
 }
@@ -83,6 +104,7 @@ Deno.serve(async (req: Request) => {
     const privacyAck=txt(form.get("privacyAck"),10)==="yes";
     const file=form.get("certificate");
     const proof=form.get("ageProof");
+    let minorProofFormat:{mime:string,ext:string}|null=null;
 
     if(fullName.length<2) return json(400,{ok:false,message:"Informe o nome completo."},origin);
     if(!validCpf(cpf)) return json(400,{ok:false,message:"CPF inválido. Confira os números informados."},origin);
@@ -102,7 +124,8 @@ Deno.serve(async (req: Request) => {
         return json(400,{ok:false,message:"Menores de 18 anos não precisam anexar certidão estadual; remova o arquivo."},origin);
       if(!(proof instanceof File)||proof.size===0)return json(400,{ok:false,message:"Anexe RG, CIN ou certidão de nascimento para comprovar a idade."},origin);
       if(proof.size>MAX_FILE)return json(413,{ok:false,message:"O comprovante de idade deve ter no máximo 10 MB."},origin);
-      if(!MIME.has(proof.type))return json(400,{ok:false,message:"O comprovante precisa ser PDF, JPG, PNG ou WebP."},origin);
+      minorProofFormat=await detectMinorProof(proof);
+      if(!minorProofFormat)return json(400,{ok:false,message:"Formato não aceito. Anexe um documento verdadeiro em PDF, JPG, PNG, WebP, HEIC, DOC, DOCX ou RTF, até 10 MB."},origin);
     }else{
       if(proof instanceof File && proof.size>0)return json(400,{ok:false,message:"Comprovante de idade separado é usado somente para menores de 18 anos."},origin);
       if(!isoDate(certIssuedOn))return json(400,{ok:false,message:"Informe a data de emissão da certidão."},origin);
@@ -128,22 +151,25 @@ Deno.serve(async (req: Request) => {
       .select("id").eq("cpf",cpf).in("status",["pending","imported"]).limit(1);
     if(duplicateError)throw new Error("Não foi possível conferir cadastros existentes.");
     if(existing?.length)return json(409,{ok:false,message:"Esse CPF já possui pré-cadastro ou acesso. Procure a coordenação."},origin);
+    // Checar CPF de perfil existente ANTES de criar usuário ou enviar anexo.
+    // Evita erro de unicidade profiles_cpf_hash_key e preserva contas aprovadas.
+    const digestBytes=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(cpf));
+    const cpfDigest=Array.from(new Uint8Array(digestBytes)).map(b=>b.toString(16).padStart(2,"0")).join("");
+    const {data:linkedProfiles,error:lookupError}=await supabase.from("profiles")
+      .select("id").eq("cpf_hash",cpfDigest).limit(1);
+    if(lookupError){
+      console.error("staff lookup profile:",lookupError.code,lookupError.message);
+      throw new Error("Não foi possível verificar o CPF no cadastro de acessos.");
+    }
+    if(linkedProfiles?.length)return json(409,{ok:false,message:"Este CPF já possui um cadastro de acesso no aplicativo. Procure a coordenação para consultar ou regularizar esse acesso."},origin);
     const applicationId=crypto.randomUUID();
     let path:string|null=null;
     let proofPath:string|null=null;
-    if(minor && proof instanceof File){
-      const head=new Uint8Array(await proof.slice(0,16).arrayBuffer());
-      const has=(bytes:number[])=>bytes.every((v,i)=>head[i]===v);
-      const signature=proof.type==="application/pdf" ? has([37,80,68,70,45])
-       : proof.type==="image/jpeg" ? has([255,216,255])
-       : proof.type==="image/png" ? has([137,80,78,71,13,10,26,10])
-       : proof.type==="image/webp" ? String.fromCharCode(...head.slice(0,4))==="RIFF" && String.fromCharCode(...head.slice(8,12))==="WEBP"
-       : false;
-      if(!signature)return json(400,{ok:false,message:"O arquivo do comprovante não corresponde a um PDF ou imagem válida."},origin);
-      const ext:Record<string,string>={"application/pdf":"pdf","image/jpeg":"jpg","image/png":"png","image/webp":"webp"};
-      proofPath=`pending/${applicationId}/idade/comprovante.${ext[proof.type]}`;
+    if(minor && proof instanceof File && minorProofFormat){
+      proofPath=`pending/${applicationId}/idade/comprovante.${minorProofFormat.ext}`;
+      const proofForStorage=new File([proof],proof.name,{type:minorProofFormat.mime});
       const {error:proofErr}=await supabase.storage.from("certidoes-ministerio")
-       .upload(proofPath,proof,{contentType:proof.type,upsert:false,cacheControl:"3600"});
+       .upload(proofPath,proofForStorage,{contentType:minorProofFormat.mime,upsert:false,cacheControl:"3600"});
       if(proofErr)throw new Error("Não foi possível armazenar o comprovante de idade.");
       uploadedPaths.push(proofPath);
     }
@@ -158,8 +184,6 @@ Deno.serve(async (req: Request) => {
     // Cria a conta no Auth com a senha definida pela própria pessoa.
     // Não confirmamos propriedade do e-mail: identidade/documentos são verificados
     // pela administração antes de ativar perfil e associar CPF ao login.
-    const digestBytes=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(cpf));
-    const cpfDigest=Array.from(new Uint8Array(digestBytes)).map(b=>b.toString(16).padStart(2,"0")).join("");
     const {data:created,error:createError}=await supabase.auth.admin.createUser({
       email,password:accountPassword,email_confirm:true
     });
@@ -171,7 +195,14 @@ Deno.serve(async (req: Request) => {
     const {error:profileError}=await supabase.from("profiles").insert({
       id:createdUserId,display_name:fullName,role:"teacher",active:false,cpf_hash:cpfDigest
     });
-    if(profileError)throw new Error("Não foi possível registrar a conta pendente.");
+    if(profileError){
+      console.error("staff profile insert:",profileError.code,profileError.message);
+      if(profileError.code==="23505"){
+        failStatus=409;
+        throw new Error("Este CPF já possui um cadastro de acesso. Procure a coordenação.");
+      }
+      throw new Error("Não foi possível registrar a conta pendente. Procure a coordenação.");
+    }
 
     const { error: insertError }=await supabase.from("staff_applications_v60").insert({
       id:applicationId,
