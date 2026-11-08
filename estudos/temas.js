@@ -1,5 +1,7 @@
 /* Catálogo editorial inicial: referências selecionadas manualmente; sem geração aleatória. */
 window.MI_ESTUDOS_TOPICS = Object.freeze([
+  {"title":"Marta e Maria","aliases":["maria e marta","ouça o que jesus tem a dizer","ouvir jesus","a boa parte"],"references":["Lucas 10:38-42"],"note":"Maria ouve Jesus; Marta se preocupa com muitos serviços."},
+
   {
     "title": "Parábola do semeador",
     "aliases": [
