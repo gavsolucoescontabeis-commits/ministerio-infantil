@@ -4,6 +4,8 @@
  */
 (()=>{'use strict';
 const profiles=[
+ {keys:['marta e maria','maria e marta','ouça o que jesus tem a dizer','ouvir jesus','a boa parte','melhor parte'],references:['Lucas 10'],lesson:'Jesus mostrou a importância de ouvir a Palavra, sem ensinar que ajudar e servir sejam errados.',activity:'Misture os acontecimentos da passagem e peça que a turma identifique quem fez cada ação: Marta, Maria ou Jesus.',question:'Qual foi a boa parte escolhida por Maria?'},
+
  {keys:['parábola do semeador','semeador'],references:['Mateus 13','Marcos 4','Lucas 8'],lesson:'Jesus explica que a maneira de receber a Palavra é importante.',activity:'Use quatro recipientes com tipos diferentes de solo para comparar a recepção da semente. Não apresente a dinâmica como parte do acontecimento bíblico.',question:'O que Jesus explicou sobre os diferentes tipos de solo?'},
  {keys:['amor de Deus','Deus nos ama'],references:['João 3','1 João 4','Romanos 5'],lesson:'O amor de Deus é revelado em Jesus Cristo.',activity:'Peça às crianças que escrevam uma maneira concreta de demonstrar amor ao próximo durante a semana.',question:'O que essa passagem revela sobre o amor de Deus?'},
  {keys:['caim e abel','caim','abel'],references:['Gênesis 4'],lesson:'As escolhas humanas têm consequências, e Deus nos chama à responsabilidade.',activity:'Proponha situações do cotidiano em que é preciso agir com respeito e domínio próprio; discuta as escolhas possíveis.',question:'Quais decisões de Caim aparecem no texto bíblico e quais foram as consequências?'},
