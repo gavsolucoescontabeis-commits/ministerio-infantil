@@ -4,6 +4,21 @@
  */
 (()=>{'use strict';
 const catalog={
+ 'marta-maria':{
+  teaching:'Jesus valorizou a atenção de Maria à sua Palavra. Servir é importante, mas não deve impedir que paremos para ouvir seus ensinamentos.',
+  questions:[
+   ['Quem recebeu Jesus em sua casa?', 'Marta recebeu Jesus. Lucas 10:38.'],
+   ['O que Maria fez enquanto Jesus ensinava?', 'Sentou-se aos pés do Senhor e ouvia sua palavra. Lucas 10:39.'],
+   ['Por que Marta foi falar com Jesus?', 'Estava ocupada com muito serviço e queria que Maria a ajudasse. Lucas 10:40.'],
+   ['O que Jesus ensinou ao responder a Marta?', 'Marta estava preocupada com muitas coisas; Maria havia escolhido a boa parte. Lucas 10:41–42.']
+  ],
+  actions:[
+   'Conte a história e peça que as crianças identifiquem quem recebeu Jesus, quem se sentou para ouvi-lo e quem pediu ajuda.',
+   'Misture cartões de fatos com os nomes Marta, Maria e Jesus. A turma deve associar cada ação à pessoa correta e justificar com Lucas 10:38–42.',
+   'Proponha um dilema sobre tarefas e prioridades. Diferencie o que está na Bíblia de uma aplicação atual e peça que a turma explique o ensino de Jesus.'
+  ]
+ },
+
  'criacao':{
   teaching:'Deus é o Criador, e a narrativa apresenta uma sequência intencional dos acontecimentos.',
   questions:[
