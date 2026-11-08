@@ -349,9 +349,9 @@ function planScriptureSearch(){
 /* Assistente editorial: sugestões explícitas e revisáveis; sem integração de IA externa. */
 let lessonSuggestRequest=0,lessonSuggestVariants=null,lessonChoiceIndices={},previewLessonId=null;
 const LESSON_FIELDS=Object.freeze({
+ story:['lessonStory','História Bíblica Explicada'],
  goal:['lessonGoal','Objetivo da Aula'],
  context:['lessonContext','Contexto Bíblico e Histórico'],
- story:['lessonStory','História Bíblica Explicada'],
  application:['lessonApplication','Aplicação Prática'],
  questions:['lessonQuestions','Perguntas para Conversar'],
 });
@@ -400,8 +400,8 @@ function renderLessonSuggestionVariants(reference){
  container.replaceChildren();lessonChoiceIndices={};
  for(const [field,[id,label]] of Object.entries(LESSON_FIELDS)){
   const values=lessonSuggestVariants[field]||[];
-  const details=document.createElement('details');details.className='lesson-suggestion-group';details.open=field==='goal';
-  const summary=document.createElement('summary');summary.textContent=label+' · '+values.length+' Opções';details.append(summary);
+  const details=document.createElement('details');details.className='lesson-suggestion-group';details.open=field==='story';
+  const summary=document.createElement('summary');summary.textContent=(field==='story'?'História para contar às crianças':label)+' · '+values.length+' Opções';details.append(summary);
   for(const [index,value] of values.entries()){
    const item=document.createElement('div');item.className='lesson-suggestion-option';item.dataset.field=field;item.dataset.optionIndex=String(index);
    const marker=document.createElement('strong');marker.textContent='Opção '+(index+1);
