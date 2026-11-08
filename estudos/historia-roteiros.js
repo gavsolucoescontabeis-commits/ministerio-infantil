@@ -326,6 +326,23 @@ stories.push(
 }
 );
 
+/* Marta e Maria: relato fiel a Lucas 10:38–42, sem serviço de IA. */
+stories.push({
+ id:'marta-maria',titles:['marta e maria','maria e marta','marta','ouca o que jesus tem a dizer','ouvir jesus','a boa parte','melhor parte'],passages:['Lucas 10'],
+ scenes:[
+  [38,39,'Jesus chegou a uma aldeia, e Marta o recebeu em casa. Maria, sua irmã, sentou-se aos pés de Jesus para ouvir seus ensinamentos.','Jesus entrou em uma aldeia e Marta o recebeu em sua casa. Maria, irmã de Marta, sentou-se aos pés do Senhor e ficou ouvindo sua palavra. Enquanto Jesus ensinava, Maria aproveitou aquele momento para prestar atenção ao que ele dizia.'],
+  [40,40,'Marta estava ocupada com muitos serviços e ficou preocupada. Ela pediu que Jesus dissesse a Maria para ajudá-la.','Marta estava distraída com muitos serviços. Ao perceber que sua irmã permanecia ouvindo Jesus, aproximou-se dele e perguntou se não se importava de ela estar servindo sozinha. Marta pediu que Jesus mandasse Maria ajudá-la.'],
+  [41,42,'Jesus mostrou que Marta estava preocupada com muitas coisas. Maria havia escolhido a boa parte, que não lhe seria tirada.','Jesus respondeu chamando Marta pelo nome duas vezes. Explicou que ela estava ansiosa e preocupada com muitas coisas, mas que uma só era necessária. Maria havia escolhido a boa parte, e ninguém a tiraria dela. A lição não é que ajudar e servir sejam errados; Jesus mostrou a importância de parar para ouvir sua palavra.']
+ ],
+ analogy:{
+  little:'Às vezes queremos fazer muitas coisas ao mesmo tempo. Podemos reservar um momento tranquilo para ouvir uma história da Bíblia e conversar com Deus.',
+  early:'Mesmo quando temos tarefas em casa ou na escola, podemos separar um momento para aprender o que Jesus ensina.',
+  middle:'Pense em um dia cheio de tarefas, brincadeiras e mensagens. Como você pode organizar seu tempo sem deixar de lado a leitura da Bíblia e a atenção à Palavra?',
+  older:'Nem tudo que exige nossa atenção é igualmente importante. Compare as preocupações de Marta com a escolha de Maria e discuta como estabelecer prioridades sem desprezar nossas responsabilidades.',
+  teen:'Notificações, cobranças e compromissos podem ocupar toda a atenção. Reflita sobre como reservar tempo para ouvir a Palavra sem usar a fé como desculpa para abandonar responsabilidades.'
+ }
+});
+
 const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
 function storyFor(topic,reference){
  const query=normalize(topic),ref=normalize(reference);
