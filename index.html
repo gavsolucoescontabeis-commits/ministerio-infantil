@@ -1365,7 +1365,9 @@ window.miCloudRefreshIfChanged=async()=>{
   const nextRevision=Number(rows[0].revision);
   Object.keys(d).forEach(k=>delete d[k]);Object.assign(d,loaded);
   revision=nextRevision;localStorage.setItem(KEY,JSON.stringify(d));
-  render();last=JSON.stringify(d);
+  render();renderKidHome();
+  if(document.getElementById('kidSearch')?.value.trim())locateKid();
+  last=JSON.stringify(d);
   status('Nuvem: atualizada com lançamentos de outros acessos');
   return true;
  })();
