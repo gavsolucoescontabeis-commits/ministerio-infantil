@@ -69,18 +69,24 @@ async function decision(id,action,wasTest){
  if(busy)return;busy=true;
  try{
    const res=await rpc('v64_review_child_application',{p_application_id:id,p_action:action});
-   const text=action==='reject'?'Pré-cadastro rejeitado.':
-     res.is_test?'Cadastro de TESTE importado! Ele aparece no Cadastro Geral identificado como teste. Atualize o aplicativo para conferir.':
-     'Criança importada com sucesso no cadastro geral. Atualize o aplicativo para visualizar.';
+   let synced=true;
    if(action==='approve'){
      if(window.miAuthRoleV58==='developer'){
-       await window.miCloudRefreshIfChanged?.().catch(()=>false);
+       synced=Boolean(await window.miCloudRefreshIfChanged?.().catch(()=>false));
      }else{
-       await window.miV59ReloadStaff?.().catch(()=>null);
+       try{await window.miV59ReloadStaff?.()}catch(_){synced=false}
      }
    }
-   alert(text);
    await refresh();
+   if(action==='approve' && synced){
+     window.showKidHome?.();
+     document.getElementById('kidRecent')?.scrollIntoView({behavior:'smooth',block:'start'});
+   }
+   const text=action==='reject'?'Pré-cadastro rejeitado.':
+     !synced?'Cadastro aprovado na nuvem, mas a atualização da lista neste aparelho ficou pendente. Confira o indicador de gravação antes de recarregar.':
+     res.is_test?'Cadastro de TESTE importado! Saiu dos pré-cadastros e consta no Cadastro Geral identificado como teste.':
+     'Criança importada com sucesso! Saiu da lista de pendentes e consta no Cadastro Geral.';
+   alert(text);
  }catch(err){alert(err.message||'Não foi possível concluir.')}
  finally{busy=false}
 }
